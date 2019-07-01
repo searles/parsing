@@ -1,0 +1,33 @@
+left-recursive grammars
+
+A: b
+ | A c
+ | A d
+ ;
+is equivalent to A: b (c | d)* ;
+
+A: b
+ | c* A d
+ ;
+is equivalent to A: c* b d* ;
+
+-----------------
+
+Grammar language:
+
+rule: id ':' expr ';'
+
+expr: concat ('|' concat)* ;
+
+concat: lit+ ;
+
+lit: term ('?' | '+' | '*' | '!' )? ;
+
+term: '(' expr ')'
+    | STRING
+    | CHARSET
+    ;
+
+STRING: (regex) ;
+
+CHARSET: (also regex) ~[...] | [...] ; 

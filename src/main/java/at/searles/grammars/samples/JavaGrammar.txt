@@ -1,0 +1,902 @@
+package at.searles.grammars.samples;
+
+import at.searles.lexer.Lexer;
+import at.searles.parsing.Parser;
+import at.searles.parsing.Recognizer;
+import at.searles.parsing.Reducer;
+import at.searles.parsing.Ref;
+import at.searles.parsing.utils.Utils;
+import at.searles.parsing.utils.ast.*;
+
+import java.util.Map;
+
+public class JavaGrammar {
+
+    public enum Ids {
+        List,
+        CompilationUnit,
+        PackageDeclaration,
+        ImportDeclaration,
+        TypeDeclaration,
+        QualifiedName,
+        Static,
+        QualifiedImportName,
+        Block,
+        ClassOrInterfaceModifier, AnnotationTypeDeclaration, InterfaceDeclaration, EnumDeclaration, ClassDeclaration, Annotation, Public, Protected, Private, Native, Synchronized, Transient, Volatile, Abstract, StrictFP, Modifier, Identifier, TypeParameters, Extends, Implements, ClassBody, TypeParameter, TypeBound, EnumConstants, BodyDeclaration, BodyDeclarations, EnumConstant, Arguments, EnumBodyDeclaration, TypeList, InterfaceBody, MemberDeclaration, Final
+    }
+
+    private Lexer lexer; // another lexer is used inside type declarations because of >/>>
+
+    private Ref<AstNode, Ids> compilationUnit = new Ref<>(Ids.CompilationUnit);
+    private Ref<AstNode, Ids> packageDeclaration = new Ref<>(Ids.PackageDeclaration);
+    private Ref<AstNode, Ids> importDeclaration = new Ref<>(Ids.ImportDeclaration);
+    private Ref<AstNode, Ids> typeDeclaration = new Ref<>(Ids.TypeDeclaration);
+    private Ref<AstNode, Ids> annotation = new Ref<>(Ids.Annotation);
+    private Ref<AstNode, Ids> qualifiedName = new Ref<>(Ids.QualifiedName);
+    private Ref<AstNode, Ids> qualifiedImportName = new Ref<>(Ids.QualifiedImportName);
+    private Ref<AstNode, Ids> classOrInterfaceModifier = new Ref<>(Ids.ClassOrInterfaceModifier);
+    private Ref<AstNode, Ids> classDeclaration = new Ref<>(Ids.ClassDeclaration);
+    private Ref<AstNode, Ids> enumDeclaration = new Ref<>(Ids.EnumDeclaration);
+    private Ref<AstNode, Ids> interfaceDeclaration = new Ref<>(Ids.InterfaceDeclaration);
+    private Ref<AstNode, Ids> annotationTypeDeclaration = new Ref<>(Ids.AnnotationTypeDeclaration);
+    private Ref<AstNode, Ids> typeParameter = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> identifier = new Ref<>(Ids.Id);
+    private Ref<AstNode, Ids> typeType = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> typeList = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> typeParameters = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> typeBound = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> enumDeclaration = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> enumConstant = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> enumBodyDeclarations = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> interfaceDeclaration = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> classBody = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> interfaceBody = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> classBodyDeclaration = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> arguments = new Ref<>(Ids.Arguments);
+    private Ref<AstNode, Ids> block = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> memberDeclaration = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+    private Ref<AstNode, Ids> = new Ref<>(Ids.);
+
+    private Recognizer keyword(String keyword) {
+        // keywords are false because they could also be an ID.
+        return Recognizer.fromToken(keyword, lexer, false);
+    }
+
+    void init() {
+        /*
+        compilationUnit
+        : packageDeclaration? importDeclaration* typeDeclaration* EOF
+        ;
+        */
+
+        compilationUnit.set(
+                MapBranch.create(
+                        Reducer.opt(Utils.put(Ids.PackageDeclaration, packageDeclaration))
+                        .then(Utils.put(Ids.ImportDeclaration, ListNode.list(importDeclaration)))
+                        .then(Utils.put(Ids.TypeDeclaration, ListNode.list(typeDeclaration))))
+        );
+
+        /*
+        packageDeclaration
+        : annotation* PACKAGE qualifiedName ';'
+        ;
+        */
+        Reducer<Map<Ids, AstNode>, Map<Ids, AstNode>> annotations =
+                Utils.put(Ids.Annotation, ListNode.list(annotation));
+
+        packageDeclaration.set(
+                MapBranch.create(
+                        annotations
+                        .then(keyword("package"))
+                        .then(Utils.put(Ids.QualifiedName, qualifiedName))
+                )
+        );
+
+        /*
+        importDeclaration
+        : IMPORT STATIC? qualifiedName ('.' '*')? ';'
+        ;
+        */
+        Reducer<Map<Ids, AstNode>, Map<Ids, AstNode>> optionalStaticModifier =
+                Reducer.opt(Utils.put(Ids.Static, keyword("static").then(AstNode.CREATOR)));
+
+
+
+        importDeclaration.set(
+                MapBranch.create(
+                        keyword("import")
+                        .then(optionalStaticModifier)
+                        .then(Utils.put(Ids.QualifiedImportName, qualifiedImportName))
+                )
+        );
+
+        /*
+        typeDeclaration
+        : classOrInterfaceModifier*
+                (classDeclaration | enumDeclaration | interfaceDeclaration | annotationTypeDeclaration)
+                | ';'
+        ;
+        */
+
+        typeDeclaration.set(MapBranch.create(
+                Utils.put(Ids.Modifier, ListNode.list(classOrInterfaceModifier))
+                .then(
+                        Utils.put(Ids.ClassDeclaration, classDeclaration)
+                        .or(Utils.put(Ids.EnumDeclaration, enumDeclaration))
+                        .or(Utils.put(Ids.InterfaceDeclaration, interfaceDeclaration))
+                        .or(Utils.put(Ids.AnnotationTypeDeclaration, annotationTypeDeclaration))
+                )
+                .then(keyword(";"))
+        ));
+
+        /*
+        modifier
+        : classOrInterfaceModifier
+                | NATIVE
+                | SYNCHRONIZED
+                | TRANSIENT
+                | VOLATILE
+        ;
+        */
+
+        Parser<AstNode> modifier = classOrInterfaceModifier
+                .or(keyword("native").then(new Value.Creator<>(Ids.Native)))
+                .or(keyword("synchronized").then(new Value.Creator<>(Ids.Synchronized)))
+                .or(keyword("transient").then(new Value.Creator<>(Ids.Transient)))
+                .or(keyword("volatile").then(new Value.Creator<>(Ids.Volatile)));
+
+        /*classOrInterfaceModifier
+        : annotation
+                | PUBLIC
+                | PROTECTED
+                | PRIVATE
+                | STATIC
+                | ABSTRACT
+                | FINAL    // FINAL for class only -- does not apply to interfaces
+                | STRICTFP
+        ;*/
+
+        classOrInterfaceModifier.set(
+                annotation
+                .or(keyword("public").then(new Value.Creator<>(Ids.Public)))
+                .or(keyword("protected").then(new Value.Creator<>(Ids.Protected)))
+                .or(keyword("private").then(new Value.Creator<>(Ids.Private)))
+                .or(keyword("static").then(new Value.Creator<>(Ids.Static)))
+                .or(keyword("abstract").then(new Value.Creator<>(Ids.Abstract)))
+                .or(keyword("final").then(new Value.Creator<>(Ids.Final)))
+                .or(keyword("strictfp").then(new Value.Creator<>(Ids.StrictFP)))
+        );
+
+        /*
+        variableModifier
+        : FINAL
+                | annotation
+        ;
+        */
+
+        Parser<AstNode> variableModifier = keyword("final")
+                .then(new Value.Creator<>(Ids.Final))
+                .or(annotation);
+
+        /*
+        classDeclaration
+        : CLASS IDENTIFIER typeParameters?
+                (EXTENDS typeType)?
+        (IMPLEMENTS typeList)?
+        classBody
+        ;
+        */
+
+        classDeclaration.set(MapBranch.create(
+                keyword("class")
+                .then(Utils.put(Ids.Identifier, identifier))
+                .then(Reducer.opt(Utils.put(Ids.TypeParameters, typeParameters)))
+                .then(Reducer.opt(keyword("extends").then(Utils.put(Ids.Extends, typeType))))
+                .then(Reducer.opt(keyword("implements").then(Utils.put(Ids.Implements, typeList))))
+                .then(Utils.put(Ids.ClassBody, classBody))
+        ));
+
+        /*
+        typeParameters
+        : '<' typeParameter (',' typeParameter)* '>'
+        ;
+        */
+
+        typeParameters.set(
+                keyword("<")
+                .then(ListNode.csvNonEmpty(keyword(","), typeParameter))
+                .then(keyword(">"))
+        );
+
+        /*
+        typeParameter
+        : annotation* IDENTIFIER (EXTENDS typeBound)?
+        ;
+        */
+
+        typeParameter.set(
+                MapBranch.create(
+                        annotations
+                        .then(Utils.put(Ids.Identifier, identifier))
+                        .then(Reducer.opt(
+                                keyword("extends")
+                                .then(Utils.put(Ids.Extends, typeBound))
+                        ))
+                )
+        );
+
+        /*
+        typeBound
+        : typeType ('&' typeType)*
+        ;
+        */
+
+        typeBound.set(
+                ListNode.csvNonEmpty(keyword("&"), typeType)
+        );
+
+        /*
+        enumDeclaration
+        : ENUM IDENTIFIER (IMPLEMENTS typeList)? '{' enumConstants? ','? enumBodyDeclarations? '}'
+        ;
+
+        enumConstants
+        : enumConstant (',' enumConstant)*
+        ;
+        */
+        enumDeclaration.set(MapBranch.create(
+                keyword("enum")
+                .then(Utils.put(Ids.Identifier, identifier))
+                .then(Reducer.opt(keyword("implements").then(Utils.put(Ids.Implements, typeList))))
+                .then(
+                        keyword("{")
+                        .then(Reducer.opt(Utils.put(Ids.EnumConstants, ListNode.csv(keyword(","), enumConstant)))))
+                        .then(keyword(",").opt())
+                        .then(Reducer.opt(Utils.put(Ids.BodyDeclarations, enumBodyDeclarations)))
+                        .then(keyword("}"))
+                )
+        );
+
+        /*
+        enumConstant
+        : annotation* IDENTIFIER arguments? classBody?
+        ;
+        */
+        enumConstant.set(MapBranch.create(
+                annotations
+                .then(Utils.put(Ids.Identifier, identifier))
+                .then(Reducer.opt(Utils.put(Ids.Arguments, arguments)))
+                .then(Reducer.opt(Utils.put(Ids.ClassBody, classBody)))
+        ));
+
+        /*
+        enumBodyDeclarations
+        : ';' classBodyDeclaration*
+        ;
+        */
+        enumBodyDeclarations.set(keyword(";").then(ListNode.list(classBodyDeclaration)));
+
+        /*
+        interfaceDeclaration
+        : INTERFACE IDENTIFIER typeParameters? (EXTENDS typeList)? interfaceBody
+        ;
+        */
+        interfaceDeclaration.set(MapBranch.create(
+                keyword("interface")
+                .then(Utils.put(Ids.Identifier, identifier))
+                .then(Reducer.opt(Utils.put(Ids.TypeParameters, typeParameters)))
+                .then(Reducer.opt(keyword("extends").then(Utils.put(Ids.TypeList, typeList))))
+                .then(Utils.put(Ids.InterfaceBody, interfaceBody))
+        ));
+
+        /*
+        classBody
+        : '{' classBodyDeclaration* '}'
+        ;
+        */
+
+        classBody.set(
+                keyword("{").then(ListNode.list(classBodyDeclaration)).then(keyword("}"))
+        );
+
+        /*
+        interfaceBody
+        : '{' interfaceBodyDeclaration* '}'
+        ;
+        */
+
+        interfaceBody.set(
+                keyword("{")
+                .then(ListNode.list(interfaceBodyDeclaration))
+                .then(keyword("}"))
+        );
+
+        /*
+        classBodyDeclaration
+        : ';'
+                | STATIC? block
+                | modifier* memberDeclaration
+        ;
+        */
+        // FIXME STATIC? is part of modifier.
+
+        Reducer<Map<Ids, AstNode>, Map<Ids, AstNode>> modifiers = Utils.put(Ids.Modifier, ListNode.list(Ids.List, modifier));
+
+        classBodyDeclaration.set(
+                MapBranch.create(
+                        optionalStaticModifier
+                        .then(Utils.put(Ids.Block, block))
+                        .or(modifiers.then(Utils.put(Ids.MemberDeclaration, memberDeclaration)))
+                        .or(keyword(";").toReducer())
+                )
+        );
+
+        /*
+        memberDeclaration
+        : methodDeclaration
+                | genericMethodDeclaration
+                | fieldDeclaration
+                | constructorDeclaration
+                | genericConstructorDeclaration
+                | interfaceDeclaration
+                | annotationTypeDeclaration
+                | classDeclaration
+                | enumDeclaration
+        ;
+        */
+
+        // FIXME: Union of method, constructor, field
+        memberDeclaration.set(
+                methodDeclaration
+                .or(genericMethodDeclaration)
+                .or(fieldDeclaration)
+                .or(constructorDeclaration)
+                .or(genericConstructorDeclaration)
+                .or(interfaceDeclaration)
+                .or(annotationTypeDeclaration)
+                .or(classDeclaration)
+                .or(enumDeclaration)
+        );
+
+// We use rule this even for void methods which cannot have [] after parameters.
+// This simplifies grammar and we can consider void to be a type, which
+// renders the [] matching as a context-sensitive issue or a semantic check
+// for invalid return type after parsing.
+
+        /*
+        methodDeclaration
+        : typeTypeOrVoid IDENTIFIER formalParameters ('[' ']')*
+        (THROWS qualifiedNameList)?
+        methodBody
+        ;
+        */
+
+        methodDeclaration.set(MapBranch.create(
+                Utils.put(Ids.Type, typeTypeOrVoid)
+                .then(Utils.put(Ids.Identifier, identifier))
+                .then(Utils.put(Ids.Parameters, formalParameters))
+                .then() // // TODO: what about []? should I count?
+                .then(Reducer.opt(
+                        keyword("throws")
+                        .then(Utils.put(Ids.Throws, qualifiedNameList))
+                ))
+                .then(Utils.put(Ids.MethodBody, methodBody))
+        ));
+
+        /*
+        methodBody
+        : block
+                | ';'
+        ;
+        */
+
+        /*
+        typeTypeOrVoid
+        : typeType
+                | VOID
+        ;
+        */
+
+        genericMethodDeclaration
+        : typeParameters methodDeclaration
+                ;
+
+        genericConstructorDeclaration
+        : typeParameters constructorDeclaration
+                ;
+
+        constructorDeclaration
+        : IDENTIFIER formalParameters (THROWS qualifiedNameList)? constructorBody=block
+        ;
+
+        fieldDeclaration
+        : typeType variableDeclarators ';'
+        ;
+
+        interfaceBodyDeclaration
+        : modifier* interfaceMemberDeclaration
+                | ';'
+        ;
+
+        interfaceMemberDeclaration
+        : constDeclaration
+                | interfaceMethodDeclaration
+                | genericInterfaceMethodDeclaration
+                | interfaceDeclaration
+                | annotationTypeDeclaration
+                | classDeclaration
+                | enumDeclaration
+        ;
+
+        constDeclaration
+        : typeType constantDeclarator (',' constantDeclarator)* ';'
+        ;
+
+        constantDeclarator
+        : IDENTIFIER ('[' ']')* '=' variableInitializer
+        ;
+
+// see matching of [] comment in methodDeclaratorRest
+// methodBody from Java8
+        interfaceMethodDeclaration
+        : interfaceMethodModifier* (typeTypeOrVoid | typeParameters annotation* typeTypeOrVoid)
+        IDENTIFIER formalParameters ('[' ']')* (THROWS qualifiedNameList)? methodBody
+        ;
+
+// Java8
+        interfaceMethodModifier
+        : annotation
+                | PUBLIC
+                | ABSTRACT
+                | DEFAULT
+                | STATIC
+                | STRICTFP
+        ;
+
+        genericInterfaceMethodDeclaration
+        : typeParameters interfaceMethodDeclaration
+                ;
+
+        variableDeclarators
+        : variableDeclarator (',' variableDeclarator)*
+        ;
+
+        variableDeclarator
+        : variableDeclaratorId ('=' variableInitializer)?
+        ;
+
+        variableDeclaratorId
+        : IDENTIFIER ('[' ']')*
+        ;
+
+        variableInitializer
+        : arrayInitializer
+                | expression
+        ;
+
+        arrayInitializer
+        : '{' (variableInitializer (',' variableInitializer)* (',')? )? '}'
+        ;
+
+        classOrInterfaceType
+        : IDENTIFIER typeArguments? ('.' IDENTIFIER typeArguments?)*
+        ;
+
+        typeArgument
+        : typeType
+                | '?' ((EXTENDS | SUPER) typeType)?
+        ;
+
+        qualifiedNameList
+        : qualifiedName (',' qualifiedName)*
+        ;
+
+        formalParameters
+        : '(' formalParameterList? ')'
+        ;
+
+        formalParameterList
+        : formalParameter (',' formalParameter)* (',' lastFormalParameter)?
+        | lastFormalParameter
+        ;
+
+        formalParameter
+        : variableModifier* typeType variableDeclaratorId
+        ;
+
+        lastFormalParameter
+        : variableModifier* typeType '...' variableDeclaratorId
+        ;
+
+        qualifiedName
+        : IDENTIFIER ('.' IDENTIFIER)*
+        ;
+
+        literal
+        : integerLiteral
+                | floatLiteral
+                | CHAR_LITERAL
+                | STRING_LITERAL
+                | BOOL_LITERAL
+                | NULL_LITERAL
+        ;
+
+        integerLiteral
+        : DECIMAL_LITERAL
+                | HEX_LITERAL
+                | OCT_LITERAL
+                | BINARY_LITERAL
+        ;
+
+        floatLiteral
+        : FLOAT_LITERAL
+                | HEX_FLOAT_LITERAL
+        ;
+
+// ANNOTATIONS
+
+        annotation
+        : '@' qualifiedName ('(' ( elementValuePairs | elementValue )? ')')?
+        ;
+
+        elementValuePairs
+        : elementValuePair (',' elementValuePair)*
+        ;
+
+        elementValuePair
+        : IDENTIFIER '=' elementValue
+        ;
+
+        elementValue
+        : expression
+                | annotation
+                | elementValueArrayInitializer
+        ;
+
+        elementValueArrayInitializer
+        : '{' (elementValue (',' elementValue)*)? (',')? '}'
+        ;
+
+        annotationTypeDeclaration
+        : '@' INTERFACE IDENTIFIER annotationTypeBody
+        ;
+
+        annotationTypeBody
+        : '{' (annotationTypeElementDeclaration)* '}'
+        ;
+
+        annotationTypeElementDeclaration
+        : modifier* annotationTypeElementRest
+                | ';' // this is not allowed by the grammar, but apparently allowed by the actual compiler
+        ;
+
+        annotationTypeElementRest
+        : typeType annotationMethodOrConstantRest ';'
+                | classDeclaration ';'?
+        | interfaceDeclaration ';'?
+        | enumDeclaration ';'?
+        | annotationTypeDeclaration ';'?
+        ;
+
+        annotationMethodOrConstantRest
+        : annotationMethodRest
+                | annotationConstantRest
+        ;
+
+        annotationMethodRest
+        : IDENTIFIER '(' ')' defaultValue?
+        ;
+
+        annotationConstantRest
+        : variableDeclarators
+        ;
+
+        defaultValue
+        : DEFAULT elementValue
+                ;
+
+// STATEMENTS / BLOCKS
+
+        block
+        : '{' blockStatement* '}'
+        ;
+
+        blockStatement
+        : localVariableDeclaration ';'
+                | statement
+                | localTypeDeclaration
+        ;
+
+        localVariableDeclaration
+        : variableModifier* typeType variableDeclarators
+        ;
+
+        localTypeDeclaration
+        : classOrInterfaceModifier*
+                (classDeclaration | interfaceDeclaration)
+                | ';'
+        ;
+
+        statement
+        : blockLabel=block
+                | ASSERT expression (':' expression)? ';'
+                | IF parExpression statement (ELSE statement)?
+        | FOR '(' forControl ')' statement
+                | WHILE parExpression statement
+        | DO statement WHILE parExpression ';'
+                | TRY block (catchClause+ finallyBlock? | finallyBlock)
+        | TRY resourceSpecification block catchClause* finallyBlock?
+        | SWITCH parExpression '{' switchBlockStatementGroup* switchLabel* '}'
+                | SYNCHRONIZED parExpression block
+        | RETURN expression? ';'
+                | THROW expression ';'
+                | BREAK IDENTIFIER? ';'
+                | CONTINUE IDENTIFIER? ';'
+                | SEMI
+                | statementExpression=expression ';'
+                | identifierLabel=IDENTIFIER ':' statement
+        ;
+
+        catchClause
+        : CATCH '(' variableModifier* catchType IDENTIFIER ')' block
+        ;
+
+        catchType
+        : qualifiedName ('|' qualifiedName)*
+        ;
+
+        finallyBlock
+        : FINALLY block
+                ;
+
+        resourceSpecification
+        : '(' resources ';'? ')'
+        ;
+
+        resources
+        : resource (';' resource)*
+        ;
+
+        resource
+        : variableModifier* classOrInterfaceType variableDeclaratorId '=' expression
+        ;
+
+// Matches cases then statements, both of which are mandatory.
+//  To handle empty cases at the end, we add switchLabel* to statement.
+
+        switchBlockStatementGroup
+        : switchLabel+ blockStatement+
+        ;
+
+        switchLabel
+        : CASE (constantExpression=expression | enumConstantName=IDENTIFIER) ':'
+                | DEFAULT ':'
+        ;
+
+        forControl
+        : enhancedForControl
+                | forInit? ';' expression? ';' forUpdate=expressionList?
+        ;
+
+        forInit
+        : localVariableDeclaration
+                | expressionList
+        ;
+
+        enhancedForControl
+        : variableModifier* typeType variableDeclaratorId ':' expression
+        ;
+
+// EXPRESSIONS
+
+        parExpression
+        : '(' expression ')'
+        ;
+
+        expressionList
+        : expression (',' expression)*
+        ;
+
+        methodCall
+        : IDENTIFIER '(' expressionList? ')'
+                | THIS '(' expressionList? ')'
+                | SUPER '(' expressionList? ')'
+        ;
+
+        expression
+        : primary
+                | expression bop='.'
+        ( IDENTIFIER
+                | methodCall
+                | THIS
+                | NEW nonWildcardTypeArguments? innerCreator
+                | SUPER superSuffix
+                | explicitGenericInvocation
+        )
+        | expression '[' expression ']'
+                | methodCall
+                | NEW creator
+                | '(' typeType ')' expression
+                | expression postfix=('++' | '--')
+                | prefix=('+'|'-'|'++'|'--') expression
+                | prefix=('~'|'!') expression
+                | expression bop=('*'|'/'|'%') expression
+                | expression bop=('+'|'-') expression
+                // FIXME
+                | expression ('<' '<' | '>' '>' '>' | '>' '>') expression
+                // Use other lexer.
+                | expression bop=('<=' | '>=' | '>' | '<') expression
+                | expression bop=INSTANCEOF typeType
+                | expression bop=('==' | '!=') expression
+                | expression bop='&' expression
+                | expression bop='^' expression
+                | expression bop='|' expression
+                | expression bop='&&' expression
+                | expression bop='||' expression
+                | expression bop='?' expression ':' expression
+                | <assoc=right> expression
+        bop=('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '>>=' | '>>>=' | '<<=' | '%=')
+        expression
+                | lambdaExpression // Java8
+
+                // Java 8 methodReference
+                | expression '::' typeArguments? IDENTIFIER
+                | typeType '::' (typeArguments? IDENTIFIER | NEW)
+                | classType '::' typeArguments? NEW
+        ;
+
+// Java8
+        lambdaExpression
+        : lambdaParameters '->' lambdaBody
+        ;
+
+// Java8
+        lambdaParameters
+        : IDENTIFIER
+                | '(' formalParameterList? ')'
+                | '(' IDENTIFIER (',' IDENTIFIER)* ')'
+        ;
+
+// Java8
+        lambdaBody
+        : expression
+                | block
+        ;
+
+        primary
+        : '(' expression ')'
+                | THIS
+                | SUPER
+                | literal
+                | IDENTIFIER
+                | typeTypeOrVoid '.' CLASS
+                | nonWildcardTypeArguments (explicitGenericInvocationSuffix | THIS arguments)
+        ;
+
+        classType
+        : (classOrInterfaceType '.')? annotation* IDENTIFIER typeArguments?
+        ;
+
+        creator
+        : nonWildcardTypeArguments createdName classCreatorRest
+                | createdName (arrayCreatorRest | classCreatorRest)
+        ;
+
+        createdName
+        : IDENTIFIER typeArgumentsOrDiamond? ('.' IDENTIFIER typeArgumentsOrDiamond?)*
+        | primitiveType
+        ;
+
+        innerCreator
+        : IDENTIFIER nonWildcardTypeArgumentsOrDiamond? classCreatorRest
+        ;
+
+        arrayCreatorRest
+        : '[' (']' ('[' ']')* arrayInitializer | expression ']' ('[' expression ']')* ('[' ']')*)
+        ;
+
+        classCreatorRest
+        : arguments classBody?
+        ;
+
+        explicitGenericInvocation
+        : nonWildcardTypeArguments explicitGenericInvocationSuffix
+                ;
+
+        typeArgumentsOrDiamond
+        : '<' '>'
+                | typeArguments
+        ;
+
+        nonWildcardTypeArgumentsOrDiamond
+        : '<' '>'
+                | nonWildcardTypeArguments
+        ;
+
+        nonWildcardTypeArguments
+        : '<' typeList '>'
+        ;
+
+        typeList
+        : typeType (',' typeType)*
+        ;
+
+        typeType
+        : annotation? (classOrInterfaceType | primitiveType) ('[' ']')*
+        ;
+
+        primitiveType
+        : BOOLEAN
+                | CHAR
+                | BYTE
+                | SHORT
+                | INT
+                | LONG
+                | FLOAT
+                | DOUBLE
+        ;
+
+        typeArguments
+        : '<' typeArgument (',' typeArgument)* '>'
+        ;
+
+        superSuffix
+        : arguments
+                | '.' IDENTIFIER arguments?
+        ;
+
+        explicitGenericInvocationSuffix
+        : SUPER superSuffix
+        | IDENTIFIER arguments
+                ;
+
+        arguments
+        : '(' expressionList? ')'
+        ;
+    }
+}
+
+    /*
+    parser grammar JavaParser;
+
+        options { tokenVocab=JavaLexer; }
+
+
+
+
+
+ */

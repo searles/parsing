@@ -1,0 +1,325 @@
+package at.searles.grammars;
+
+import at.searles.lexer.Lexer;
+import at.searles.lexer.LexerWithHidden;
+import at.searles.parsing.*;
+import at.searles.parsing.utils.Utils;
+import at.searles.parsing.utils.ast.*;
+import at.searles.parsing.utils.ast.builder.AstNodeBuilder;
+import at.searles.regex.CharSet;
+import at.searles.regex.Regex;
+
+import java.util.List;
+
+public class ParserGenerator {
+
+    /**
+     * Grammar
+     */
+
+    public enum Type {
+        Expr, Concat, Literal, Term, Text, Rule, Identifier, Choice, Opt, Plus, Rep, Eager, EscChar, Annotate, Fold, JavaRef, None, Range, Reference, JavaCode, CharSet }
+
+    private final Ref<AstNode, Type> rule = new Ref<>(Type.Rule);
+    private final Ref<AstNode, Type> expr = new Ref<>(Type.Expr);
+    private final Ref<AstNode, Type> concat = new Ref<>(Type.Concat);
+    private final Ref<AstNode, Type> folded = new Ref<>(Type.Fold);
+    private final Ref<AstNode, Type> annotated = new Ref<>(Type.Annotate);
+    private final Ref<AstNode, Type> literal = new Ref<>(Type.Literal);
+    private final Ref<AstNode, Type> term = new Ref<>(Type.Term);
+    private final Ref<AstNode, Type> text = new Ref<>(Type.Text);
+    private final Ref<AstNode, Type> charSet = new Ref<>(Type.CharSet);
+    private final Ref<Integer, Type> escChar = new Ref<>(Type.EscChar);
+    private final Ref<AstNode, Type> ref = new Ref<>(Type.Reference);
+
+    private final Ref<String, Type> identifier = new Ref<>(Type.Identifier);
+    private final Ref<String, Type> javaCode = new Ref<>(Type.JavaCode);
+
+    private final LexerWithHidden lexer = new LexerWithHidden();
+    private final Lexer rawLexer = new Lexer();
+
+    private final AstNodeBuilder<Type> builder = new SyntaxTreeBuilder();
+
+    public ParserGenerator() {
+        initHidden();
+        initCharSet();
+        initEscChars();
+        initText();
+        initRef();
+        init();
+    }
+
+    public List<AstNode> rules(Environment env, ParserStream input) {
+        return Utils.rep(rule.then(Recognizer.fromToken(";", lexer, false))).parse(env, input);
+    }
+
+    public AstNode rule(Environment env, ParserStream stream) {
+        return rule.parse(env, stream);
+    }
+
+    public AstNode expr(Environment env, ParserStream input) {
+        return expr.parse(env, input);
+    }
+
+    private Recognizer t(String str) {
+        return Recognizer.fromToken(str, lexer, false);
+    }
+
+    private void initHidden() {
+        // hidden tokens
+        lexer.hiddenToken(CharSet.chars(' ', '\n', '\r', '\t').plus());
+        lexer.hiddenToken(Regex.text("//").then(CharSet.all().rep()).then(CharSet.chars('\n', '\r')).nonGreedy());
+        lexer.hiddenToken(Regex.text("/*").then(CharSet.all().rep()).then(Regex.text("*/")).nonGreedy());
+    }
+
+    private void init() {
+        // rule: IDENTIFIER ':'expr ;
+
+        rule.set(
+                identifier.then(t(":"))
+                .then(
+                        expr
+                        .or(builder.empty(Type.None))
+                        .fold(builder.binary(Type.Rule))
+                )
+        );
+
+        // expr: concat ('|'concat)* ;
+
+        expr.set(concat
+                .then(Reducer.rep(
+                        t("|").then(concat)
+                        .fold(builder.binary(Type.Choice))
+                ))
+        );
+
+        // concat: lit lit* ;
+
+        concat.set(annotated
+                .then(Reducer.rep(
+                        annotated
+                        .fold(builder.binary(Type.Concat))
+                ))
+        );
+
+        annotated.set(
+                folded.then(
+                        Reducer.opt(t("@").then(
+                                javaCode
+                                .fold(builder.binary(Type.Annotate))
+                        ))
+                )
+        );
+
+        folded.set(
+                literal.then(
+                        Reducer.opt(t(">").then(
+                                javaCode
+                                .fold(builder.binary(Type.Fold))
+                        ))
+                )
+        );
+
+        // lit: term ('?'|'+'|'*'|'^'|'{' num (',' num?)? '}')?;
+
+        Parser<Integer> num = Parser.fromToken(
+                lexer.token(CharSet.interval('0', '9').range(1, 6)),
+                (env, str, stream) -> Integer.parseInt(str.toString()), false);
+
+        Mapping<Integer, int[]> countMapping = (env, count, stream) -> new int[]{count};
+        Mapping<Integer, int[]> minMapping = (env, count, stream) -> new int[]{count, -1};
+        Fold<Integer, Integer, int[]> minMaxFold = (env, left, right, stream) -> new int[]{left, right};
+
+        Parser<int[]> range = num.then(
+                t(",").then(
+                        num.fold(minMaxFold)
+                                .or(minMapping)
+                )
+                        .or(countMapping)
+        );
+
+        literal.set(
+                term.then(
+                        Reducer.opt(
+                                t("?").then(builder.<AstNode>value(Type.Opt))
+                                        .or(t("+").then(builder.value(Type.Plus)))
+                                        .or(t("*").then(builder.value(Type.Rep)))
+                                        .or(t("^").then(builder.value(Type.Eager)))
+                                        .or(t("{").then(range).then(t("}"))
+                                                .fold(builder.binary(Type.Range))
+                                        )
+                        )
+                )
+        );
+
+        // term:'('expr ')'
+        //        | TEXT
+        //        | CHARSET
+        //        | IDENTIFIER
+
+        term.set(
+                t("(").then(expr).then(t(")"))
+                        .or(text)
+                        .or(charSet)
+                        .or(ref)
+        );
+
+    }
+
+    private void initEscChars() {
+        // SPECIAL CHARACTERS
+        Regex hexDigit = CharSet.interval('0', '9', 'A', 'F', 'a', 'f');
+
+        Regex escHexRex =
+                Regex.text("\\u").then(hexDigit.count(4))
+                .or(Regex.text("\\U").then(hexDigit.count(8)))
+                .or(Regex.text("\\x").then(hexDigit.count(2)));
+
+        Regex escCharRex =
+                escHexRex
+                .or(Regex.text("\\").then(
+                        Regex.text("n")
+                                .or(Regex.text("r"))
+                                .or(Regex.text("t"))
+                                .or(Regex.text("b"))
+                                .or(Regex.text("f"))
+                                .or(Regex.text("\\"))
+                                .or(Regex.text("]"))
+                                .or(Regex.text("-"))
+                                .or(Regex.text("\'"))
+                                .or(Regex.text("\""))
+                ));
+
+        escChar.set(
+                Parser.fromToken(rawLexer.token(escCharRex),
+                new EscChars(),
+                false)
+        );
+    }
+
+    private void initText() {
+        // TEXT
+        Regex charRex = CharSet.chars('\'', '\\').invert();
+
+        Parser<Integer> chr = Parser.fromToken(
+                rawLexer.token(charRex),
+                (env, seq, stream) -> (int) seq.charAt(0), false);
+
+        Parser<Integer> chars = chr.or(escChar);
+
+        Reducer<String, String> appendChar = chars.fold(
+                (env, left, right, stream) -> left + new String(Character.toChars(right))
+        );
+
+        Initializer<String> emptyString = (env, stream) -> "";
+
+        Parser<String> rawText = Recognizer.fromToken("'", rawLexer, false)
+                .then(emptyString)
+                .then(Reducer.rep(appendChar))
+                .then(Recognizer.fromToken("'", rawLexer, false));
+
+        text.set(rawText.then(builder.value(Type.Text)));
+    }
+
+    private void initCharSet() {
+        // CHARSET: (also regex) ~[...] | [...] | . ;
+
+        Regex normalSetStartCharsRex = CharSet.chars(']', '\\').invert();
+        Regex normalSetEndCharsRex = CharSet.chars('\\').invert();
+
+        Parser<Integer> setStartChars =
+                Parser.fromToken(rawLexer.token(normalSetStartCharsRex),
+                        (env, seq, stream) -> (int) seq.charAt(0), false)
+                        .or(escChar);
+
+        Parser<Integer> setEndChars =
+                Parser.fromToken(rawLexer.token(normalSetEndCharsRex),
+                        (env, seq, stream) -> (int) seq.charAt(0), false)
+                        .or(escChar);
+
+        Fold<Integer, Integer, CharSet> interval =
+                (env, left, right, stream) -> CharSet.interval((int) left, right);
+        Mapping<Integer, CharSet> singleChar = (env, ch, stream) -> CharSet.chars(ch);
+
+        Parser<CharSet> simpleRange = setStartChars
+                .then(
+                        Recognizer.fromToken("-", rawLexer, false)
+                                .then(setEndChars.fold(interval))
+                                .or(singleChar)
+                );
+
+        Initializer<CharSet> emptySet = (env, stream) -> CharSet.empty();
+
+        Fold<CharSet, CharSet, CharSet> union = (env, left, right, stream) -> left.union(right);
+
+        Parser<CharSet> ranges = emptySet.then(Reducer.rep(simpleRange.fold(union)));
+
+        Parser<CharSet> rawNonInvCharSet =
+                Recognizer.fromToken("[", rawLexer, false)
+                        .then(ranges)
+                        .then(Recognizer.fromToken("]", rawLexer, false)
+                );
+
+        Mapping<CharSet, CharSet> invert = (env, set, stream) -> set.invert();
+
+        Parser<CharSet> rawCharSet =
+                Recognizer.fromToken("~", rawLexer, false)
+                        .then(rawNonInvCharSet)
+                        .then(invert)
+                        .or(rawNonInvCharSet);
+
+        Parser<CharSet> allChars =
+                Recognizer.fromToken(".", lexer, false)
+                        .then((Initializer<CharSet>) (env, stream) -> CharSet.all());
+
+        charSet.set(
+                rawCharSet.or(allChars).then(builder.value(Type.CharSet))
+        );
+    }
+
+    private void initRef() {
+        // JAVA CODE
+        Regex regex = Regex.text("`").then(
+                CharSet.chars('`').invert()
+                        .or(Regex.text("``"))
+                        .rep()
+        ).then(Regex.text("`"));
+
+        javaCode.set(
+                Parser.fromToken(rawLexer.token(regex),
+                        new JavaCode(),
+                        false)
+        );
+
+        // IDENTIFIER
+        Regex idRex =
+                CharSet.interval('A', 'Z', 'a', 'z').or(CharSet.chars('_'))
+                .then(
+                        CharSet.interval('A', 'Z', 'a', 'z', '0', '9')
+                        .or(CharSet.chars('_')).rep()
+                );
+
+        identifier.set(Parser.fromToken(lexer.token(idRex), (env, seq, stream) -> seq.toString(), false));
+
+        // REF
+        ref.set(javaCode.or(identifier).then(builder.value(Type.Reference)));
+    }
+
+    private static class JavaCode implements Mapping<CharSequence, String> {
+        @Override
+        public String parse(Environment env, CharSequence left, ParserStream stream) {
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 1; i < left.length() - 1; ++i) {
+                char ch = left.charAt(i);
+                sb.append(ch);
+                if(ch == '`') {
+                    // skip char after `. It can only be `
+                    i++;
+                }
+            }
+
+            return sb.toString();
+        }
+    }
+}

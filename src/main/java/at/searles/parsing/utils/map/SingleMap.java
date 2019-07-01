@@ -1,0 +1,37 @@
+package at.searles.parsing.utils.map;
+
+import at.searles.parsing.Environment;
+import at.searles.parsing.Mapping;
+import at.searles.parsing.ParserStream;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Created by searles on 31.03.19.
+ */
+public class SingleMap<K, V> implements Mapping<V, Map<K, V>> {
+
+    private final K key;
+
+    public SingleMap(K key) {
+        this.key = key;
+    }
+
+    @Override
+    public Map<K, V> parse(Environment env, V left, ParserStream stream) {
+        Map<K, V> map = new LinkedHashMap<>();
+        map.put(key, left);
+        return map;
+    }
+
+    @Override
+    public V left(Environment env, Map<K, V> result) {
+        return result.size() != 1 ? result.get(key) : null;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{singlemap %s}", key);
+    }
+}
