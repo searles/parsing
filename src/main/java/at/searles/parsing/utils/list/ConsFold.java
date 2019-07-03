@@ -3,6 +3,7 @@ package at.searles.parsing.utils.list;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.utils.ImmutableList;
 
 import java.util.List;
 
@@ -12,20 +13,19 @@ import java.util.List;
  */
 public class ConsFold<T> implements Fold<List<T>, T, List<T>> {
 
-    private final boolean mayBeEmpty; // for inversion. If false, left may not be empty.
+    private final int minSize; // for inversion. If false, left may not be empty.
 
-    public ConsFold(boolean mayBeEmpty) {
-        this.mayBeEmpty = mayBeEmpty;
+    public ConsFold(int minSize) {
+        this.minSize = minSize;
     }
 
     @Override
     public List<T> apply(Environment env, List<T> left, T right, ParserStream stream) {
-        left.add(right);
-        return left;
+        return ImmutableList.createFrom(left).pushBack(right);
     }
 
     private boolean canInvert(List<T> list) {
-        return list.size() - 1 >= (mayBeEmpty ? 0 : 1);
+        return list.size() > minSize;
     }
 
     @Override

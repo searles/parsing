@@ -6,6 +6,7 @@ import at.searles.lexer.TokStream;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.StringTree;
 import at.searles.regex.CharSet;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -215,7 +216,7 @@ public class ParserAndPrinterTest {
 
         String str2 = output.toStringBuilder(new StringBuilder(), (c, parent) -> parent).toString();
 
-        Assert.assertTrue(str.equals(str2));
+        Assert.assertEquals(str, str2);
         //System.out.println(this.output);
     }
 
@@ -291,7 +292,7 @@ public class ParserAndPrinterTest {
                 return false;
             }
 
-            Ref<Expr, String> exprParser = new Ref<>("expr");
+            Ref<Expr> exprParser = new Ref<>("expr");
 
             Parser<Expr> term = term(exprParser);
 
@@ -335,7 +336,7 @@ public class ParserAndPrinterTest {
                 return false;
             }
 
-            Ref<Expr, String> exprParser = new Ref<>("expr");
+            Ref<Expr> exprParser = new Ref<>("expr");
 
             Parser<Expr> term = term(exprParser);
 
@@ -374,13 +375,14 @@ public class ParserAndPrinterTest {
         },
         ;
 
-        Parser<Expr> term(Ref<Expr, String> exprParser) {
+        Parser<Expr> term(Ref<Expr> exprParser) {
             Lexer lexer = new Lexer();
             Parser<Expr> idParser =
                     Parser.fromToken(lexer.token(CharSet.interval('a', 'z')),
                     new Mapping<CharSequence, Expr>() {
+                        @NotNull
                         @Override
-                        public Id parse(Environment env, CharSequence left, ParserStream stream) {
+                        public Id parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
                             return new Id(left.toString());
                         }
 

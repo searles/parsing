@@ -11,7 +11,7 @@ import java.util.List;
 public class UtilsTest {
     @Test
     public void testConsMayBeEmpty() {
-        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(true);
+        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(0);
 
         List<Integer> l = Arrays.asList(1, 2);
 
@@ -29,7 +29,7 @@ public class UtilsTest {
 
     @Test
     public void testConsMayNotBeEmpty() {
-        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(false);
+        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(1);
 
         List<Integer> l = Arrays.asList(1, 2);
 

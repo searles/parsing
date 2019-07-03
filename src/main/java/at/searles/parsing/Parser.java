@@ -67,7 +67,7 @@ public interface Parser<T> extends Recognizable {
         return new ParserToReducer<>(this, fold);
     }
 
-    /**
+    /*
      * A.+(fold); short for
      */
 //    default Parser<T> plus(Fold<T, T, T> fold) {
@@ -79,7 +79,7 @@ public interface Parser<T> extends Recognizable {
      * created for each rule.
      */
     default <L> Parser<T> ref(L label) {
-        return new Ref<T, L>(label).set(this);
+        return new Ref<T>(label.toString()).set(this);
     }
 
     /**

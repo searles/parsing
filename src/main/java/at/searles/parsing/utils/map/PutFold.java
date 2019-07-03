@@ -20,8 +20,9 @@ public class PutFold<K, V> implements Fold<Map<K, V>, V, Map<K, V>> {
 
     @Override
     public Map<K, V> apply(Environment env, Map<K, V> left, V right, ParserStream stream) {
-        left.put(key, right);
-        return left;
+        Map<K, V> map = new LinkedHashMap<>(left);
+        map.put(key, right);
+        return map;
     }
 
     @Override
@@ -30,8 +31,7 @@ public class PutFold<K, V> implements Fold<Map<K, V>, V, Map<K, V>> {
             return null;
         }
 
-        Map<K, V> left = new LinkedHashMap<>();
-        left.putAll(result);
+        Map<K, V> left = new LinkedHashMap<>(result);
         left.remove(key);
         return left;
     }

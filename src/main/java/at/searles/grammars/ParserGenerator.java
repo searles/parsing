@@ -8,6 +8,7 @@ import at.searles.parsing.utils.ast.*;
 import at.searles.parsing.utils.ast.builder.AstNodeBuilder;
 import at.searles.regex.CharSet;
 import at.searles.regex.Regex;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -20,20 +21,20 @@ public class ParserGenerator {
     public enum Type {
         Expr, Concat, Literal, Term, Text, Rule, Identifier, Choice, Opt, Plus, Rep, Eager, EscChar, Annotate, Fold, JavaRef, None, Range, Reference, JavaCode, CharSet }
 
-    private final Ref<AstNode, Type> rule = new Ref<>(Type.Rule);
-    private final Ref<AstNode, Type> expr = new Ref<>(Type.Expr);
-    private final Ref<AstNode, Type> concat = new Ref<>(Type.Concat);
-    private final Ref<AstNode, Type> folded = new Ref<>(Type.Fold);
-    private final Ref<AstNode, Type> annotated = new Ref<>(Type.Annotate);
-    private final Ref<AstNode, Type> literal = new Ref<>(Type.Literal);
-    private final Ref<AstNode, Type> term = new Ref<>(Type.Term);
-    private final Ref<AstNode, Type> text = new Ref<>(Type.Text);
-    private final Ref<AstNode, Type> charSet = new Ref<>(Type.CharSet);
-    private final Ref<Integer, Type> escChar = new Ref<>(Type.EscChar);
-    private final Ref<AstNode, Type> ref = new Ref<>(Type.Reference);
+    private final Ref<AstNode> rule = new Ref<>(Type.Rule.toString());
+    private final Ref<AstNode> expr = new Ref<>(Type.Expr.toString());
+    private final Ref<AstNode> concat = new Ref<>(Type.Concat.toString());
+    private final Ref<AstNode> folded = new Ref<>(Type.Fold.toString());
+    private final Ref<AstNode> annotated = new Ref<>(Type.Annotate.toString());
+    private final Ref<AstNode> literal = new Ref<>(Type.Literal.toString());
+    private final Ref<AstNode> term = new Ref<>(Type.Term.toString());
+    private final Ref<AstNode> text = new Ref<>(Type.Text.toString());
+    private final Ref<AstNode> charSet = new Ref<>(Type.CharSet.toString());
+    private final Ref<Integer> escChar = new Ref<>(Type.EscChar.toString());
+    private final Ref<AstNode> ref = new Ref<>(Type.Reference.toString());
 
-    private final Ref<String, Type> identifier = new Ref<>(Type.Identifier);
-    private final Ref<String, Type> javaCode = new Ref<>(Type.JavaCode);
+    private final Ref<String> identifier = new Ref<>(Type.Identifier.toString());
+    private final Ref<String> javaCode = new Ref<>(Type.JavaCode.toString());
 
     private final LexerWithHidden lexer = new LexerWithHidden();
     private final Lexer rawLexer = new Lexer();
@@ -50,7 +51,7 @@ public class ParserGenerator {
     }
 
     public List<AstNode> rules(Environment env, ParserStream input) {
-        return Utils.rep(rule.then(Recognizer.fromToken(";", lexer, false))).parse(env, input);
+        return Utils.list(rule.then(Recognizer.fromToken(";", lexer, false))).parse(env, input);
     }
 
     public AstNode rule(Environment env, ParserStream stream) {
@@ -306,6 +307,7 @@ public class ParserGenerator {
     }
 
     private static class JavaCode implements Mapping<CharSequence, String> {
+        @NotNull
         @Override
         public String parse(Environment env, CharSequence left, ParserStream stream) {
             StringBuilder sb = new StringBuilder();
