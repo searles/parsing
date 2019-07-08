@@ -25,12 +25,12 @@ public class ParserAndPrinterTest {
     public void setUp() {
         this.env = new Environment() {
             @Override
-            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser, Recognizable expected) {
+            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
                 throw new IllegalArgumentException();
             }
 
             @Override
-            public void notifyLeftPrintFailed(Recognizable.Then failed, StringTree rightTree) {
+            public void notifyLeftPrintFailed(StringTree rightTree, Recognizable.Then failed) {
                 throw new IllegalArgumentException();
             }
         };
@@ -393,8 +393,8 @@ public class ParserAndPrinterTest {
                     }, false);
 
             Parser<Expr> wrappedExprParser =
-                    Recognizer.fromToken("(", lexer, false).
-                            then(exprParser).then(Recognizer.fromToken(")", lexer, false));
+                    Recognizer.fromString("(", lexer, false).
+                            then(exprParser).then(Recognizer.fromString(")", lexer, false));
 
             return idParser.or(wrappedExprParser);
         }

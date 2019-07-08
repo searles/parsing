@@ -40,7 +40,7 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
         long start = stream.start();
 
         if(!right.recognize(env, stream)) {
-            env.notifyNoMatch(stream, this, right);
+            env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);

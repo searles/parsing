@@ -28,7 +28,7 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
         U u = reducer.parse(env, left, stream);
 
         if(u == null) {
-            env.notifyNoMatch(stream, this, reducer);
+            env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setEnd(preEnd);
             return null;

@@ -6,8 +6,17 @@ import java.util.function.BiFunction;
 public interface StringTree {
     StringTree EMPTY = new EmptyStringTree();
 
+    default StringTree consRight(String right) {
+        return consRight(new LeafStringTree(right));
+    }
+
     default StringTree consRight(StringTree right) {
         return new ConsStringTree(this, right);
+    }
+
+
+    default StringTree consLeft(String left) {
+        return consLeft(new LeafStringTree(left));
     }
 
     default StringTree consLeft(StringTree left) {
@@ -18,7 +27,7 @@ public interface StringTree {
         return new AnnotatedStringTree<>(this, annotate);
     }
 
-    <C> StringBuilder toStringBuilder(StringBuilder sb, BiFunction<C, StringTree, StringTree> markerInserts);
+    StringBuilder toStringBuilder(StringBuilder sb, BiFunction<Object, StringTree, StringTree> markerInserts);
 
     static StringTree empty() {
         return EMPTY;

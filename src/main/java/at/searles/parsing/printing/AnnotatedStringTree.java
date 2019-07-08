@@ -16,7 +16,7 @@ public class AnnotatedStringTree<C> implements StringTree {
     }
 
     @Override
-    public <C2> StringBuilder toStringBuilder(StringBuilder sb, BiFunction<C2, StringTree, StringTree> annotationInserts) {
-        return annotationInserts.apply((C2) annotation, parent).toStringBuilder(sb, annotationInserts);
+    public StringBuilder toStringBuilder(StringBuilder sb, BiFunction<Object, StringTree, StringTree> annotationInserts) {
+        return annotationInserts.apply(annotation, parent).toStringBuilder(sb, annotationInserts);
     }
 }

@@ -28,7 +28,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
         T t = parser.parse(env, stream);
 
         if(t == null) {
-            env.notifyNoMatch(stream, this, parser);
+            env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);

@@ -35,7 +35,7 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
         U u = reducer.parse(env, t, stream);
 
         if(u == null) {
-            env.notifyNoMatch(stream, this, reducer);
+            env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);
@@ -67,7 +67,7 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
         StringTree parserOutput = parent.print(env, reducerOutput.left);
 
         if(parserOutput == null) {
-            env.notifyLeftPrintFailed(this, reducerOutput.right);
+            env.notifyLeftPrintFailed(reducerOutput.right, this);
             return null;
         }
 

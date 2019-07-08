@@ -39,7 +39,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
         }
 
         if(!right.recognize(env, stream)) {
-            env.notifyNoMatch(stream, this, right);
+            env.notifyNoMatch(stream, this);
 
             stream.setOffset(offset);
             assert stream.start() == preStart;

@@ -12,6 +12,11 @@ public class AstNode {
         this.end = stream.end();
     }
 
+    protected AstNode(AstNode predecessor) {
+        this.start = predecessor.start;
+        this.end = predecessor.end;
+    }
+
     public long start() {
         return start;
     }

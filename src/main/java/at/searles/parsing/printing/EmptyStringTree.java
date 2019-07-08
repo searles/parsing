@@ -14,7 +14,7 @@ public class EmptyStringTree implements StringTree {
     }
 
     @Override
-    public <C> StringBuilder toStringBuilder(StringBuilder sb, BiFunction<C, StringTree, StringTree> markerInserts) {
+    public StringBuilder toStringBuilder(StringBuilder sb, BiFunction<Object, StringTree, StringTree> markerInserts) {
         return sb;
     }
 

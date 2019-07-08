@@ -78,8 +78,8 @@ public interface Parser<T> extends Recognizable {
      * Useful to simplify parser's toString output. Automtically
      * created for each rule.
      */
-    default <L> Parser<T> ref(L label) {
-        return new Ref<T>(label.toString()).set(this);
+    default Parser<T> ref(String label) {
+        return new Ref<T>(label).set(this);
     }
 
     /**

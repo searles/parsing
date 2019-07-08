@@ -62,6 +62,6 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
 
     @Override
     public String toString() {
-        return parent.toString() + "~" + fold.toString();
+        return parent.toString() + " >> " + fold.toString();
     }
 }

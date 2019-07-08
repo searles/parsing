@@ -35,7 +35,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
         assert stream.start() == preStart;
 
         if(v == null) {
-            env.notifyNoMatch(stream, this, right);
+            env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setEnd(preEnd);
             return null;
@@ -69,7 +69,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
         PartialStringTree<T> leftTree = left.print(env, midTree.left);
 
         if(leftTree == null) {
-            env.notifyLeftPrintFailed(this, midTree.right);
+            env.notifyLeftPrintFailed(midTree.right, this);
             return null;
         }
 

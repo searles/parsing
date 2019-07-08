@@ -32,9 +32,9 @@ public class ParserGeneratorTest {
         this.generator = new ParserGenerator();
         this.env = new Environment() {
             @Override
-            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser, Recognizable expected) {
+            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
                 error = true;
-                System.err.print("at '" + stream + "' when parsing '" + failedParser + "' the exprected unit '" + expected + "' was not found.");
+                System.err.print("at '" + stream + "' when parsing '" + failedParser);
             }
         };
         this.error = false;

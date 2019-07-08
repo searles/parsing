@@ -1,5 +1,6 @@
 package at.searles.lexer.utils;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -10,7 +11,7 @@ import java.util.TreeSet;
  */
 public class LexicalSet<A extends Comparable<A>> implements Comparable<LexicalSet<A>>, Iterable<A> {
 
-    public static <A extends Comparable<A>> LexicalSet<A> create(A...as) {
+    public static <A extends Comparable<A>> LexicalSet<A> create(Collection<A> as) {
         LexicalSet<A> set = new LexicalSet<>();
 
         for(A a : as) {
@@ -23,7 +24,7 @@ public class LexicalSet<A extends Comparable<A>> implements Comparable<LexicalSe
     private final TreeSet<A> set;
 
     public LexicalSet() {
-        this.set = new TreeSet<A>();
+        this.set = new TreeSet<>();
     }
 
     public int size() {

@@ -1,5 +1,8 @@
 package at.searles.lexer;
 
+/**
+ * A token is
+ */
 public class Token {
 
     public final Tokenizer lexer;

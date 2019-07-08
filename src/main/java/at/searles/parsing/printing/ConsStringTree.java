@@ -16,10 +16,18 @@ public class ConsStringTree implements StringTree {
     }
 
     @Override
-    public <C> StringBuilder toStringBuilder(StringBuilder sb, BiFunction<C, StringTree, StringTree> markerInserts) {
-        // XXX Could replace one recursion by a loop...
+    public StringBuilder toStringBuilder(StringBuilder sb, BiFunction<Object, StringTree, StringTree> markerInserts) {
         left.toStringBuilder(sb, markerInserts);
-        right.toStringBuilder(sb, markerInserts);
+
+        StringTree tree = right;
+
+        while(tree instanceof ConsStringTree) {
+            ((ConsStringTree) tree).left.toStringBuilder(sb, markerInserts);
+            tree = ((ConsStringTree) tree).right;
+        }
+
+        tree.toStringBuilder(sb, markerInserts);
+
         return sb;
     }
 }

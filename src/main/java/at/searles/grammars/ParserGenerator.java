@@ -51,7 +51,7 @@ public class ParserGenerator {
     }
 
     public List<AstNode> rules(Environment env, ParserStream input) {
-        return Utils.list(rule.then(Recognizer.fromToken(";", lexer, false))).parse(env, input);
+        return Utils.list(rule.then(Recognizer.fromString(";", lexer, false))).parse(env, input);
     }
 
     public AstNode rule(Environment env, ParserStream stream) {
@@ -63,7 +63,7 @@ public class ParserGenerator {
     }
 
     private Recognizer t(String str) {
-        return Recognizer.fromToken(str, lexer, false);
+        return Recognizer.fromString(str, lexer, false);
     }
 
     private void initHidden() {
@@ -214,10 +214,10 @@ public class ParserGenerator {
 
         Initializer<String> emptyString = (env, stream) -> "";
 
-        Parser<String> rawText = Recognizer.fromToken("'", rawLexer, false)
+        Parser<String> rawText = Recognizer.fromString("'", rawLexer, false)
                 .then(emptyString)
                 .then(Reducer.rep(appendChar))
-                .then(Recognizer.fromToken("'", rawLexer, false));
+                .then(Recognizer.fromString("'", rawLexer, false));
 
         text.set(rawText.then(builder.value(Type.Text)));
     }
@@ -244,7 +244,7 @@ public class ParserGenerator {
 
         Parser<CharSet> simpleRange = setStartChars
                 .then(
-                        Recognizer.fromToken("-", rawLexer, false)
+                        Recognizer.fromString("-", rawLexer, false)
                                 .then(setEndChars.fold(interval))
                                 .or(singleChar)
                 );
@@ -256,21 +256,21 @@ public class ParserGenerator {
         Parser<CharSet> ranges = emptySet.then(Reducer.rep(simpleRange.fold(union)));
 
         Parser<CharSet> rawNonInvCharSet =
-                Recognizer.fromToken("[", rawLexer, false)
+                Recognizer.fromString("[", rawLexer, false)
                         .then(ranges)
-                        .then(Recognizer.fromToken("]", rawLexer, false)
+                        .then(Recognizer.fromString("]", rawLexer, false)
                 );
 
         Mapping<CharSet, CharSet> invert = (env, set, stream) -> set.invert();
 
         Parser<CharSet> rawCharSet =
-                Recognizer.fromToken("~", rawLexer, false)
+                Recognizer.fromString("~", rawLexer, false)
                         .then(rawNonInvCharSet)
                         .then(invert)
                         .or(rawNonInvCharSet);
 
         Parser<CharSet> allChars =
-                Recognizer.fromToken(".", lexer, false)
+                Recognizer.fromString(".", lexer, false)
                         .then((Initializer<CharSet>) (env, stream) -> CharSet.all());
 
         charSet.set(
