@@ -1,5 +1,8 @@
 # Tutorial (in Kotlin)
 
+* auto-gen TOC:
+{:toc}
+
 # Parser Combinators
 
 A certain familiarity with regular expressions and basic
@@ -307,7 +310,7 @@ can be used. It is very useful because it returns codePoints instead of `char`.
 The grammar enriched with multiplication, division and negation is
 implemented in the file `at.searles.demo.DemoEval.kt`.
 
-# Inversion of parsers (at.searles.demo.DemoInvert.kt)
+# Inversion of parsers
 
 Parsers are usually used to create an abstract syntax tree (AST) out of 
 their input. A pretty printer does the exact opposite: It creates source
@@ -454,6 +457,6 @@ formattings. Here, we add spaces to the left and right.
 easily implemented in order to obtain more complex formattings like
 indentations or optional line breaks.
 
-[You fine the pretty-printer demo here.](src/main/java/at/searles/demo/DemoInvert.kt)
+[You find the pretty-printer demo here.](src/main/java/at/searles/demo/DemoInvert.kt)
 
 This concludes this tutorial. Enjoy this project. 
