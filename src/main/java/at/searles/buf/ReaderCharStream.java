@@ -3,6 +3,9 @@ package at.searles.buf;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * This class creates a CharStream out of a Reader.
+ */
 public class ReaderCharStream implements CharStream {
     private final Reader r;
     private long offset;

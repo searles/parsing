@@ -5,48 +5,98 @@
 A certain familiarity with regular expressions and basic
 grammar syntax is expected in the following.
 
-A main inspiration for this project were parser combinators the way they
-are used in Scala. Basically, you combine parsers
+Parser combinators are used eg in Scala. You define simple parsers that return
+numbers, identifiers etc... and then you combine them using various operations
+like sequencing, choice, repetition etc... Basically, you combine parsers
 to obtain more complex parsers. As always, [Wikipedia knows more](https://en.wikipedia.org/wiki/Parser_combinator).
 
-Each parser combinator accepts two or more parameters:
+In this project, there are three basic types of parsers, and combining them will
+return one such kind of parser:
+
+* `Recognizer`: Returns true if a token was consumed. Useful for all kinds of operands or keywords.
+
+~~~ kotlin
+    val plus: Recognizer = /* ... */ // consumes a +.
+    
+    if(plus.apply(env, stream)) {
+        // plus was consumed from stream
+    }
+~~~
+
+* `Parser<T>`: Returns the parsed item as an instance of `T`. They can be used
+for identifiers or numbers, but also each parser rule is an instance of this 
+interface. Parsers return null if they are not successful.
+
+~~~ kotlin
+    val num: Parser<Int> = /* ...*/ // parses a number
+    
+    val value = num.apply(env, stream)
+    
+    if(value != null) {
+        // successfully parsed number
+    }
+~~~
+
+* `Reducer<T, U>`: A reducer consumes the return value from the parser to its left 
+(which is an instance of `T`) to its left and returns an instance of `U`. Instances
+of Reducers are usually used in a sequence or repetition. Like parsers, they
+return `null` if they are unsuccessful. 
+
+All parser types extend the `Recognizable`-interface. It can be used for a quick
+syntax check.
+
+Each parser at least two parameters:
 
 * `Environment`: A context object that is used to propagate notifications of 
 parsing errors.
 * `ParserStream`: A stream from which characters/tokens are fetched. It also 
 provides information on the current position in the stream.
 
-There are three basic parser types in this project:
+## Summary of parser combinators
 
-* `Recognizer`: Returns true if a token was consumed. Useful for all kinds of operands or keywords.
-* `Parser<T>`: Returns the parsed item as an instance of `T`. Use this for numbers, identifiers etc...
-* `Reducer<T, U>`: A reducer consumes the return value from the parser (which 
-is an instance of `T`) to its left and returns an instance of `U`. Doing this
-it may consume further elements from the input stream.
 
-Every return value of a parser or reducer must be consumed unless
-it returns `null` which indicates an unsucessful parse attempt.
+| Call              | Description                                                                                      | Syntax |
+|-------------------|--------------------------------------------------------------------------------------------------|--------|
+| `a.or(b)`         | Choice of a or b. a and b must be of the same type.                                              | a | b  |
+| `a.then(b)`       | a followed by b. a and b must not both be parsers.                                               | a b    |
+| `Reducer.rep(a)`  | Possibly empty repetition of a. a must be a Reducer<T, T>                                        | a*     |
+| `Reducer.plus(a)` | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | a+     |
+| `Reducer.opt(a)`  | Optional of a. a must be a Reducer<T, T>.                                                        | a?     |
+| `a.join(b)`       | For possibly empty sequences "a b a b ... a". a must be a Recognizer, b must be a Reducer<T, T>. |        |
 
-All parser types contain additional methods to combine parsers and also to invert it. Additionally, there are function interfaces that allow to initialize 
-values (`Initializer<T>`), convert 
-them (`Mapping<T, U>`) or to combine them with other vales 
-(`Fold<T, U, V>`).
+There are further parser combinators but these should be the most important ones.
 
-All parser types extend the `Recognizable`-interface. It can be used to
-simply check whether an expression is accepted.
+## Parser Functions
 
-# Recursive Descent Parser (at.searles.demo.DemoEval.kt)
+Apart from parsers there are functional interfaces that can be used to
+introduce, convert or aggregate values.
+
+* `Initializer<T>` introduces a value. `Initializer<T>` extends `Parser<T>`.
+* `Mapping<T, U>` converts an instance of `T` to an instance of `U`. 
+`Mapping<T, U>` extends `Reducer<T, U>`.
+* `Fold<T, U, V>` combines an instance of `T` and `U` and returns an instance of `V`.
+Using the `fold`-method, a `Parser<U>` is converted to a `Reducer<T, V>`.
+
+## On inversion
+
+All parser combinators are invertable. This means that eg `Parser<T>` not only
+contains a `parser`-method but also a `print`-method that creates a `StringTree`
+out of the result of the `print`-method. There are similar methods for `Reducer` 
+and `Recognizer`. 
+
+# Recursive Descent Parser
 
 In the following, a simple recursive-descent parser is created that evaluates 
 mathematical expressions. Inversion is not used here since the result 
-will be the result of the calculation. 
-
+will be the result of the calculation.
+[The source code can be found here.](src/main/java/at/searles/demo/DemoEval.kt)
+ 
 ## Number Parser
 
 We want to parse natural numbers using the regex `[0-9]+`. 
 To parse numbers we need 
 
-* a lexer. The lexer uses a single FSA, thus it is very fast.
+* a lexer (or rather an instance of the `Tokenizer` interface). 
 
 ~~~ kotlin
     val lexer = Lexer()
@@ -58,9 +108,7 @@ To parse numbers we need
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
 ~~~
 
-* a mapping that converts the `CharSequence` that matched this pattern, 
-to a number since Parsers
-that match patterns will return a `CharSequence`.
+* a mapping that converts a `CharSequence` to a number.
 
 ~~~ kotlin
     val numMapping = Mapping<CharSequence, Int> { 
@@ -86,17 +134,23 @@ Next, let's combine multiple `num`-parsers using the following rule:
 sum: num '+' num ;
 ~~~
 
-The following creates arecognizer for `+`.
+We need a recognizer for the plus symbol:
 
 ~~~ kotlin
     val plus = Recognizer.fromString("+", lexer, true)
 ~~~
 
-`plus.then(num)` is a combination of a `Recognizer` and a `Parser<Int>` which
-is also an instance of `Parser<Int>`. Yet, `'+' num` must be an instance of `Reducer<Int, Int>` since it
-must consume the left `num`'s return value. In order to create a
-reducer out of a parser, we need an instance of `Fold` that consume
-the return value of the left parser and the one of the parser itself:
+Using the `then`-method we can now create a sequence of the `plus`-recognizer and
+the `num`-parser: `plus.then(num)`. This sequence is an instance of `Parser<Int>`.
+Since this parser must also consume the return value of the first `num`-parser,
+we have to apply the `fold`-method to create a `Reducer<Int, Int>`:
+
+~~~ kotlin
+    val sum = num.then(plus.then(num).fold(add))
+~~~
+
+`add` is a simple binary function that sums up the return values of the 
+left `num` and the right `num` parser.
 
 ~~~ kotlin
     val add = Fold<Int, Int, Int> { _, left, right, _ ->
@@ -104,15 +158,9 @@ the return value of the left parser and the one of the parser itself:
     }
 ~~~
 
-Finally the rule looks as follows:
-
-~~~
-    val sum = num.then(plus.then(num).fold(add))
-~~~
-
 ## Choice
 
-Let's expand the rule by subtractions: 
+Next, we introduce subtractions:
 
 ~~~
 sum: num ('+' num | '-' num) ;
@@ -129,8 +177,8 @@ another reducer:
     }
 ~~~
 
-And we can use the `or` method to combine the two reducers which results
-again in a reducer.
+The reducer for subtractions is `minus.then(num).fold(sub)`. Using
+the `or` method we finally obtain the following:
 
 ~~~
     val sum = num.then(
@@ -141,15 +189,15 @@ again in a reducer.
 
 ## Repetition
 
-Normally, we would allow expressions like `1+2-3+4` of arbitrary length. 
-For this purpose, we add one `*` to the rule:
+In order to allow multiple additions and subtractions we need repetitions:
 
 ~~~
 sum: num ('+' num | '-' num)* ;
 ~~~
 
 Repetition only work on recognizers and reducers with the same left- and 
-return type (`Reducer<T, T>`). 
+return type (`Reducer<T, T>`) since the return value of the reducer is
+used as left input by subsequent reducers. 
 
 ~~~ kotlin
     val sum = num.then(
@@ -160,26 +208,36 @@ return type (`Reducer<T, T>`).
     )
 ~~~
 
-Optionals can be created the same way using `Reducer.opt(...)`.
+`rep` creates possibly empty repetitions, `plus` are non-empty repetitions
+and `opt` is an optional. An alternative to optionals is using `or` where
+the second argument is a simple `Mapping` (which is also an instance of `Reducer`).
 
 ## Recursion
 
-Let's also allow expressions in parentheses. For this purpose, we add one new
-rule.
+Context-free grammars allow recursive definitions. In the following we
+introduce a new rule that allows parentheses and require such a recursive 
+definition:
 
 ~~~
 term: num | '(' sum ')' ;
 sum: term ('+' term | '-' term)* ;
 ~~~
 
-In order to reference the `sum` parser before it is defined, we use a 
-an instance of `Ref`. The label provided in the constructor has no
-specific function except for providing a useful return value for the
-`toString()`-method:
+In order to reference the `sum` parser before it is defined, we can use `Ref`,
+a reference to a parser that is initialized only later. 
 
 ~~~ kotlin
     val sum = Ref<Int>("sum")
-    
+~~~
+
+The label provided in the constructor has no
+specific function except for providing a useful return value for the
+`toString()`-method. This is useful even for non-recursive rules for
+debugging purposes.
+
+Using `Ref.set`, the referenced parser is set.
+
+~~~ kotlin
     val openPar = Recognizer.fromString("(", lexer, true)
     val closePar = Recognizer.fromString(")", lexer, true)
 
@@ -197,18 +255,19 @@ specific function except for providing a useful return value for the
     )
 ~~~
 
-Refs are also useful to obtain a more readable debugging output. In
-`DemoEval.kt`, all parsers use a reference for that purpose.
+`Ref`s can be added to a parser also using the `ref`-method. In `DemoEval.kt`, all 
+parsers use a reference to achieve a simpler output of the parser's 
+`toString`-method which is very useful for debugging.
 
 ## Error handling
 
-Each recognizer, parser and reducer requires an instance of `Environment`. In
-case of a mismatch, its `notifyNoMatch` is called. Parameters are the stream 
-and the failed parser. The failed parser is always a sequence of two parsers,
-thus an instance of `Recognizable.Then`. The left item was matched while the
-right one was not matched. If the grammar is supposed to be LL-1, it is
+Each recognizer, parser and reducer requires an instance of `Environment`. 
+In case of a mismatch in a sequence of parsers (thus an instance of 
+`Recognizable.Then`), its `notifyNoMatch` is called. 
+
+If the grammar is supposed to be LL-1, it is
 best to throw an expeption, otherwise backtracking is used to recover from
-this mismatch. In this example, an exception is thrown.
+this mismatch. Our grammar is LL-1, thus we throw an exception.
 
 ~~~ kotlin
     val env = Environment { stream, failedParser ->
@@ -223,7 +282,7 @@ class ParserException(msg: String) : RuntimeException(msg)
 ## Creating the stream
 
 Now, there are all ingredients to finally evaluate mathematical expressions
-using this simple grammar. 
+using this simple grammar. All that is left is to create a `ParserStream`.
 
 ~~~
     val stream = ParserStream.fromString(readLine())
@@ -238,36 +297,40 @@ Entering an expression in a single line will now print the result:
 Result = -4
 ~~~
 
+In order to create a `ParserStream` out of a `Reader`, the class `ReaderCharStream`
+can be used. It is very useful because it returns codePoints instead of `char`.
+
+~~~ kotlin
+    val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(reader)))`
+~~~
+
 The grammar enriched with multiplication, division and negation is
 implemented in the file `at.searles.demo.DemoEval.kt`.
 
 # Inversion of parsers (at.searles.demo.DemoInvert.kt)
 
-The main motivation to invert a parser is that pretty printers 
-are far from trivial to implement.
-One of the reasons for this is operator precedence that sometimes
-makes it necessary to add parentheses around an expression. Achieving this
-programmatically can be very difficult and results in hard-to-read code. 
-Though much work can be saved because all the information which expressions 
-need to be put into parentheses is already encoded in the grammar. Inverting
-the parser will thus put exactly those expressions into parentheses for which
-this is necessary.
-
-In this section, the grammar of `DemoEval` is reused which is a slight
-extension of the grammar in the previous section.
-
 Parsers are usually used to create an abstract syntax tree (AST) out of 
-their input. A parser creates textual output out of an abstract syntax tree, 
-thus a pretty printer is the exact inverse of the parser. In the following,
-the grammar is modified so that it can be inverted. This mainly requires
-to modify the `Mapping`s and `Fold`s.
+their input. A pretty printer does the exact opposite: It creates source
+code out of an abstract syntax tree.
+
+The main motivation to invert a parser is that pretty printers 
+are far from trivial to implement (because of eg operator precedence
+and parentheses). Creating a pretty printer directly out of a parser 
+thus saves a lot of time.
+
+In this example, the grammar of the previous section will be modified so
+that the parser creates an abstract syntax tree (AST) and the printer 
+creates source code. Since
+all parser combinators already contain a `print` method that is the inverse
+of the `parse`-method, this mainly requires to modify the `Mapping`s and `Fold`s
+and add (partial) inverse methods to them.
 
 ## AstNodes
 
 The class `AstNode` provides nodes of an AST. It requires the ParserStream 
 in its constructor which is used to store the position in the stream.
 
-There is a class for number nodes, one for unary nodes and one for binary nodes:
+We need `AstNode`s for numbers, for unary nodes and for binary nodes:
 
 ~~~ kotlin
 enum class Op {Add, Sub, Mul, Div, Neg}
@@ -278,14 +341,12 @@ class UnNode(stream: ParserStream, val op: Op, val arg: AstNode): AstNode(stream
 class BinNode(stream: ParserStream, val op: Op, val arg0: AstNode, val arg1: AstNode): AstNode(stream)
 ~~~
 
-## Inverting a `Mapping`
+## Inverting a Mapping
 
-Mappings become invertible by overriding the optional method `left`. This method
-should be the exact opposite of the `parse`-method. The names of these method
-originate from `Reducer` which is implemented by `Mapping`.
-
-`left` must return `null` if the value in `result` cannot be inverted by
-the Mapping.
+To invert mappings we need to implement the optional method `left`. 
+The names of these method originate from `Reducer` which is implemented by 
+`Mapping`. The method `left` must return `null` if the value in `result` is not
+an image of the mapping, and otherwise undo the `parse`-method.
 
 ~~~ kotlin
     val numMapping = object: Mapping<CharSequence, AstNode> {
@@ -297,12 +358,13 @@ the Mapping.
     }
 ~~~
 
-This is the usual blue print of invertible Mappings.
+Invertible mappings usually look very similar to this implementation.
 
 ## Inverting a `Fold`
 
 Folds are functions with a `left` and `right` argument. Thus, to invert it,
-there are two functions, one for `left` and one for `right`.
+there are two functions, one to return the `left` argument and one for the `right`
+argument.
 
 ~~~ kotlin
     val add = object: Fold<AstNode, AstNode, AstNode> {
@@ -330,7 +392,8 @@ printing it.
     println("Pretty-Print: ${sum.print(env, ast)}")
 ~~~
 
-This will remove all unnecessary parentheses but keep the necessary ones:
+This will remove all unnecessary parentheses from the expression but keep the 
+necessary ones:
 
 ~~~
 (1+2)*(3+(-4))
@@ -338,22 +401,14 @@ Pretty-Print: (1+2)*(3+-4)
 ~~~
 
 The print-method also uses the `env`-object to propagate if backtracking
-is necessary when printing failed. If printing should be possible with back-tracking, 
-the optional method `notifyLeftPrintFailed` should be overridden.
+is necessary when printing failed which might indicate a performance issue.
 
 ## Adding annotations for custom formatting
 
-In most cases, white spaces should be added to the output to format it. This can 
-be done by annotating parsers for which formatting is desired.
-In our parser, all infix operations should be wrapped by one single space to
-improve readability. For this purpose we add an enum with so far one single category:
-
-~~~ kotlin
-enum class Annotation { Infix }
-~~~
-
-In the parser rules the infix operands can now be annotated with this category.
-The parser rule for multiplications and divisions now looks as follows.
+Sometimes it is desirable to add white spaces to the output. 
+In our parser, all infix operations should be wrapped by spaces to
+improve readability. For this purpose we annotate the recognizers, which
+is shown here for the product-rule:
 
 ~~~ kotlin
     val product = literal.then(
@@ -362,35 +417,43 @@ The parser rule for multiplications and divisions now looks as follows.
                 .or(slash.annotate(Annotation.Infix).then(literal).fold(divide))
             )
     ).ref("product")
+
+enum class Annotation { Infix }
 ~~~
 
-The final ref is used solely to provide a better readable debugging output.
+## Printing a StringTree
 
-## Printing
+The return type of the `print`-method is a `StringTree` which contains the 
+concrete syntax tree of the output. 
 
-The return type of the `print`-method is a `StringTree` which resembles a 
-concrete syntax tree. Its `toString()`-method will return the source code
+~~~ kotlin
+    val outTree = sum.print(env, ast)!!
+~~~
+
+THe `toString()`-method of `StringTree` will return the source code
 without applying formatting rules. 
 
-~~~ kotlin
-    val outTree = sum.print(env, ast)!!
-~~~
-
-To use the annotations of the previous
-section the `toStringBuilder`-method should be used. In this method,
-annotations are resolved by calling the functional argument. In this argument,
-the annotated `StringTree` can be decorated. 
+In order to use the annotations of the previous
+section, the `toStringBuilder`-method should be used. This method uses
+a function to decorate an annotated `StringTree` with additional
+formattings. Here, we add spaces to the left and right. 
 
 ~~~ kotlin
     val outTree = sum.print(env, ast)!!
 
-    val formattedSource = outTree.toStringBuilder(StringBuilder()) {
+    val formatting = BiFunction<Any, StringTree, StringTree> {
         category, tree -> if(category == Annotation.Infix) tree.consLeft(" ").consRight(" ") else tree
     }
+
+    val formattedSource = outTree.toStringBuilder(StringBuilder(), formatting) 
 
     println("Pretty-Print: $formattedSource")
 ~~~
 
-`StringTree` itself is a very simple functional interface. By implementing
-the `toStringBuilder`-method, more complex formattings like indentations
-can be achieved.
+`StringTree` itself is a very simple functional interface. It can be
+easily implemented in order to obtain more complex formattings like
+indentations or optional line breaks.
+
+[You fine the pretty-printer demo here.](src/main/java/at/searles/demo/DemoInvert.kt)
+
+This concludes this tutorial. Enjoy this project. 

@@ -2,8 +2,10 @@ package at.searles.demo
 
 import at.searles.lexer.LexerWithHidden
 import at.searles.parsing.*
+import at.searles.parsing.printing.StringTree
 import at.searles.parsing.utils.ast.AstNode
 import at.searles.regex.RegexParser
+import java.util.function.BiFunction
 
 /**
  * Demo of inversion of a parser for the following grammar:
@@ -146,9 +148,11 @@ fun main() {
 
     val outTree = sum.print(env, ast)!!
 
-    val formattedSource = outTree.toStringBuilder(StringBuilder()) {
+    val formatting = BiFunction<Any, StringTree, StringTree> {
         category, tree -> if(category == Annotation.Infix) tree.consLeft(" ").consRight(" ") else tree
     }
+
+    val formattedSource = outTree.toStringBuilder(StringBuilder(), formatting)
 
     println("Pretty-Print: $formattedSource")
 }

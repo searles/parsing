@@ -100,6 +100,8 @@ fun main() {
     }
 
     val stream = ParserStream.fromString(readLine())
+    // To use a reader, the following can be used:
+    // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 
     println("Result = ${sum.parse(env, stream)}")
     println("Position in stream: ${stream.end()}")
