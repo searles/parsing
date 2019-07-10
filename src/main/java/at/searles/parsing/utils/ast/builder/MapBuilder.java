@@ -18,7 +18,7 @@ public class MapBuilder<L, V> implements Mapping<Map<L, V>, AstNode> {
 
     @Override
     public AstNode parse(Environment env, Map<L, V> left, ParserStream stream) {
-        return builder.createMap(stream, label, left);
+        return builder.createMap(stream.createSourceInfo(), label, left);
     }
 
     @Override

@@ -2,6 +2,7 @@ package at.searles.parsing.utils.ast.builder;
 
 import at.searles.parsing.*;
 import at.searles.parsing.utils.ast.AstNode;
+import at.searles.parsing.utils.ast.SourceInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
  * @param <L> A label that indicates the type of the node.
  */
 public interface AstNodeBuilder<L> {
-    <V, R> AstNode createBin(ParserStream stream, L label, V left, R right);
+    <V, R> AstNode createBin(SourceInfo info, L label, V left, R right);
 
     default <V> V matchLeft(L label) {
         throw new UnsupportedOperationException();
@@ -24,31 +25,31 @@ public interface AstNodeBuilder<L> {
         throw new UnsupportedOperationException();
     }
 
-    <V> AstNode createValue(ParserStream stream, L label, V value);
+    <V> AstNode createValue(SourceInfo info, L label, V value);
 
     default <V> V matchValue(L label, AstNode node) {
         throw new UnsupportedOperationException();
     }
 
-    <V> AstNode createList(ParserStream stream, L label, List<V> list);
+    <V> AstNode createList(SourceInfo info, L label, List<V> list);
 
     default <V> List<V> matchList(AstNode result) {
         throw new UnsupportedOperationException();
     }
 
-    AstNode createToken(ParserStream stream, L label, CharSequence left);
+    AstNode createToken(SourceInfo info, L label, CharSequence left);
 
     default CharSequence matchToken(L label, AstNode node) {
         throw new UnsupportedOperationException();
     }
 
-    AstNode createItem(ParserStream stream, L label);
+    AstNode createItem(SourceInfo info, L label);
 
     default boolean matchItem(L label) {
         throw new UnsupportedOperationException();
     }
 
-    <V> AstNode createMap(ParserStream stream, L label, Map<L, V> map);
+    <V> AstNode createMap(SourceInfo info, L label, Map<L, V> map);
 
     default <V> Map<L, V> matchMap(L label, AstNode node) {
         throw new UnsupportedOperationException();

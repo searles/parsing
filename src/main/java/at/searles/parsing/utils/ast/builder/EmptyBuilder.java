@@ -16,7 +16,7 @@ public class EmptyBuilder<L> implements Initializer<AstNode> {
 
     @Override
     public AstNode parse(Environment env, ParserStream stream) {
-        return builder.createItem(stream, label);
+        return builder.createItem(stream.createSourceInfo(), label);
     }
 
     @Override

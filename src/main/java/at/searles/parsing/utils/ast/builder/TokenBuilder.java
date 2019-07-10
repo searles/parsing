@@ -17,7 +17,7 @@ public class TokenBuilder<L> implements Mapping<CharSequence, AstNode> {
 
     @Override
     public AstNode parse(Environment env, CharSequence left, ParserStream stream) {
-        return builder.createToken(stream, label, left);
+        return builder.createToken(stream.createSourceInfo(), label, left);
     }
 
     @Override

@@ -2,6 +2,7 @@ package at.searles.parsing;
 
 import at.searles.lexer.TokStream;
 import at.searles.lexer.Token;
+import at.searles.parsing.utils.ast.SourceInfo;
 
 public class ParserStream {
     private final TokStream stream;
@@ -32,6 +33,10 @@ public class ParserStream {
 
     public long end() {
         return this.parsedEnd;
+    }
+
+    public SourceInfo createSourceInfo() {
+        return new RangeSourceInfo(this);
     }
 
     public void setStart(long start) {
@@ -76,4 +81,30 @@ public class ParserStream {
     public String toString() {
         return stream.toString() + ": [" + parsedStart + ", " + parsedEnd + "]";
     }
+
+    private static class RangeSourceInfo implements SourceInfo {
+
+        private final long end;
+        private final long start;
+
+        RangeSourceInfo(ParserStream stream) {
+            this.start = stream.parsedStart;
+            this.end = stream.parsedEnd;
+        }
+
+        @Override
+        public long start() {
+            return start;
+        }
+
+        @Override
+        public long end() {
+            return end;
+        }
+
+        public String toString() {
+            return String.format("[%d:%d]", start(), end());
+        }
+    }
+
 }

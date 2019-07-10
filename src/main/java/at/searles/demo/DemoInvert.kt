@@ -4,6 +4,7 @@ import at.searles.lexer.LexerWithHidden
 import at.searles.parsing.*
 import at.searles.parsing.printing.StringTree
 import at.searles.parsing.utils.ast.AstNode
+import at.searles.parsing.utils.ast.SourceInfo
 import at.searles.regex.RegexParser
 import java.util.function.BiFunction
 
@@ -27,7 +28,7 @@ fun main() {
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
     val numMapping = object: Mapping<CharSequence, AstNode> {
         override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
-                NumNode(stream, Integer.parseInt(left.toString()))
+                NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
         override fun left(env: Environment, result: AstNode): CharSequence? =
                 if (result is NumNode) result.value.toString() else null
@@ -54,10 +55,10 @@ fun main() {
 
     val negate = object: Mapping<AstNode, AstNode> {
         override fun parse(env: Environment, left: AstNode, stream: ParserStream): AstNode =
-            UnNode(stream, Op.Neg, left)
+            OpNode(stream.createSourceInfo(), Op.Neg, left)
 
         override fun left(env: Environment, result: AstNode): AstNode? =
-            if(result is UnNode && result.op == Op.Neg) result.arg else null
+            if(result is OpNode && result.op == Op.Neg) result.args[0] else null
     }
 
     val literal =
@@ -70,26 +71,26 @@ fun main() {
 
     val multiply = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
-                BinNode(stream, Op.Mul, left, right)
+                OpNode(stream.createSourceInfo(), Op.Mul, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Mul) result.arg0 else null
+                if(result is OpNode && result.op == Op.Mul) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Mul) result.arg1 else null
+                if(result is OpNode && result.op == Op.Mul) result.args[1] else null
     }
 
     val slash = Recognizer.fromString("/", lexer, true)
 
     val divide = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
-                BinNode(stream, Op.Div, left, right)
+                OpNode(stream.createSourceInfo(), Op.Div, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Div) result.arg0 else null
+                if(result is OpNode && result.op == Op.Div) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Div) result.arg1 else null
+                if(result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
     val product = literal.then(
@@ -105,24 +106,24 @@ fun main() {
 
     val add = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
-            BinNode(stream, Op.Add, left, right)
+            OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is BinNode && result.op == Op.Add) result.arg0 else null
+            if(result is OpNode && result.op == Op.Add) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is BinNode && result.op == Op.Add) result.arg1 else null
+            if(result is OpNode && result.op == Op.Add) result.args[1] else null
     }
 
     val sub = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
-                BinNode(stream, Op.Sub, left, right)
+                OpNode(stream.createSourceInfo(), Op.Sub, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Sub) result.arg0 else null
+                if(result is OpNode && result.op == Op.Sub) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is BinNode && result.op == Op.Sub) result.arg1 else null
+                if(result is OpNode && result.op == Op.Sub) result.args[1] else null
     }
 
     sum.set(
@@ -140,8 +141,35 @@ fun main() {
         )
     }
 
-    val stream = ParserStream.fromString(readLine())
+    // Printing a generic Ast
+    val emptySourceInfo = object: SourceInfo {
+        override fun start(): Long = -1
+        override fun end(): Long = -1
+    }
 
+    /* 1*2+3 */
+    val genericAst0 = OpNode(emptySourceInfo,
+            Op.Add,
+            OpNode(emptySourceInfo,
+                    Op.Mul,
+                    NumNode(emptySourceInfo, 1),
+                    NumNode(emptySourceInfo, 2)),
+            NumNode(emptySourceInfo, 3))
+
+    println("Pretty-Print: ${sum.print(env, genericAst0)}")
+
+    /*  (1+2)*3 */
+    val genericAst1 = OpNode(emptySourceInfo,
+            Op.Mul,
+            OpNode(emptySourceInfo,
+                    Op.Add,
+                    NumNode(emptySourceInfo, 1),
+                    NumNode(emptySourceInfo, 2)),
+            NumNode(emptySourceInfo, 3))
+
+    println("Pretty-Print: ${sum.print(env, genericAst1)}")
+
+    val stream = ParserStream.fromString(readLine())
     val ast = sum.parse(env, stream)
 
     // now pretty-print the tree
@@ -161,8 +189,7 @@ enum class Op {Add, Sub, Mul, Div, Neg}
 
 enum class Annotation { Infix }
 
-class NumNode(stream: ParserStream, val value: Int): AstNode(stream)
+class NumNode(info: SourceInfo, val value: Int): AstNode(info)
 
-class UnNode(stream: ParserStream, val op: Op, val arg: AstNode): AstNode(stream)
-class BinNode(stream: ParserStream, val op: Op, val arg0: AstNode, val arg1: AstNode): AstNode(stream)
+class OpNode(info: SourceInfo, val op: Op, vararg val args: AstNode): AstNode(info)
 

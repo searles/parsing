@@ -1,8 +1,5 @@
 # Tutorial (in Kotlin)
 
-* auto-gen TOC:
-{:toc}
-
 # Parser Combinators
 
 A certain familiarity with regular expressions and basic
@@ -16,7 +13,8 @@ to obtain more complex parsers. As always, [Wikipedia knows more](https://en.wik
 In this project, there are three basic types of parsers, and combining them will
 return one such kind of parser:
 
-* `Recognizer`: Returns true if a token was consumed. Useful for all kinds of operands or keywords.
+* `Recognizer`: Returns true if a token was consumed. Useful for all kinds of operators 
+or keywords.
 
 ~~~ kotlin
     val plus: Recognizer = /* ... */ // consumes a +.
@@ -330,18 +328,17 @@ and add (partial) inverse methods to them.
 
 ## AstNodes
 
-The class `AstNode` provides nodes of an AST. It requires the ParserStream 
+The class `AstNode` provides nodes of an AST. It requires some
+information of the ParserStream 
 in its constructor which is used to store the position in the stream.
 
-We need `AstNode`s for numbers, for unary nodes and for binary nodes:
+We need `AstNode`s for numbers (these are leafs) and for operations:
 
 ~~~ kotlin
 enum class Op {Add, Sub, Mul, Div, Neg}
 
-class NumNode(stream: ParserStream, val value: Int): AstNode(stream)
-
-class UnNode(stream: ParserStream, val op: Op, val arg: AstNode): AstNode(stream)
-class BinNode(stream: ParserStream, val op: Op, val arg0: AstNode, val arg1: AstNode): AstNode(stream)
+class NumNode(info: SourceInfo, val value: Int): AstNode(info)
+class OpNode(info: SourceInfo, val op: Op, vararg val args: AstNode): AstNode(info)
 ~~~
 
 ## Inverting a Mapping
@@ -354,7 +351,7 @@ an image of the mapping, and otherwise undo the `parse`-method.
 ~~~ kotlin
     val numMapping = object: Mapping<CharSequence, AstNode> {
         override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
-                NumNode(stream, Integer.parseInt(left.toString()))
+                NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
         override fun left(env: Environment, result: AstNode): CharSequence? = 
                 if (result is NumNode) result.value.toString() else null 
@@ -363,7 +360,7 @@ an image of the mapping, and otherwise undo the `parse`-method.
 
 Invertible mappings usually look very similar to this implementation.
 
-## Inverting a `Fold`
+## Inverting a Fold
 
 Folds are functions with a `left` and `right` argument. Thus, to invert it,
 there are two functions, one to return the `left` argument and one for the `right`
@@ -372,18 +369,18 @@ argument.
 ~~~ kotlin
     val add = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
-            BinNode(stream, Op.Add, left, right)
+            OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is BinNode && result.op == Op.Add) result.arg0 else null
+            if(result is OpNode && result.op == Op.Add) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is BinNode && result.op == Op.Add) result.arg1 else null
+            if(result is OpNode && result.op == Op.Add) result.args[1] else null
     }
 ~~~
 
-All other folds are implemented exactly in the same way by replacing the operand 
-`Op.Add`.
+All other folds are implemented exactly in the same way by replacing 
+`Op.Add` by the corresponding operator.
 
 ## Pretty-printing an expression
 
@@ -433,7 +430,7 @@ concrete syntax tree of the output.
     val outTree = sum.print(env, ast)!!
 ~~~
 
-THe `toString()`-method of `StringTree` will return the source code
+The `toString()`-method of `StringTree` will return the source code
 without applying formatting rules. 
 
 In order to use the annotations of the previous

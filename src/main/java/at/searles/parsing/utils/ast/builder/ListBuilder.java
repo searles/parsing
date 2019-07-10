@@ -19,7 +19,7 @@ public class ListBuilder<L, V> implements Mapping<List<V>, AstNode> {
 
     @Override
     public AstNode parse(Environment env, List<V> left, ParserStream stream) {
-        return builder.createList(stream, label, left);
+        return builder.createList(stream.createSourceInfo(), label, left);
     }
 
     @Override

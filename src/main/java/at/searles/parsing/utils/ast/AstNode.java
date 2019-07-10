@@ -4,28 +4,17 @@ import at.searles.parsing.ParserStream;
 
 public class AstNode {
 
-    private final long start;
-    private final long end;
+    private final SourceInfo sourceInfo;
 
-    protected AstNode(ParserStream stream) {
-        this.start = stream.start();
-        this.end = stream.end();
+    protected AstNode(SourceInfo sourceInfo) {
+        this.sourceInfo = sourceInfo;
     }
 
-    protected AstNode(AstNode predecessor) {
-        this.start = predecessor.start;
-        this.end = predecessor.end;
-    }
-
-    public long start() {
-        return start;
-    }
-
-    public long end() {
-        return end;
+    public SourceInfo sourceInfo() {
+        return sourceInfo;
     }
 
     public String toString() {
-        return String.format("[%d:%d]", start, end);
+        return String.format("[%d:%d]", sourceInfo.start(), sourceInfo.end());
     }
 }

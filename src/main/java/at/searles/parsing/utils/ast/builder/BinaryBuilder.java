@@ -17,7 +17,7 @@ public class BinaryBuilder<L, V, R> implements Fold<V, R, AstNode> {
 
     @Override
     public AstNode apply(Environment env, V left, R right, ParserStream stream) {
-        return builder.createBin(stream, label, left, right);
+        return builder.createBin(stream.createSourceInfo(), label, left, right);
     }
 
     @Override
