@@ -11,11 +11,11 @@ import java.util.List;
  * Fold to append elements to a list.
  * @param <T>
  */
-public class ConsFold<T> implements Fold<List<T>, T, List<T>> {
+public class Append<T> implements Fold<List<T>, T, List<T>> {
 
     private final int minSize; // for inversion. If false, left may not be empty.
 
-    public ConsFold(int minSize) {
+    public Append(int minSize) {
         this.minSize = minSize;
     }
 

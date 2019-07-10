@@ -1,7 +1,7 @@
 package at.searles.parsing.utils.test;
 
 import at.searles.parsing.Fold;
-import at.searles.parsing.utils.list.ConsFold;
+import at.searles.parsing.utils.list.Append;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public class UtilsTest {
     @Test
     public void testConsMayBeEmpty() {
-        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(0);
+        Fold<List<Integer>, Integer, List<Integer>> cons = new Append<>(0);
 
         List<Integer> l = Arrays.asList(1, 2);
 
@@ -29,7 +29,7 @@ public class UtilsTest {
 
     @Test
     public void testConsMayNotBeEmpty() {
-        Fold<List<Integer>, Integer, List<Integer>> cons = new ConsFold<>(1);
+        Fold<List<Integer>, Integer, List<Integer>> cons = new Append<>(1);
 
         List<Integer> l = Arrays.asList(1, 2);
 

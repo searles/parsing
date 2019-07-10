@@ -4,10 +4,7 @@ import at.searles.parsing.*;
 import at.searles.parsing.utils.common.PairFold;
 import at.searles.parsing.utils.common.SwapPairFold;
 import at.searles.parsing.utils.common.ValueInitializer;
-import at.searles.parsing.utils.list.BinaryList;
-import at.searles.parsing.utils.list.ConsFold;
-import at.searles.parsing.utils.list.EmptyList;
-import at.searles.parsing.utils.list.SingleList;
+import at.searles.parsing.utils.list.*;
 import at.searles.parsing.utils.map.EmptyMap;
 import at.searles.parsing.utils.map.PutFold;
 import at.searles.parsing.utils.map.SingleMap;
@@ -30,18 +27,18 @@ public class Utils {
      * @return An inversible parser for a list of items.
      */
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
-         return singleton(parser).then(Reducer.rep(separator.then(cons(parser, 1))));
+         return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
     }
 
     public static <T> Parser<List<T>> list1(Parser<T> parser) {
-        return singleton(parser).then(Reducer.rep(cons(parser, 1)));
+        return singleton(parser).then(Reducer.rep(append(parser, 1)));
     }
 
     public static <T> Parser<List<T>> list(Parser<T> parser, Recognizer separator) {
         return Utils.<T>empty().then(
                 Reducer.opt(
-                        cons(parser, 0)
-                        .then(Reducer.rep(separator.then(cons(parser, 1))))
+                        append(parser, 0)
+                        .then(Reducer.rep(separator.then(append(parser, 1))))
                 )
         );
     }
@@ -49,8 +46,8 @@ public class Utils {
     public static <T> Parser<List<T>> list(Parser<T> parser) {
         return Utils.<T>empty()
                 .then(Reducer.opt(
-                        cons(parser, 0)
-                        .then(Reducer.rep(cons(parser, 1)))
+                        append(parser, 0)
+                        .then(Reducer.rep(append(parser, 1)))
                 )
         );
     }
@@ -84,8 +81,12 @@ public class Utils {
      * @param minLeftElements The minimum number of elements that are asserted to be in the left list. This is
      *                        needed for inversion.
      */
-    public static <T> Reducer<List<T>, List<T>> cons(Parser<T> parser, int minLeftElements) {
-        return parser.fold(new ConsFold<>(minLeftElements));
+    public static <T> Reducer<List<T>, List<T>> append(Parser<T> parser, int minLeftElements) {
+        return parser.fold(new Append<>(minLeftElements));
+    }
+
+    public static <T> Reducer<T, List<T>> prepend(Parser<List<T>> parser) {
+        return parser.fold(new Prepend<>());
     }
 
     /**

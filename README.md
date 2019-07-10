@@ -1,5 +1,8 @@
 # Invertible Parser Combinators
 
+This project is implemented in Java and Kotlin. It provides parser combinators
+that are invertible, ie, a parser using this project is also a pretty printer.
+
 ## In a nutshell
 
 * Define recursive descent parsers using parser combinators, and you will get

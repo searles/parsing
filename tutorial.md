@@ -80,7 +80,7 @@ Using the `fold`-method, a `Parser<U>` is converted to a `Reducer<T, V>`.
 
 ## On inversion
 
-All parser combinators are invertable. This means that eg `Parser<T>` not only
+All parser combinators are invertible. This means that eg `Parser<T>` not only
 contains a `parser`-method but also a `print`-method that creates a `StringTree`
 out of the result of the `print`-method. There are similar methods for `Reducer` 
 and `Recognizer`. 
