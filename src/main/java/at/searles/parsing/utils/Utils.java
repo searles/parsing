@@ -1,7 +1,6 @@
 package at.searles.parsing.utils;
 
 import at.searles.parsing.*;
-import at.searles.parsing.utils.common.Cast;
 import at.searles.parsing.utils.common.PairFold;
 import at.searles.parsing.utils.common.SwapPairFold;
 import at.searles.parsing.utils.common.ValueInitializer;
@@ -98,6 +97,8 @@ public class Utils {
         return new ValueInitializer<>(v);
     }
 
+    // Add things to a map
+
     public static <K, V> Initializer<Map<K, V>> map() {
         return new EmptyMap<>();
     }
@@ -110,10 +111,6 @@ public class Utils {
         return itemParser.fold(new PutFold<>(key));
     }
 
-    public static <T, U> Parser<U> cast(Parser<T> parser, Class<T> srcType, Class<U> dstType) {
-        return parser.then(new Cast<>(srcType, dstType));
-    }
-
     // === reflection ===
     public static<T> Initializer<T> builder(Class<T> cls) {
         return new BuilderInitializer<>(cls);
@@ -121,6 +118,10 @@ public class Utils {
 
     public static<T, V> Reducer<T, T> setter(Parser<V> parser, Class<T> builderType, String property, Class<V> parameterType) {
         return parser.fold(new Setter<>(builderType, property, parameterType));
+    }
+
+    public static<T, V> Reducer<T, T> setter(String property, Parser<V> parser) {
+        return parser.fold(new SetterUnsafe<>(property));
     }
 
     public static<T, U> Mapping<T, U> apply(Class<T> builderType, Class<U> itemType) {

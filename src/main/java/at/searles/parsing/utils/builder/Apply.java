@@ -6,39 +6,41 @@ import at.searles.parsing.ParserStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Apply<T, U> implements Mapping<T, U> {
     private final Method applyMethod;
-    private final Constructor<T> builderCtor;
+    private final Method builderCreate;
     private final Class<U> itemType;
+    private final Class<T> builderType;
 
     public Apply(Class<T> builderType, Class<U> itemType) {
         this.itemType = itemType;
+        this.builderType = builderType;
 
         try {
-            this.applyMethod = builderType.getMethod("apply");
+            this.applyMethod = builderType.getMethod("apply", ParserStream.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
 
-        Constructor<T> builderCtor;
+        Method method;
 
         try {
-            builderCtor = builderType.getConstructor(itemType);
+            // printing is optional.
+            method = builderType.getMethod("create", itemType);
         } catch (NoSuchMethodException e) {
-            builderCtor = null;
+            method = null;
         }
 
-        this.builderCtor = builderCtor;
+        this.builderCreate = method;
     }
 
     @Override
     public U parse(Environment env, @NotNull T left, ParserStream stream) {
         try {
-            return itemType.cast(this.applyMethod.invoke(left));
+            return itemType.cast(this.applyMethod.invoke(left, stream));
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
@@ -48,8 +50,8 @@ public class Apply<T, U> implements Mapping<T, U> {
     @Override
     public T left(Environment env, @NotNull U result) {
         try {
-            return builderCtor.newInstance(result);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            return builderType.cast(builderCreate.invoke(null, result));
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
     }

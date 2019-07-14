@@ -91,14 +91,16 @@ public class BuilderTest {
         public String a;
         public String b;
 
-        public Builder() {}
+        public static Builder create(Item item) {
+            // may return null if not applicable
+            Builder builder = new Builder();
+            builder.a = item.a;
+            builder.b = item.b;
 
-        public Builder(Item item) {
-            this.a = item.a;
-            this.b = item.b;
+            return builder;
         }
 
-        public Item apply() {
+        public Item apply(ParserStream stream) {
             return new Item(a, b);
         }
 
