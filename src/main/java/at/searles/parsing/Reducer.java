@@ -52,4 +52,8 @@ public interface Reducer<T, U> extends Recognizable {
     static <T> Reducer<T, T> rep(Reducer<T, T> reducer) {
         return new ReducerRep<>(reducer);
     }
+
+    static <T> Reducer<T, T> plus(Reducer<T, T> reducer) {
+        return new ReducerPlus<>(reducer, 1);
+    }
 }

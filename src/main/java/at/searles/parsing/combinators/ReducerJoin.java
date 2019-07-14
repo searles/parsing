@@ -8,12 +8,12 @@ import at.searles.parsing.printing.PartialStringTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Join<T> implements Reducer<T, T> {
+public class ReducerJoin<T> implements Reducer<T, T> {
 
     private final Reducer<T, T> parserReducer;
     private final Reducer<T, T> printerReducer;
 
-    public Join(Recognizer separator, Reducer<T, T> reducer) {
+    public ReducerJoin(Recognizer separator, Reducer<T, T> reducer) {
         this.parserReducer = Reducer.opt(reducer.then(Reducer.rep(separator.then(reducer))));
         this.printerReducer = Reducer.opt(Reducer.rep(reducer.then(separator)).then(reducer));
     }
