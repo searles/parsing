@@ -3,6 +3,7 @@ package at.searles.parsing.utils.common;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 public class Increment implements Mapping<Integer, Integer> {
 
@@ -13,7 +14,7 @@ public class Increment implements Mapping<Integer, Integer> {
     }
 
     @Override
-    public Integer parse(Environment env, Integer left, ParserStream stream) {
+    public Integer parse(Environment env, @NotNull Integer left, ParserStream stream) {
         return left + 1;
     }
 

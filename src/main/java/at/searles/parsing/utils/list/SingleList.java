@@ -3,6 +3,7 @@ package at.searles.parsing.utils.list;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class SingleList<T> implements Mapping<T, List<T>> {
 
     @Override
-    public List<T> parse(Environment env, T left, ParserStream stream) {
+    public List<T> parse(Environment env, @NotNull T left, ParserStream stream) {
         List<T> l = new ArrayList<T>();
         l.add(left);
         return l;

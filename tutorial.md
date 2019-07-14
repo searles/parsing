@@ -67,6 +67,9 @@ provides information on the current position in the stream.
 
 There are further parser combinators but these should be the most important ones.
 
+HINT: `Reducer.rep` does not support backtracking. Everything that can be consumed
+by `rep` will be consumed, for both, `parse` and `print`.
+
 ## Parser Functions
 
 Apart from parsers there are functional interfaces that can be used to

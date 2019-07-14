@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
+import org.jetbrains.annotations.NotNull;
 
 public class UnaryBuilder<L, V> implements Mapping<V, AstNode> {
 
@@ -16,7 +17,7 @@ public class UnaryBuilder<L, V> implements Mapping<V, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, V left, ParserStream stream) {
+    public AstNode parse(Environment env, @NotNull V left, ParserStream stream) {
         return builder.createValue(stream.createSourceInfo(), label, left);
     }
 

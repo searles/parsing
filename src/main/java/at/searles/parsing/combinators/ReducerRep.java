@@ -3,6 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialStringTree;
 import at.searles.parsing.printing.StringTree;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public T parse(Environment env, T left, ParserStream stream) {
+    public T parse(Environment env, @NotNull T left, ParserStream stream) {
         long preStart = stream.start();
 
         while(true) {
@@ -43,7 +44,7 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, T t) {
+    public PartialStringTree<T> print(Environment env, @NotNull T t) {
         T left = t;
 
         ArrayList<StringTree> trees = new ArrayList<>();

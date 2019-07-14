@@ -3,6 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialStringTree;
 import at.searles.parsing.printing.StringTree;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Creates a reducer out of a parser.
@@ -17,7 +18,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
         this.fold = fold;
     }
 
-    public V parse(Environment env, T left, ParserStream stream) {
+    public V parse(Environment env, @NotNull T left, ParserStream stream) {
         // must preserve start position.
         long leftStart = stream.start();
 
@@ -33,7 +34,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, V v) {
+    public PartialStringTree<T> print(Environment env, @NotNull V v) {
         U right = fold.rightInverse(env, v);
 
         if(right == null) {

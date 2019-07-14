@@ -3,6 +3,7 @@ package at.searles.parsing.utils.opt;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
  */
 public class SomeMapping<T> implements Mapping<T, Optional<T>> {
     @Override
-    public Optional<T> parse(Environment env, T left, ParserStream stream) {
+    public Optional<T> parse(Environment env, @NotNull T left, ParserStream stream) {
         return Optional.of(left);
     }
 

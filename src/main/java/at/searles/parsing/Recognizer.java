@@ -57,14 +57,7 @@ public interface Recognizer extends Recognizable {
      * Creates a reducer for a possibly empty csv-alike structure
      */
     default <T> Reducer<T, T> join(Reducer<T, T> reducer) {
-        return Reducer.opt(reducer.then(Reducer.rep(this.then(reducer))));
-    }
-
-    /**
-     * Creates a parser for a non-empty csv-alike structure
-     */
-    default <T> Parser<T> join(Parser<T> parser, Fold<T, T, T> fold) {
-        return parser.then(Reducer.rep(this.then(parser.fold(fold))));
+        return new Join(this, reducer);
     }
 
     default <A> Recognizer annotate(A category) {

@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class MapBuilder<L, V> implements Mapping<Map<L, V>, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, Map<L, V> left, ParserStream stream) {
+    public AstNode parse(Environment env, @NotNull Map<L, V> left, ParserStream stream) {
         return builder.createMap(stream.createSourceInfo(), label, left);
     }
 

@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
+import org.jetbrains.annotations.NotNull;
 
 public class TokenBuilder<L> implements Mapping<CharSequence, AstNode> {
 
@@ -16,7 +17,7 @@ public class TokenBuilder<L> implements Mapping<CharSequence, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, CharSequence left, ParserStream stream) {
+    public AstNode parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
         return builder.createToken(stream.createSourceInfo(), label, left);
     }
 

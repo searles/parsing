@@ -3,6 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialStringTree;
 import at.searles.parsing.printing.StringTree;
+import org.jetbrains.annotations.NotNull;
 
 public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.Then {
     private final Reducer<T, U> left;
@@ -24,7 +25,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public U parse(Environment env, T left, ParserStream stream) {
+    public U parse(Environment env, @NotNull T left, ParserStream stream) {
         long offset = stream.offset();
 
         long preStart = stream.start();
@@ -68,7 +69,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, U u) {
+    public PartialStringTree<T> print(Environment env, @NotNull U u) {
         PartialStringTree<T> leftOutput = left.print(env, u);
 
         if(leftOutput == null) {

@@ -309,7 +309,7 @@ public class ParserGenerator {
     private static class JavaCode implements Mapping<CharSequence, String> {
         @NotNull
         @Override
-        public String parse(Environment env, CharSequence left, ParserStream stream) {
+        public String parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
             StringBuilder sb = new StringBuilder();
 
             for(int i = 1; i < left.length() - 1; ++i) {

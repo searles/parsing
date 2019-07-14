@@ -4,6 +4,9 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
 
+/**
+ * Append codePoint to String.
+ */
 public class StringAppend implements Fold<String, Integer, String> {
     @Override
     public String apply(Environment env, String left, Integer right, ParserStream stream) {

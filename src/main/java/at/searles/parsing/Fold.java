@@ -1,5 +1,7 @@
 package at.searles.parsing;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Fold<T, U, V> {
     V apply(Environment env, T left, U right, ParserStream stream); // must not return null
 
@@ -26,7 +28,7 @@ public interface Fold<T, U, V> {
         }
 
         @Override
-        public V parse(Environment env, U mid, ParserStream stream) {
+        public V parse(Environment env, @NotNull U mid, ParserStream stream) {
             return fold.apply(env, left, mid, stream);
         }
 

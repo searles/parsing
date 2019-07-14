@@ -3,13 +3,14 @@ package at.searles.grammars;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Maps special characters.
  */
 class EscChars implements Mapping<CharSequence, Integer> {
     @Override
-    public Integer parse(Environment env, CharSequence left, ParserStream stream) {
+    public Integer parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
         switch (left.charAt(1)) {
             case 'x':case 'u':case'U':
                 return parseHex(left);

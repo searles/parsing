@@ -3,6 +3,7 @@ package at.searles.parsing.utils.map;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class SingleMap<K, V> implements Mapping<V, Map<K, V>> {
     }
 
     @Override
-    public Map<K, V> parse(Environment env, V left, ParserStream stream) {
+    public Map<K, V> parse(Environment env, @NotNull V left, ParserStream stream) {
         Map<K, V> map = new LinkedHashMap<>();
         map.put(key, left);
         return map;

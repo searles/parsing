@@ -8,15 +8,14 @@ import org.jetbrains.annotations.Nullable;
 public interface Mapping<T, U> extends Reducer<T, U> {
 
     @Override
-    @NotNull
-    U parse(Environment env, T left, ParserStream stream);
+    U parse(Environment env, @NotNull T left, ParserStream stream);
 
     default @Nullable
-    T left(Environment env, U result) {
+    T left(Environment env, @NotNull U result) {
         throw new UnsupportedOperationException();
     }
 
-    default PartialStringTree<T> print(Environment env, U u) {
+    default PartialStringTree<T> print(Environment env, @NotNull U u) {
         T left = left(env, u);
 
         if(left == null) {
