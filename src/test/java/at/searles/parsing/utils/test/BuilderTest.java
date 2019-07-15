@@ -6,15 +6,9 @@ import at.searles.parsing.printing.StringTree;
 import at.searles.parsing.utils.Utils;
 import at.searles.parsing.utils.common.Str;
 import at.searles.regex.RegexParser;
+import at.searles.utils.GenericBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 public class BuilderTest {
 
@@ -91,30 +85,6 @@ public class BuilderTest {
         public Item(String a, String b) {
             this.a = a;
             this.b = b;
-        }
-    }
-
-    public static class GenericBuilder<A extends GenericBuilder<A>> implements Cloneable {
-        public A copy() {
-            try {
-                return (A) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-
-        public boolean isEmpty() {
-            try {
-                for(Field field: getClass().getFields()) {
-                    if(field.get(this) != null) {
-                        return false;
-                    }
-                }
-
-                return true;
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(e);
-            }
         }
     }
 
