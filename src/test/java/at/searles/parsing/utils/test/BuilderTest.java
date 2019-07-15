@@ -9,6 +9,13 @@ import at.searles.regex.RegexParser;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
 public class BuilderTest {
 
     private Lexer lexer = new Lexer();
@@ -27,8 +34,8 @@ public class BuilderTest {
 
     Parser<Item> parser = Utils.builder(Builder.class).then(
             Recognizer.fromString(",", lexer, false).join(
-                Utils.setter(Recognizer.fromString("+", lexer, false).then(id), Builder.class, "a", String.class)
-                .or(Utils.setter(Recognizer.fromString("-", lexer, false).then(id), Builder.class, "b", String.class), true)
+                Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
+                .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
             )
         .then(Utils.apply(Builder.class, Item.class))
     );
@@ -87,11 +94,35 @@ public class BuilderTest {
         }
     }
 
-    public static class Builder {
+    public static class GenericBuilder<A extends GenericBuilder<A>> implements Cloneable {
+        public A copy() {
+            try {
+                return (A) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+
+        public boolean isEmpty() {
+            try {
+                for(Field field: getClass().getFields()) {
+                    if(field.get(this) != null) {
+                        return false;
+                    }
+                }
+
+                return true;
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
+    public static class Builder extends GenericBuilder<Builder> {
         public String a;
         public String b;
 
-        public static Builder create(Item item) {
+        public static Builder toBuilder(Item item) {
             // may return null if not applicable
             Builder builder = new Builder();
             builder.a = item.a;
@@ -100,19 +131,8 @@ public class BuilderTest {
             return builder;
         }
 
-        public Item apply(ParserStream stream) {
+        public Item build(ParserStream stream) {
             return new Item(a, b);
-        }
-
-        public boolean isEmpty() {
-            return this.a == null && this.b == null;
-        }
-
-        public Builder copy() {
-            Builder copy = new Builder();
-            copy.a = a;
-            copy.b = b;
-            return copy;
         }
     }
 }

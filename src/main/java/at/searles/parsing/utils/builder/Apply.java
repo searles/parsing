@@ -20,7 +20,7 @@ public class Apply<T, U> implements Mapping<T, U> {
         this.builderType = builderType;
 
         try {
-            this.applyMethod = builderType.getMethod("apply", ParserStream.class);
+            this.applyMethod = builderType.getMethod("build", ParserStream.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
@@ -29,7 +29,7 @@ public class Apply<T, U> implements Mapping<T, U> {
 
         try {
             // printing is optional.
-            method = builderType.getMethod("create", itemType);
+            method = builderType.getMethod("toBuilder", itemType);
         } catch (NoSuchMethodException e) {
             method = null;
         }

@@ -116,7 +116,7 @@ public class Utils {
         return new BuilderInitializer<>(cls);
     }
 
-    public static<T, V> Reducer<T, T> setter(Parser<V> parser, Class<T> builderType, String property, Class<V> parameterType) {
+    public static<T, V> Reducer<T, T> setter(String property, Parser<V> parser, Class<T> builderType, Class<V> parameterType) {
         return parser.fold(new Setter<>(builderType, property, parameterType));
     }
 
