@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Apply<T, U> implements Mapping<T, U> {
+public class Build<T, U> implements Mapping<T, U> {
     private final Method applyMethod;
     private final Method builderCreate;
     private final Class<U> itemType;
     private final Class<T> builderType;
 
-    public Apply(Class<T> builderType, Class<U> itemType) {
+    public Build(Class<T> builderType, Class<U> itemType) {
         this.itemType = itemType;
         this.builderType = builderType;
 
@@ -58,6 +58,6 @@ public class Apply<T, U> implements Mapping<T, U> {
 
     @Override
     public String toString() {
-        return "{apply}";
+        return "{build}";
     }
 }

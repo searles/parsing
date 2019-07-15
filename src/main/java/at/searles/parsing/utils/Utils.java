@@ -124,7 +124,7 @@ public class Utils {
         return parser.fold(new SetterUnsafe<>(property));
     }
 
-    public static<T, U> Mapping<T, U> apply(Class<T> builderType, Class<U> itemType) {
-        return new Apply<>(builderType, itemType);
+    public static<T, U> Mapping<T, U> build(Class<T> builderType, Class<U> itemType) {
+        return new Build<>(builderType, itemType);
     }
 }

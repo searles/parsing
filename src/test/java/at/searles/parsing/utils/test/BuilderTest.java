@@ -31,7 +31,7 @@ public class BuilderTest {
                 Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
                 .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
             )
-        .then(Utils.apply(Builder.class, Item.class))
+        .then(Utils.build(Builder.class, Item.class))
     );
 
     private ParserStream input;
