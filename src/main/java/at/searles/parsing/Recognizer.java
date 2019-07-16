@@ -60,6 +60,10 @@ public interface Recognizer extends Recognizable {
         return new ReducerJoin<>(this, reducer);
     }
 
+    default <T> Reducer<T, T> joinPlus(Reducer<T, T> reducer) {
+        return new ReducerJoinPlus<>(this, reducer);
+    }
+
     default <T> Parser<T> join(Parser<T> parser, Fold<T, T, T> aggregate) {
         return parser.then(Reducer.rep(this.then(parser.fold(aggregate))));
     }

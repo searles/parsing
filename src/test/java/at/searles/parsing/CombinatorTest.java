@@ -3,7 +3,7 @@ package at.searles.parsing;
 import at.searles.lexer.Lexer;
 import at.searles.parsing.printing.EmptyStringTree;
 import at.searles.parsing.printing.StringTree;
-import at.searles.parsing.utils.common.Str;
+import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,7 +79,7 @@ public class CombinatorTest {
     }
 
     private Lexer lexer = new Lexer();
-    private Parser<String> chr =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]")), new Str(), false);
+    private Parser<String> chr =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]")), new ToString(), false);
     private Recognizer comma = Recognizer.fromString(",", lexer, false);
 
     private Initializer<String> emptyString = new Initializer<String>() {

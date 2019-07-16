@@ -127,4 +127,8 @@ public class Utils {
     public static<T, U> Mapping<T, U> build(Class<T> builderType, Class<U> itemType) {
         return new Build<>(builderType, itemType);
     }
+
+    public static<T, U> Mapping<T, U> build(Class<T> builderType) {
+        return new BuildUnsafe<>(builderType);
+    }
 }

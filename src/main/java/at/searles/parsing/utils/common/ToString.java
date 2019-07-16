@@ -6,7 +6,7 @@ import at.searles.parsing.ParserStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Str implements Mapping<CharSequence, String> {
+public class ToString implements Mapping<CharSequence, String> {
     @Override
     public String parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
         return left.toString();

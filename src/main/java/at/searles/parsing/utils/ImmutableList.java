@@ -44,6 +44,10 @@ public class ImmutableList<E> extends AbstractList<E> {
     }
 
     public ImmutableList<E> pushBack(E element) {
+        if(element == null) {
+            throw new NullPointerException();
+        }
+
         // remove all elements behind size.
         this.list.subList(size, list.size()).clear();
 
