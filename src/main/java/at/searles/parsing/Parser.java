@@ -6,7 +6,7 @@ import at.searles.parsing.combinators.ParserThenRecognizer;
 import at.searles.parsing.combinators.ParserThenReducer;
 import at.searles.parsing.combinators.ParserToReducer;
 import at.searles.parsing.annotation.AnnotationParser;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenParser;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ public interface Parser<T> extends Recognizable {
     @Nullable T parse(Environment env, ParserStream stream);
 
     default @Nullable
-    StringTree print(Environment env, T t) {
+    ConcreteSyntaxTree print(Environment env, T t) {
         throw new UnsupportedOperationException("printing not supported");
     }
 

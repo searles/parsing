@@ -3,7 +3,7 @@ package at.searles.parsing.annotation;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Parser;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class AnnotationParser<C, T> implements Parser<T> {
 
@@ -26,8 +26,8 @@ public class AnnotationParser<C, T> implements Parser<T> {
     }
 
     @Override
-    public StringTree print(Environment env, T t) {
-        StringTree output = parser.print(env, t);
+    public ConcreteSyntaxTree print(Environment env, T t) {
+        ConcreteSyntaxTree output = parser.print(env, t);
 
         if(output == null) {
             return null;

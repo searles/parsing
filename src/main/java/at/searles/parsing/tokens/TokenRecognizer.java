@@ -1,12 +1,11 @@
 package at.searles.parsing.tokens;
 
-import at.searles.lexer.Lexer;
 import at.searles.lexer.Token;
 import at.searles.lexer.Tokenizer;
 import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class TokenRecognizer implements Recognizer {
 
@@ -26,8 +25,8 @@ public class TokenRecognizer implements Recognizer {
     }
 
     @Override
-    public StringTree print(Environment env) {
-        return StringTree.fromCharSequence(str);
+    public ConcreteSyntaxTree print(Environment env) {
+        return ConcreteSyntaxTree.fromCharSequence(str);
     }
 
     public String toString() {

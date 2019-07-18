@@ -1,8 +1,8 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,7 +34,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, @NotNull V v) {
+    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull V v) {
         U right = fold.rightInverse(env, v);
 
         if(right == null) {
@@ -47,13 +47,13 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
             return null;
         }
 
-        StringTree rightOutput = parent.print(env, right);
+        ConcreteSyntaxTree rightOutput = parent.print(env, right);
 
         if(rightOutput == null) {
             return null;
         }
 
-        return new PartialStringTree<>(left, rightOutput);
+        return new PartialConcreteSyntaxTree<>(left, rightOutput);
     }
 
     @Override

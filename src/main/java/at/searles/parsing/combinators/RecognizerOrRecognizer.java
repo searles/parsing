@@ -3,7 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Multiple recognizers combined with 'or'.
@@ -19,7 +19,7 @@ public class RecognizerOrRecognizer<C extends Environment> implements Recognizer
     }
 
     @Override
-    public StringTree print(Environment env) {
+    public ConcreteSyntaxTree print(Environment env) {
         return first.print(env);
     }
 

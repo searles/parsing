@@ -1,6 +1,6 @@
 package at.searles.parsing;
 
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class Ref<T> implements Parser<T> {
 
@@ -27,7 +27,7 @@ public class Ref<T> implements Parser<T> {
     }
 
     @Override
-    public StringTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(Environment env, T t) {
         return ref.print(env, t);
     }
 

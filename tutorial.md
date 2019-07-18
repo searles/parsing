@@ -426,39 +426,50 @@ is shown here for the product-rule:
 enum class Annotation { Infix }
 ~~~
 
-## Printing a StringTree
+## Printing a ConcreteSyntaxTree
 
-The return type of the `print`-method is a `StringTree` which contains the 
-concrete syntax tree of the output. 
+The return type of the `print`-method is a `ConcreteSyntaxTree`.
 
 ~~~ kotlin
     val outTree = sum.print(env, ast)!!
 ~~~
 
-The `toString()`-method of `StringTree` will return the source code
+The `toString()`-method of this concrete syntax tree will return the source code
 without applying formatting rules. 
 
 In order to use the annotations of the previous
-section, the `toStringBuilder`-method should be used. This method uses
-a function to decorate an annotated `StringTree` with additional
-formattings. Here, we add spaces to the left and right. 
+section, we have to implement a `CstPrinter` that respects these
+formatting rules. Here, we add spaces to the left and right. The
+result should be written into a `String`, therefore
+we print the result into a `StringOutStream`:
+
+~~~ kotlin
+    val sourceStream = StringOutStream()
+
+    val printer = object: CstPrinter(sourceStream) {
+        override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter =
+                when(annotation) {
+                    FormatOp.Infix -> print(" ").print(tree).print(" ")
+                    else -> print(tree)
+                }
+    }
+~~~
+
+After printing the concrete syntax tree, the final string
+can be obtained from the `StringOutStream`:
 
 ~~~ kotlin
     val outTree = sum.print(env, ast)!!
-
-    val formatting = BiFunction<Any, StringTree, StringTree> {
-        category, tree -> if(category == Annotation.Infix) tree.consLeft(" ").consRight(" ") else tree
-    }
-
-    val formattedSource = outTree.toStringBuilder(StringBuilder(), formatting) 
-
-    println("Pretty-Print: $formattedSource")
+    outTree.print(printer)
+    println("Pretty-Print: $sourceStream")
 ~~~
 
-`StringTree` itself is a very simple functional interface. It can be
-easily implemented in order to obtain more complex formattings like
-indentations or optional line breaks.
-
 [You find the pretty-printer demo here.](src/main/java/at/searles/demo/DemoInvert.kt)
+
+In order to format source code with indentations or
+more complex patterns, the 
+`CstPrinter` must keep track of indentation levels. A
+concrete implementation for such a `CstPrinter` is given
+in the unit test `PrinterTest` [here](src/main/java/at/searles/parsing/printing/PrinterTest.kt).
 
 This concludes this tutorial. Enjoy this project. 

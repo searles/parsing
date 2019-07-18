@@ -4,7 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.Reducer;
-import at.searles.parsing.printing.PartialStringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public class ReducerJoinPlus<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public PartialStringTree<T> print(Environment env, @NotNull T t) {
+    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull T t) {
         return printerReducer.print(env, t);
     }
 

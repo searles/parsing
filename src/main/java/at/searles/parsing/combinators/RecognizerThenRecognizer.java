@@ -3,7 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  *
@@ -29,7 +29,7 @@ public class RecognizerThenRecognizer<C extends Environment> implements Recogniz
     }
 
     @Override
-    public StringTree print(Environment env) {
+    public ConcreteSyntaxTree print(Environment env) {
         return left.print(env).consRight(right.print(env));
     }
 

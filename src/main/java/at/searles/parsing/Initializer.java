@@ -1,6 +1,6 @@
 package at.searles.parsing;
 
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public interface Initializer<T> extends Parser<T> {
 
@@ -12,8 +12,8 @@ public interface Initializer<T> extends Parser<T> {
     }
 
     @Override
-    default StringTree print(Environment env, T t) {
-        return consume(env, t) ? StringTree.empty() : null;
+    default ConcreteSyntaxTree print(Environment env, T t) {
+        return consume(env, t) ? ConcreteSyntaxTree.empty() : null;
     }
 
     @Override

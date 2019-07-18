@@ -1,13 +1,12 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Stack;
 
 /**
  * Parser for repetitions
@@ -44,13 +43,13 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, @NotNull T t) {
+    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull T t) {
         T left = t;
 
-        ArrayList<StringTree> trees = new ArrayList<>();
+        ArrayList<ConcreteSyntaxTree> trees = new ArrayList<>();
 
         for(;;) {
-            PartialStringTree<T> next = parent.print(env, left);
+            PartialConcreteSyntaxTree<T> next = parent.print(env, left);
 
             if(next == null) {
                 break;
@@ -63,7 +62,7 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
 
         Collections.reverse(trees);
 
-        return new PartialStringTree<>(left, StringTree.fromList(trees));
+        return new PartialConcreteSyntaxTree<>(left, ConcreteSyntaxTree.fromList(trees));
     }
 
     @Override

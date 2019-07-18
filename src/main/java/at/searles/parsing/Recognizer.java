@@ -3,7 +3,7 @@ package at.searles.parsing;
 import at.searles.lexer.Tokenizer;
 import at.searles.parsing.combinators.*;
 import at.searles.parsing.annotation.AnnotationRecognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenRecognizer;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,8 @@ public interface Recognizer extends Recognizable {
     /**
      * Must not return null!
      */
-    @NotNull StringTree print(Environment env);
+    @NotNull
+    ConcreteSyntaxTree print(Environment env);
 
     default <T> Reducer<T, T> toReducer() {
         // corresponds to prefix.

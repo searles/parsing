@@ -3,7 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Possibly empty repetition
@@ -22,8 +22,8 @@ public class RecognizerRep implements Recognizer, Recognizable.Rep {
     }
 
     @Override
-    public StringTree print(Environment env) {
-        return StringTree.empty();
+    public ConcreteSyntaxTree print(Environment env) {
+        return ConcreteSyntaxTree.empty();
     }
 
     @Override

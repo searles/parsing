@@ -112,8 +112,19 @@ public class Utils {
     }
 
     // === reflection ===
+
+    /**
+     * Creates an empty builder
+     */
     public static<T> Initializer<T> builder(Class<T> cls) {
         return new BuilderInitializer<>(cls);
+    }
+
+    /**
+     * Creates a builder and adds the left item to it.
+     */
+    public static<T, V> Mapping<V, T> builder(Class<T> builder, String property) {
+        return new BuilderSetterUnsafe<T, V>(builder, property);
     }
 
     public static<T, V> Reducer<T, T> setter(String property, Parser<V> parser, Class<T> builderType, Class<V> parameterType) {

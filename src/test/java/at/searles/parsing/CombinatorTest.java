@@ -1,8 +1,8 @@
 package at.searles.parsing;
 
 import at.searles.lexer.Lexer;
-import at.searles.parsing.printing.EmptyStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.EmptyConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
 import org.junit.Assert;
@@ -89,8 +89,8 @@ public class CombinatorTest {
         }
 
         @Override
-        public StringTree print(Environment env, String s) {
-            return s.isEmpty() ? new EmptyStringTree() : null;
+        public ConcreteSyntaxTree print(Environment env, String s) {
+            return s.isEmpty() ? new EmptyConcreteSyntaxTree() : null;
         }
     };
 
@@ -124,7 +124,7 @@ public class CombinatorTest {
         }
 
         @Override
-        public void notifyLeftPrintFailed(StringTree rightTree, Recognizable.Then failed) {
+        public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
             error = true;
             throw new IllegalArgumentException();
         }
@@ -134,7 +134,7 @@ public class CombinatorTest {
 
     private ParserStream input;
     private String parseResult;
-    private StringTree printResult;
+    private ConcreteSyntaxTree printResult;
     private boolean error;
 
     private void actPrint() {

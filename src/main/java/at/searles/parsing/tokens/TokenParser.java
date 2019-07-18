@@ -5,7 +5,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.Parser;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class TokenParser<A> implements Parser<A> {
 
@@ -36,14 +36,14 @@ public class TokenParser<A> implements Parser<A> {
     }
 
     @Override
-    public StringTree print(Environment env, A a) {
+    public ConcreteSyntaxTree print(Environment env, A a) {
         CharSequence seq = mapping.left(env, a);
 
         if(seq == null) {
             return null;
         }
 
-        return StringTree.fromCharSequence(seq);
+        return ConcreteSyntaxTree.fromCharSequence(seq);
     }
 
     public String toString() {

@@ -1,7 +1,7 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     private Recognizer parent;
@@ -41,8 +41,8 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     }
 
     @Override
-    public StringTree print(Environment env, T t) {
-        StringTree output = parser.print(env, t);
+    public ConcreteSyntaxTree print(Environment env, T t) {
+        ConcreteSyntaxTree output = parser.print(env, t);
 
         // print in recognizer always succeeds.
         return output != null ? output.consLeft(parent.print(env)) : null;

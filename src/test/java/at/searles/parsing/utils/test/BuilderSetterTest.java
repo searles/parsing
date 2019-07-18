@@ -4,16 +4,29 @@ import at.searles.lexer.Lexer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;
-import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
 import at.searles.utils.GenericBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BuilderTest {
+public class BuilderSetterTest {
 
     private Lexer lexer = new Lexer();
-    private Parser<String> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
+    private Parser<Object> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
+            new Mapping<CharSequence, Object>() {
+                @Override
+                public Object parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+                    return left.toString();
+                }
+
+                @Nullable
+                @Override
+                public CharSequence left(Environment env, @NotNull Object result) {
+                    return result instanceof String ? result.toString() : null;
+                }
+            }, false);
 
     private Environment env = new Environment() {
         @Override
@@ -26,51 +39,50 @@ public class BuilderTest {
         }
     };
 
-    Parser<Object> parser = Utils.builder(Builder.class).then(
-            Recognizer.fromString(",", lexer, false).join(
-                Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
-                .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
-            )
-        .then(Utils.build(Builder.class))
-    );
+    Parser<Object> parser =
+            id.then(
+                Reducer.opt(
+                    Recognizer.fromString("+", lexer, false)
+                    .then(Utils.builder(Builder.class, "a"))
+                    .then(Utils.build(Builder.class))
+                ));
 
     private ParserStream input;
     private Object item; // using object to test inheritance
     private String output;
 
     @Test
-    public void testEmpty() {
-        withInput("");
+    public void testNoOpt() {
+        withInput("k");
         actParse();
-        actPrint();
 
-        Assert.assertEquals("", output);
+        Assert.assertTrue(item instanceof String);
     }
 
     @Test
-    public void testAB() {
-        withInput("+zyx,-wvu");
+    public void testOpt() {
+        withInput("k+");
         actParse();
-        actPrint();
 
-        Assert.assertEquals("+zyx,-wvu", output);
+        Assert.assertTrue(item instanceof Item);
     }
 
     @Test
-    public void testAA() {
-        withInput("+zyx,+wvu");
+    public void testOptPrint() {
+        withInput("k+");
         actParse();
         actPrint();
 
-        Assert.assertEquals("+wvu", output);
+        Assert.assertEquals("k+", output);
     }
 
     @Test
-    public void testBadObject() {
-        this.item = "This is a string and not an item";
+    public void testNoOptPrint() {
+        withInput("k");
+        actParse();
         actPrint();
 
-        Assert.assertNull(output);
+        Assert.assertEquals("k", output);
     }
 
     private void actPrint() {
@@ -89,29 +101,25 @@ public class BuilderTest {
 
     public static class Item {
         public final String a;
-        public final String b;
 
-        public Item(String a, String b) {
+        public Item(String a) {
             this.a = a;
-            this.b = b;
         }
     }
 
     public static class Builder extends GenericBuilder<Builder> {
         public String a;
-        public String b;
 
         public static Builder toBuilder(Item item) {
             Builder builder = new Builder();
 
             builder.a = item.a;
-            builder.b = item.b;
 
             return builder;
         }
 
         public Item build(ParserStream stream) {
-            return new Item(a, b);
+            return new Item(a);
         }
     }
 }

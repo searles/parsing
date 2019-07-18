@@ -1,6 +1,6 @@
 package at.searles.parsing;
 
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public interface Environment {
     /**
@@ -15,7 +15,7 @@ public interface Environment {
      * In printing, if a string tree is created and at some point the creation is
      * stuck and hence backtracking is required. Optional.
      */
-    default void notifyLeftPrintFailed(StringTree rightTree, Recognizable.Then failed) {
+    default void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,8 +1,8 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.Then {
@@ -64,16 +64,16 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, @NotNull U u) {
-        PartialStringTree<T> output = reducer.print(env, u);
+    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u) {
+        PartialConcreteSyntaxTree<T> output = reducer.print(env, u);
 
         if(output == null) {
             return null;
         }
 
-        StringTree leftOutput = parent.print(env);
+        ConcreteSyntaxTree leftOutput = parent.print(env);
 
-        return new PartialStringTree<>(output.left, output.right.consLeft(leftOutput));
+        return new PartialConcreteSyntaxTree<>(output.left, output.right.consLeft(leftOutput));
     }
 
     @Override

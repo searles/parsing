@@ -1,6 +1,6 @@
 package at.searles.parsing.combinators;
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialStringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
@@ -32,11 +32,11 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
     }
 
     @Override
-    public PartialStringTree<T> print(Environment env, @NotNull U result) {
+    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U result) {
         Reducer<T, U> first = swapOnInvert ? r2 : r1;
         Reducer<T, U> second = swapOnInvert ? r1 : r2;
 
-        PartialStringTree<T> firstOutput = first.print(env, result);
+        PartialConcreteSyntaxTree<T> firstOutput = first.print(env, result);
 
         return firstOutput != null ? firstOutput : second.print(env, result);
     }

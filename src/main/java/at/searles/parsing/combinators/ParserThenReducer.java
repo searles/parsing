@@ -1,8 +1,8 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Parser for chaining parsers. Eg for 5 + 6 where + 6 is the reducer.
@@ -57,14 +57,14 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     }
 
     @Override
-    public StringTree print(Environment env, U u) {
-        PartialStringTree<T> reducerOutput = reducer.print(env, u);
+    public ConcreteSyntaxTree print(Environment env, U u) {
+        PartialConcreteSyntaxTree<T> reducerOutput = reducer.print(env, u);
 
         if(reducerOutput == null) {
             return null;
         }
 
-        StringTree parserOutput = parent.print(env, reducerOutput.left);
+        ConcreteSyntaxTree parserOutput = parent.print(env, reducerOutput.left);
 
         if(parserOutput == null) {
             env.notifyLeftPrintFailed(reducerOutput.right, this);

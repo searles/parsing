@@ -3,7 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Optional recognizer. This one is different from reducer and parser
@@ -25,12 +25,12 @@ public class RecognizerOpt implements Recognizer, Recognizable.Opt {
     }
 
     @Override
-    public StringTree print(Environment env) {
+    public ConcreteSyntaxTree print(Environment env) {
         if(alwaysPrint) {
             return parent.print(env);
         }
 
-        return StringTree.empty();
+        return ConcreteSyntaxTree.empty();
     }
 
     @Override

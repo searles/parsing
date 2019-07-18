@@ -2,11 +2,9 @@ package at.searles.parsing.utils.test;
 
 import at.searles.lexer.Lexer;
 import at.searles.parsing.*;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.ImmutableList;
 import at.searles.parsing.utils.Utils;
-import at.searles.parsing.utils.common.ToInt;
-import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -127,7 +125,7 @@ public class ListTest {
         }
 
         @Override
-        public void notifyLeftPrintFailed(StringTree rightTree, Recognizable.Then failed) {
+        public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
             throw new IllegalArgumentException();
         }
     };
@@ -137,7 +135,7 @@ public class ListTest {
     private String output;
 
     private void actPrint() {
-        StringTree tree = parser.print(env, item);
+        ConcreteSyntaxTree tree = parser.print(env, item);
         output = tree != null ? tree.toString(): null;
     }
 

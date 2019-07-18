@@ -3,7 +3,7 @@ package at.searles.parsing.annotation;
 import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Using this parser we obtain recursion.
@@ -24,7 +24,7 @@ public class AnnotationRecognizer<A> implements Recognizer {
     }
 
     @Override
-    public StringTree print(Environment env) {
+    public ConcreteSyntaxTree print(Environment env) {
         return recognizer.print(env).annotate(annotate);
     }
 

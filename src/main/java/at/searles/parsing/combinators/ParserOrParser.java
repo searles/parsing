@@ -4,7 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Parser;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizable;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
  * Parser for options. The order is important. First one to
@@ -30,11 +30,11 @@ public class ParserOrParser<T> implements Parser<T>, Recognizable.Or {
     }
 
     @Override
-    public StringTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(Environment env, T t) {
         Parser<T> first = swapOnInvert ? p2 : p1;
         Parser<T> second = swapOnInvert ? p1 : p2;
 
-        StringTree output = first.print(env, t);
+        ConcreteSyntaxTree output = first.print(env, t);
 
         return output != null ? output : second.print(env, t);
     }

@@ -1,7 +1,7 @@
 package at.searles.parsing;
 
-import at.searles.parsing.printing.PartialStringTree;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,14 +15,14 @@ public interface Mapping<T, U> extends Reducer<T, U> {
         throw new UnsupportedOperationException();
     }
 
-    default PartialStringTree<T> print(Environment env, @NotNull U u) {
+    default PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u) {
         T left = left(env, u);
 
         if(left == null) {
             return null;
         }
 
-        return new PartialStringTree<>(left, StringTree.empty());
+        return new PartialConcreteSyntaxTree<>(left, ConcreteSyntaxTree.empty());
     }
 
     @Override

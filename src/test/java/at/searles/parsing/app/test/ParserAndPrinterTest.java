@@ -4,7 +4,7 @@ import at.searles.buf.CharStream;
 import at.searles.lexer.Lexer;
 import at.searles.lexer.TokStream;
 import at.searles.parsing.*;
-import at.searles.parsing.printing.StringTree;
+import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.regex.CharSet;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ public class ParserAndPrinterTest {
     private Environment env;
     private ParserStream input;
     private Expr result;
-    private StringTree output;
+    private ConcreteSyntaxTree output;
 
     @Before
     public void setUp() {
@@ -30,7 +30,7 @@ public class ParserAndPrinterTest {
             }
 
             @Override
-            public void notifyLeftPrintFailed(StringTree rightTree, Recognizable.Then failed) {
+            public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
                 throw new IllegalArgumentException();
             }
         };
@@ -203,7 +203,7 @@ public class ParserAndPrinterTest {
 
         System.out.println("Printer successful");
 
-        String str = output.toStringBuilder(new StringBuilder(), (c, parent) -> parent).toString();
+        String str = output.toString();
 
         System.out.println(str.length());
 
@@ -214,7 +214,7 @@ public class ParserAndPrinterTest {
 
         print();
 
-        String str2 = output.toStringBuilder(new StringBuilder(), (c, parent) -> parent).toString();
+        String str2 = output.toString();
 
         Assert.assertEquals(str, str2);
         //System.out.println(this.output);
@@ -325,7 +325,7 @@ public class ParserAndPrinterTest {
             }
 
             @Override
-            public StringTree print(Environment environment, Expr expr) {
+            public ConcreteSyntaxTree print(Environment environment, Expr expr) {
                 return exprParser.print(environment, expr);
             }
         }
@@ -369,7 +369,7 @@ public class ParserAndPrinterTest {
             }
 
             @Override
-            public StringTree print(Environment environment, Expr expr) {
+            public ConcreteSyntaxTree print(Environment environment, Expr expr) {
                 return exprParser.print(environment, expr);
             }
         },

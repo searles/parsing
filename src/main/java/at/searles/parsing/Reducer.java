@@ -1,7 +1,7 @@
 package at.searles.parsing;
 
 import at.searles.parsing.combinators.*;
-import at.searles.parsing.printing.PartialStringTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,8 @@ public interface Reducer<T, U> extends Recognizable {
      * @param u The argument
      * @return null if fail
      */
-    @Nullable PartialStringTree<T> print(Environment env, @NotNull U u);
+    @Nullable
+    PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u);
 
     default <V> Reducer<T, V> then(Reducer<U, V> reducer) {
         return new ReducerThenReducer<>(this, reducer);
