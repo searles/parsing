@@ -40,8 +40,8 @@ fun main() {
     // term: num | '(' sum ')'
     val sum = Ref<AstNode>("sum")
 
-    val openPar = Recognizer.fromString("(", lexer, true)
-    val closePar = Recognizer.fromString(")", lexer, true)
+    val openPar = Recognizer.fromString("(", lexer, false)
+    val closePar = Recognizer.fromString(")", lexer, false)
 
     val term = num.or(
             openPar.then(sum).then(closePar)
@@ -52,7 +52,7 @@ fun main() {
     // literal: '-' term | term
 
 
-    val minus = Recognizer.fromString("-", lexer, true)
+    val minus = Recognizer.fromString("-", lexer, false)
 
     val negate = object: Mapping<AstNode, AstNode> {
         override fun parse(env: Environment, left: AstNode, stream: ParserStream): AstNode =
@@ -68,7 +68,7 @@ fun main() {
 
     // product: term ('*' term | '/' term)* ;
 
-    val times = Recognizer.fromString("*", lexer, true)
+    val times = Recognizer.fromString("*", lexer, false)
 
     val multiply = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
@@ -81,7 +81,7 @@ fun main() {
                 if(result is OpNode && result.op == Op.Mul) result.args[1] else null
     }
 
-    val slash = Recognizer.fromString("/", lexer, true)
+    val slash = Recognizer.fromString("/", lexer, false)
 
     val divide = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
@@ -103,7 +103,7 @@ fun main() {
 
     // sum: product ('+' product | '-' product)* ;
 
-    val plus = Recognizer.fromString("+", lexer, true)
+    val plus = Recognizer.fromString("+", lexer, false)
 
     val add = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =

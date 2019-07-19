@@ -32,8 +32,8 @@ fun main() {
     // term: num | '(' sum ')'
     val sum = Ref<Int>("sum")
 
-    val openPar = Recognizer.fromString("(", lexer, true)
-    val closePar = Recognizer.fromString(")", lexer, true)
+    val openPar = Recognizer.fromString("(", lexer, false)
+    val closePar = Recognizer.fromString(")", lexer, false)
 
     val term = num.or(
             openPar.then(sum).then(closePar)
@@ -43,7 +43,7 @@ fun main() {
     // it is actually much easier to rewrite this rule
     // literal: '-' term | term
 
-    val minus = Recognizer.fromString("-", lexer, true)
+    val minus = Recognizer.fromString("-", lexer, false)
 
     val negate = Mapping<Int, Int> { _, value, _ -> -value }
 
@@ -53,13 +53,13 @@ fun main() {
 
     // product: term ('*' term | '/' term)* ;
 
-    val times = Recognizer.fromString("*", lexer, true)
+    val times = Recognizer.fromString("*", lexer, false)
 
     val multiply = Fold<Int, Int, Int> { _, left, right, _ ->
         left * right
     }
 
-    val slash = Recognizer.fromString("/", lexer, true)
+    val slash = Recognizer.fromString("/", lexer, false)
 
     val divide = Fold<Int, Int, Int> { _, left, right, _ ->
         left / right
@@ -74,7 +74,7 @@ fun main() {
 
     // sum: product ('+' product | '-' product)* ;
 
-    val plus = Recognizer.fromString("+", lexer, true)
+    val plus = Recognizer.fromString("+", lexer, false)
 
     val add = Fold<Int, Int, Int> { _, left, right, _ ->
         left + right

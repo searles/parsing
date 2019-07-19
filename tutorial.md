@@ -39,7 +39,7 @@ interface. Parsers return null if they are not successful.
 ~~~
 
 * `Reducer<T, U>`: A reducer consumes the return value from the parser to its left 
-(which is an instance of `T`) to its left and returns an instance of `U`. Instances
+(which is an instance of `T`) and returns an instance of `U`. Instances
 of Reducers are usually used in a sequence or repetition. Like parsers, they
 return `null` if they are unsuccessful. 
 
@@ -64,7 +64,7 @@ provides information on the current position in the stream.
 | `Reducer.plus(a)` | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | `a+`          |
 | `Reducer.opt(a)`  | Optional of a. a must be a Reducer<T, T>.                                                        | `a?`          |
 | `a.join(b)`       | For possibly empty sequences "b a b a ... b". a must be a Recognizer, b must be a Reducer<T, T>. | `(b (a b)*)?` |
-| `a.joinPlus(b)`   | Like `join` but for non-empty sequences "b a b a ... b".                                         | `(b (a b)*)`  |
+| `a.joinPlus(b)`   | Like `join` but for non-empty sequences "b a b a ... b".                                         | `b (a b)*`    |
 
 There are further parser combinators but these should be the most important ones.
 
@@ -132,7 +132,27 @@ To parse numbers we need
 
 If the last argument is true, then a token is only accepted if no other
 token in the lexer matches (mixing lexers is allowed). This is useful 
-to avoid that keywords are confused with identifiers.
+to avoid that keywords are confused with identifiers. Consider the following
+example:
+
+~~~ kotlin
+    // Example on how to use the exclusive-flag
+    val idToken = lexer.token(RegexParser.parse("[a-z]+"))
+    val ifKeyword = Recognizer.fromString("if", lexer, false)
+~~~
+
+The string `if` matches both patterns, `"if"` and `[a-z]+`. Thus,
+a parser that parses `if` might consider it being an identifier.
+Yet, by setting the exclusive-flag to true, it is ensured, that
+the parser only parses identifiers that are not matched by
+another token.
+
+~~~ kotlin
+    val id = Parser.fromToken(numToken, idMapping, true)
+~~~
+
+In most cases apart from that, the token can be simply set as
+`false`.
 
 ## Recognizers, Concatenation and Reducers
 
@@ -145,7 +165,7 @@ sum: num '+' num ;
 We need a recognizer for the plus symbol:
 
 ~~~ kotlin
-    val plus = Recognizer.fromString("+", lexer, true)
+    val plus = Recognizer.fromString("+", lexer, false)
 ~~~
 
 Using the `then`-method we can now create a sequence of the `plus`-recognizer and
@@ -178,7 +198,7 @@ We will again need a recognizer for `'-'` and a fold-function to create
 another reducer:
 
 ~~~ kotlin
-    val minus = Recognizer.fromString("-", lexer, true)
+    val minus = Recognizer.fromString("-", lexer, false)
 
     val sub = Fold<Int, Int, Int> { _, left, right, _ ->
         left - right
@@ -246,8 +266,8 @@ debugging purposes.
 Using `Ref.set`, the referenced parser is set.
 
 ~~~ kotlin
-    val openPar = Recognizer.fromString("(", lexer, true)
-    val closePar = Recognizer.fromString(")", lexer, true)
+    val openPar = Recognizer.fromString("(", lexer, false)
+    val closePar = Recognizer.fromString(")", lexer, false)
 
     val term = num.or(
         openPar.then(sum).then(closePar)
