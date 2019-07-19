@@ -56,21 +56,23 @@ provides information on the current position in the stream.
 ## Summary of parser combinators
 
 
-| Call              | Description                                                                                      | Syntax |
-|-------------------|--------------------------------------------------------------------------------------------------|--------|
-| `a.or(b)`         | Choice of a or b. a and b must be of the same type.                                              | a | b  |
-| `a.then(b)`       | a followed by b. a and b must not both be parsers.                                               | a b    |
-| `Reducer.rep(a)`  | Possibly empty repetition of a. a must be a Reducer<T, T>                                        | a*     |
-| `Reducer.plus(a)` | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | a+     |
-| `Reducer.opt(a)`  | Optional of a. a must be a Reducer<T, T>.                                                        | a?     |
-| `a.join(b)`       | For possibly empty sequences "a b a b ... a". a must be a Recognizer, b must be a Reducer<T, T>. |        |
+| Call              | Description                                                                                      | Common Syntax |
+|-------------------|--------------------------------------------------------------------------------------------------|---------------|
+| `a.or(b)`         | Choice of a or b. a and b must be of the same type.                                              | `a \| b`      |
+| `a.then(b)`       | a followed by b. a and b must not both be parsers.                                               | `a b`         |
+| `Reducer.rep(a)`  | Possibly empty repetition of a. a must be a Reducer<T, T>                                        | `a*`          |
+| `Reducer.plus(a)` | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | `a+`          |
+| `Reducer.opt(a)`  | Optional of a. a must be a Reducer<T, T>.                                                        | `a?`          |
+| `a.join(b)`       | For possibly empty sequences "b a b a ... b". a must be a Recognizer, b must be a Reducer<T, T>. | `(b (a b)*)?` |
+| `a.joinPlus(b)`   | Like `join` but for non-empty sequences "b a b a ... b".                                         | `(b (a b)*)`  |
 
 There are further parser combinators but these should be the most important ones.
 
 HINT: `Reducer.rep` does not support backtracking. Everything that can be consumed
 by `rep` will be consumed, for both, `parse` and `print`. For this reason, printing
 the result of `a.then(Reducer.rep(a))` where `a` is a `Reducer` will always fail.
-The JoinReducer-class or PlusReducer-class can be helpful to overcome this problem. 
+The JoinReducer-class (created by `join`) or PlusReducer-class (`plus`) can be helpful 
+to overcome this problem. 
 
 ## Parser Functions
 
@@ -86,7 +88,7 @@ Using the `fold`-method, a `Parser<U>` is converted to a `Reducer<T, V>`.
 ## On inversion
 
 All parser combinators are invertible. This means that eg `Parser<T>` not only
-contains a `parser`-method but also a `print`-method that creates a `StringTree`
+contains a `parser`-method but also a `print`-method that creates a `ConcreteSyntaxTree`
 out of the result of the `print`-method. There are similar methods for `Reducer` 
 and `Recognizer`. 
 
@@ -470,6 +472,6 @@ In order to format source code with indentations or
 more complex patterns, the 
 `CstPrinter` must keep track of indentation levels. A
 concrete implementation for such a `CstPrinter` is given
-in the unit test `PrinterTest` [here](src/main/java/at/searles/parsing/printing/PrinterTest.kt).
+in the unit test `PrinterTest` [here](src/test/java/at/searles/parsing/printing/test/PrinterTest.kt).
 
 This concludes this tutorial. Enjoy this project. 
