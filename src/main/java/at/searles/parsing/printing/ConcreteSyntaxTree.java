@@ -4,21 +4,16 @@ import java.util.List;
 
 public interface ConcreteSyntaxTree {
 
+    /**
+     * Print this syntax tree using the provided printer.
+     * @param printer The non-null printer.
+     */
     void print(CstPrinter printer);
 
     ConcreteSyntaxTree EMPTY = new EmptyConcreteSyntaxTree();
 
-    default ConcreteSyntaxTree consRight(String right) {
-        return consRight(new LeafConcreteSyntaxTree(right));
-    }
-
     default ConcreteSyntaxTree consRight(ConcreteSyntaxTree right) {
         return new ConsConcreteSyntaxTree(this, right);
-    }
-
-
-    default ConcreteSyntaxTree consLeft(String left) {
-        return consLeft(new LeafConcreteSyntaxTree(left));
     }
 
     default ConcreteSyntaxTree consLeft(ConcreteSyntaxTree left) {

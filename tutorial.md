@@ -88,9 +88,9 @@ Using the `fold`-method, a `Parser<U>` is converted to a `Reducer<T, V>`.
 ## On inversion
 
 All parser combinators are invertible. This means that eg `Parser<T>` not only
-contains a `parser`-method but also a `print`-method that creates a `ConcreteSyntaxTree`
-out of the result of the `print`-method. There are similar methods for `Reducer` 
-and `Recognizer`. 
+contains a `parser`-method but also a `print`-method that creates 
+the source code. There are 
+similar methods for `Reducer` and `Recognizer`. 
 
 # Recursive Descent Parser
 
@@ -148,42 +148,46 @@ the parser only parses identifiers that are not matched by
 another token.
 
 ~~~ kotlin
-    val id = Parser.fromToken(numToken, idMapping, true)
+    val id = Parser.fromToken(idToken, idMapping, true)
 ~~~
 
-In most cases apart from that, the token can be simply set as
+In most cases apart from that, the flag can be simply set to
 `false`.
 
 ## Recognizers, Concatenation and Reducers
 
-Next, let's combine multiple `num`-parsers using the following rule: 
+Next, let's parse expressions like `1 + 2` using the following rule: 
 
 ~~~
 sum: num '+' num ;
 ~~~
 
-We need a recognizer for the plus symbol:
-
-~~~ kotlin
-    val plus = Recognizer.fromString("+", lexer, false)
-~~~
-
-Using the `then`-method we can now create a sequence of the `plus`-recognizer and
-the `num`-parser: `plus.then(num)`. This sequence is an instance of `Parser<Int>`.
-Since this parser must also consume the return value of the first `num`-parser,
-we have to apply the `fold`-method to create a `Reducer<Int, Int>`:
-
-~~~ kotlin
-    val sum = num.then(plus.then(num).fold(add))
-~~~
-
-`add` is a simple binary function that sums up the return values of the 
-left `num` and the right `num` parser.
+Both `num`-parsers return an integer-value. Since the second 
+`num`-parser must consume the left hand side return value we need 
+to convert it to a reducer using the fold-method: `num.fold(add)`. 
+`add` is a simple binary function that adds the result of
+the left hand and the current parser. 
 
 ~~~ kotlin
     val add = Fold<Int, Int, Int> { _, left, right, _ ->
         left + right
     }
+~~~
+
+Furthermore, we need a recognizer for the plus symbol:
+
+~~~ kotlin
+    val plus = Recognizer.fromString("+", lexer, false)
+~~~
+
+Using the `then`-method we create a sequence of the `plus`-recognizer and
+the `num.fold(add)`-reducer: `plus.then(num.fold(add))`. 
+
+Prepending the first `num`-parser and pulling out the fold-method
+(the latter just for aesthetic reasons) yields the following: 
+
+~~~ kotlin
+    val sum = num.then(plus.then(num).fold(add))
 ~~~
 
 ## Choice
@@ -243,7 +247,7 @@ the second argument is a simple `Mapping` (which is also an instance of `Reducer
 ## Recursion
 
 Context-free grammars allow recursive definitions. In the following we
-introduce a new rule that allows parentheses and require such a recursive 
+introduce a new rule that allows parentheses and requires such a recursive 
 definition:
 
 ~~~
@@ -294,8 +298,8 @@ In case of a mismatch in a sequence of parsers (thus an instance of
 `Recognizable.Then`), its `notifyNoMatch` is called. 
 
 If the grammar is supposed to be LL-1, it is
-best to throw an expeption, otherwise backtracking is used to recover from
-this mismatch. Our grammar is LL-1, thus we throw an exception.
+best to throw an exception, otherwise backtracking is used to recover from
+this mismatch. Our grammar is supposed to be LL-1, thus we throw an exception.
 
 ~~~ kotlin
     val env = Environment { stream, failedParser ->
@@ -326,14 +330,17 @@ Result = -4
 ~~~
 
 In order to create a `ParserStream` out of a `Reader`, the class `ReaderCharStream`
-can be used. It is very useful because it returns codePoints instead of `char`.
+can be used. It is very useful also for other purposes because it 
+returns codePoints instead of `char` which might not contain a
+full character due to UTF-16.
 
 ~~~ kotlin
     val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(reader)))`
 ~~~
 
 The grammar enriched with multiplication, division and negation is
-implemented in the file `at.searles.demo.DemoEval.kt`.
+implemented in the file 
+[`at.searles.demo.DemoEval.kt`.](src/main/java/at/searles/demo/DemoEval.kt)
 
 # Inversion of parsers
 
@@ -352,6 +359,12 @@ creates source code. Since
 all parser combinators already contain a `print` method that is the inverse
 of the `parse`-method, this mainly requires to modify the `Mapping`s and `Fold`s
 and add (partial) inverse methods to them.
+
+The return value of the `print` method is an instance of 
+`ConcreteSyntaxTree`. This class can be directly converted into a
+string using `toString()` or it can be further formatted to apply
+certain code rules. But let's first focus on the inversion itself
+and introduce abstract syntax trees.
 
 ## AstNodes
 
@@ -457,12 +470,15 @@ The return type of the `print`-method is a `ConcreteSyntaxTree`.
 ~~~
 
 The `toString()`-method of this concrete syntax tree will return the source code
-without applying formatting rules. 
+without applying formatting rules. Yet, using annotations in the
+parser we can add markers to the concrete syntax tree
+and use them for further formattions. 
 
-In order to use the annotations of the previous
-section, we have to implement a `CstPrinter` that respects these
-formatting rules. Here, we add spaces to the left and right. The
-result should be written into a `String`, therefore
+The `print` method in `ConcreteSyntaxTree` is used for this
+purpose. It takes an instance of the `CstPrinter`-class as a parameter.
+In this `CstPrinter` we need to override a method to
+apply our formatting rules. In this case, we want to add spaces to the left 
+and right of the infix operators. The result should be a `String`, therefore
 we print the result into a `StringOutStream`:
 
 ~~~ kotlin
@@ -478,7 +494,7 @@ we print the result into a `StringOutStream`:
 ~~~
 
 After printing the concrete syntax tree, the final string
-can be obtained from the `StringOutStream`:
+can be obtained from the `StringOutStream` using `toString()`.
 
 ~~~ kotlin
     val outTree = sum.print(env, ast)!!
@@ -490,8 +506,11 @@ can be obtained from the `StringOutStream`:
 
 In order to format source code with indentations or
 more complex patterns, the 
-`CstPrinter` must keep track of indentation levels. A
+`CstPrinter` must keep track of indentation levels. [A
 concrete implementation for such a `CstPrinter` is given
-in the unit test `PrinterTest` [here](src/test/java/at/searles/parsing/printing/test/PrinterTest.kt).
+in the unit test class `PrinterTest`.](src/test/java/at/searles/parsing/printing/test/PrinterTest.kt).
 
-This concludes this tutorial. Enjoy this project. 
+This concludes this tutorial. Suggestions, improvements and such are
+always welcome. Enjoy this project. 
+
+-- Karl
