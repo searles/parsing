@@ -118,7 +118,7 @@ public class BuilderSetterTest {
             return builder;
         }
 
-        public Item build(ParserStream stream) {
+        public Item build(Environment env, ParserStream stream) {
             return new Item(a);
         }
     }

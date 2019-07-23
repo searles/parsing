@@ -16,7 +16,7 @@ public class BuildUnsafe<T, U> implements Mapping<T, U> {
 
     public BuildUnsafe(Class<T> builderType) {
         try {
-            this.buildMethod = builderType.getMethod("build", ParserStream.class);
+            this.buildMethod = builderType.getMethod("build", Environment.class, ParserStream.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
@@ -36,10 +36,8 @@ public class BuildUnsafe<T, U> implements Mapping<T, U> {
     @Override
     public U parse(Environment env, @NotNull T left, ParserStream stream) {
         try {
-            Class<?> builderType = left.getClass();
-            Method buildMethod = builderType.getMethod("build", ParserStream.class);
-            return (U) buildMethod.invoke(left, stream);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            return (U) buildMethod.invoke(left, env, stream);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
     }

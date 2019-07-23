@@ -110,7 +110,7 @@ public class BuilderTest {
             return builder;
         }
 
-        public Item build(ParserStream stream) {
+        public Item build(Environment env, ParserStream stream) {
             return new Item(a, b);
         }
     }

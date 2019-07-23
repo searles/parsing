@@ -175,16 +175,19 @@ class PrinterTest {
             var indent: Int = 0
             var atBeginningOfLine: Boolean = false
 
+            private fun newline() {
+                print("\n")
+                atBeginningOfLine = true
+            }
+
             override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter {
                 return when(annotation) {
                     Markers.Block -> {
-                        print("\n")
-                        atBeginningOfLine = true
+                        newline()
                         indent++
                         print(tree)
                         indent--
-                        print("\n")
-                        atBeginningOfLine = true
+                        newline()
                         return this
                     }
                     Markers.Arg -> {
