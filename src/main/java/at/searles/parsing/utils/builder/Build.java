@@ -20,7 +20,7 @@ public class Build<T, U> implements Mapping<T, U> {
         this.builderType = builderType;
 
         try {
-            this.applyMethod = builderType.getMethod("build", ParserStream.class);
+            this.applyMethod = builderType.getMethod("build", Environment.class, ParserStream.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
