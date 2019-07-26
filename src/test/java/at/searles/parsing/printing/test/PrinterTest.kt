@@ -176,7 +176,7 @@ class PrinterTest {
             var atBeginningOfLine: Boolean = false
 
             private fun newline() {
-                print("\n")
+                outStream.append("\n")
                 atBeginningOfLine = true
             }
 

@@ -6,7 +6,7 @@ package at.searles.parsing.printing;
  */
 public class CstPrinter {
 
-    private final OutStream outStream;
+    protected final OutStream outStream;
 
     public CstPrinter(OutStream outStream) {
         this.outStream = outStream;

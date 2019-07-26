@@ -97,7 +97,7 @@ public class BuilderTest {
         }
     }
 
-    public static class Builder extends GenericBuilder<Builder> {
+    public static class Builder extends GenericBuilder<Builder, Item> {
         public String a;
         public String b;
 

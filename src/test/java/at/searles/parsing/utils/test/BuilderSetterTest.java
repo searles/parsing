@@ -107,7 +107,7 @@ public class BuilderSetterTest {
         }
     }
 
-    public static class Builder extends GenericBuilder<Builder> {
+    public static class Builder extends GenericBuilder<Builder, Item> {
         public String a;
 
         public static Builder toBuilder(Item item) {
@@ -118,6 +118,7 @@ public class BuilderSetterTest {
             return builder;
         }
 
+        @Override
         public Item build(Environment env, ParserStream stream) {
             return new Item(a);
         }
