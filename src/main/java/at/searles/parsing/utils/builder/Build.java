@@ -40,7 +40,7 @@ public class Build<T, U> implements Mapping<T, U> {
     @Override
     public U parse(Environment env, @NotNull T left, ParserStream stream) {
         try {
-            return itemType.cast(this.applyMethod.invoke(left, stream));
+            return itemType.cast(this.applyMethod.invoke(left, env, stream));
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
