@@ -125,11 +125,11 @@ public class ParserGenerator {
 
         Parser<Integer> num = Parser.fromToken(
                 lexer.token(CharSet.interval('0', '9').range(1, 6)),
-                (env, str, stream) -> Integer.parseInt(str.toString()), false);
+                (env, stream, str) -> Integer.parseInt(str.toString()), false);
 
-        Mapping<Integer, int[]> countMapping = (env, count, stream) -> new int[]{count};
-        Mapping<Integer, int[]> minMapping = (env, count, stream) -> new int[]{count, -1};
-        Fold<Integer, Integer, int[]> minMaxFold = (env, left, right, stream) -> new int[]{left, right};
+        Mapping<Integer, int[]> countMapping = (env, stream, count) -> new int[]{count};
+        Mapping<Integer, int[]> minMapping = (env, stream, count) -> new int[]{count, -1};
+        Fold<Integer, Integer, int[]> minMaxFold = (env, stream, left, right) -> new int[]{left, right};
 
         Parser<int[]> range = num.then(
                 t(",").then(
@@ -204,12 +204,12 @@ public class ParserGenerator {
 
         Parser<Integer> chr = Parser.fromToken(
                 rawLexer.token(charRex),
-                (env, seq, stream) -> (int) seq.charAt(0), false);
+                (env, stream, seq) -> (int) seq.charAt(0), false);
 
         Parser<Integer> chars = chr.or(escChar);
 
         Reducer<String, String> appendChar = chars.fold(
-                (env, left, right, stream) -> left + new String(Character.toChars(right))
+                (env, stream, left, right) -> left + new String(Character.toChars(right))
         );
 
         Initializer<String> emptyString = (env, stream) -> "";
@@ -230,17 +230,17 @@ public class ParserGenerator {
 
         Parser<Integer> setStartChars =
                 Parser.fromToken(rawLexer.token(normalSetStartCharsRex),
-                        (env, seq, stream) -> (int) seq.charAt(0), false)
+                        (env, stream, seq) -> (int) seq.charAt(0), false)
                         .or(escChar);
 
         Parser<Integer> setEndChars =
                 Parser.fromToken(rawLexer.token(normalSetEndCharsRex),
-                        (env, seq, stream) -> (int) seq.charAt(0), false)
+                        (env, stream, seq) -> (int) seq.charAt(0), false)
                         .or(escChar);
 
         Fold<Integer, Integer, CharSet> interval =
-                (env, left, right, stream) -> CharSet.interval((int) left, right);
-        Mapping<Integer, CharSet> singleChar = (env, ch, stream) -> CharSet.chars(ch);
+                (env, stream, left, right) -> CharSet.interval((int) left, right);
+        Mapping<Integer, CharSet> singleChar = (env, stream, ch) -> CharSet.chars(ch);
 
         Parser<CharSet> simpleRange = setStartChars
                 .then(
@@ -251,7 +251,7 @@ public class ParserGenerator {
 
         Initializer<CharSet> emptySet = (env, stream) -> CharSet.empty();
 
-        Fold<CharSet, CharSet, CharSet> union = (env, left, right, stream) -> left.union(right);
+        Fold<CharSet, CharSet, CharSet> union = (env, stream, left, right) -> left.union(right);
 
         Parser<CharSet> ranges = emptySet.then(Reducer.rep(simpleRange.fold(union)));
 
@@ -261,7 +261,7 @@ public class ParserGenerator {
                         .then(Recognizer.fromString("]", rawLexer, false)
                 );
 
-        Mapping<CharSet, CharSet> invert = (env, set, stream) -> set.invert();
+        Mapping<CharSet, CharSet> invert = (env, stream, set) -> set.invert();
 
         Parser<CharSet> rawCharSet =
                 Recognizer.fromString("~", rawLexer, false)
@@ -300,7 +300,7 @@ public class ParserGenerator {
                         .or(CharSet.chars('_')).rep()
                 );
 
-        identifier.set(Parser.fromToken(lexer.token(idRex), (env, seq, stream) -> seq.toString(), false));
+        identifier.set(Parser.fromToken(lexer.token(idRex), (env, stream, seq) -> seq.toString(), false));
 
         // REF
         ref.set(javaCode.or(identifier).then(builder.value(Type.Reference)));
@@ -309,7 +309,7 @@ public class ParserGenerator {
     private static class JavaCode implements Mapping<CharSequence, String> {
         @NotNull
         @Override
-        public String parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+        public String parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
             StringBuilder sb = new StringBuilder();
 
             for(int i = 1; i < left.length() - 1; ++i) {

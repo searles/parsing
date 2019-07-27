@@ -119,7 +119,7 @@ public class FSA {
      * Class to apply the DFA-algorithm.
      */
     private class DFAAlgorithm {
-        Map<Node, LexicalSet<Node>> replacementMap;
+        final Map<Node, LexicalSet<Node>> replacementMap;
 
         DFAAlgorithm() {
             this.replacementMap = new TreeMap<>();
@@ -510,7 +510,7 @@ public class FSA {
         String range = Character.toString((char) iterator.start());
 
         if(iterator.start() + 1 < iterator.end()) {
-            range += " - " + Character.toString((char) (iterator.end() - 1));
+            range += " - " + (char) (iterator.end() - 1);
         }
         return range;
     }

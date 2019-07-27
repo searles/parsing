@@ -1,5 +1,7 @@
 package at.searles.buf;
 
+import org.jetbrains.annotations.NotNull;
+
 public class FrameStreamImpl implements FrameStream {
 
     private final Impl stream;
@@ -7,7 +9,7 @@ public class FrameStreamImpl implements FrameStream {
     private long frameEnd;
 
     private boolean invalid;
-    private CharSeq frame;
+    private final CharSeq frame;
 
     public FrameStreamImpl(Impl stream) {
         this.stream = stream;
@@ -107,6 +109,7 @@ public class FrameStreamImpl implements FrameStream {
             return str.subSequence(start, end);
         }
 
+        @NotNull
         public String toString() {
             update();
             return str;

@@ -3,7 +3,6 @@ package at.searles.parsing.utils;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * To avoid side effects when backtracking but at the same time avoid excessive copying,

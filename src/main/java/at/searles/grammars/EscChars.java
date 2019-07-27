@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 class EscChars implements Mapping<CharSequence, Integer> {
     @Override
-    public Integer parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+    public Integer parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         switch (left.charAt(1)) {
             case 'x':case 'u':case'U':
                 return parseHex(left);

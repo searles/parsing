@@ -20,8 +20,8 @@ public class ReducerJoinPlus<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public T parse(Environment env, @NotNull T left, ParserStream stream) {
-        return parserReducer.parse(env, left, stream);
+    public T parse(Environment env, ParserStream stream, @NotNull T left) {
+        return parserReducer.parse(env, stream, left);
     }
 
     @Nullable

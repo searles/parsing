@@ -12,12 +12,12 @@ import java.util.Optional;
  */
 public class SomeMapping<T> implements Mapping<T, Optional<T>> {
     @Override
-    public Optional<T> parse(Environment env, @NotNull T left, ParserStream stream) {
+    public Optional<T> parse(Environment env, ParserStream stream, @NotNull T left) {
         return Optional.of(left);
     }
 
     @Override
-    public T left(Environment env, Optional<T> result) {
+    public T left(Environment env, @NotNull Optional<T> result) {
         return result.orElse(null);
     }
 

@@ -34,7 +34,7 @@ public class BuildUnsafe<T, U> implements Mapping<T, U> {
     }
 
     @Override
-    public U parse(Environment env, @NotNull T left, ParserStream stream) {
+    public U parse(Environment env, ParserStream stream, @NotNull T left) {
         try {
             return (U) buildMethod.invoke(left, env, stream);
         } catch (IllegalAccessException | InvocationTargetException e) {

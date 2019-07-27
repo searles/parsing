@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public interface Mapping<T, U> extends Reducer<T, U> {
 
     @Override
-    U parse(Environment env, @NotNull T left, ParserStream stream);
+    U parse(Environment env, ParserStream stream, @NotNull T left);
 
     default @Nullable
     T left(Environment env, @NotNull U result) {

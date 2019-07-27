@@ -2,6 +2,7 @@ package at.searles.regex;
 
 import at.searles.lexer.utils.Interval;
 import at.searles.lexer.utils.IntervalSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -129,11 +130,12 @@ public class CharSet implements Regex, Iterable<Interval> {
         return String.format("CharSet(%s)", set.toString());
     }
 
+    @NotNull
     @Override
     public Iterator<Interval> iterator() {
         return new Iterator<Interval>() {
 
-            IntervalSet.Iter<Void> it = set.iterator();
+            final IntervalSet.Iter<Void> it = set.iterator();
 
             @Override
             public boolean hasNext() {

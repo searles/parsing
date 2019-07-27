@@ -115,7 +115,7 @@ class PrinterTest {
 
     private lateinit var cstPrinter: CstPrinter
 
-    fun initParser() {
+    private fun initParser() {
         val lexer = LexerWithHidden()
 
         lexer.hiddenToken(RegexParser.parse("[ \n\r\t]+"))
@@ -124,7 +124,7 @@ class PrinterTest {
         val closePar = Recognizer.fromString(")", lexer, false)
 
         val idMapping = object: Mapping<CharSequence, AstNode> {
-            override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
+            override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                     IdNode(stream.createSourceInfo(), left.toString())
 
             override fun left(env: Environment, result: AstNode): CharSequence? =
@@ -132,7 +132,7 @@ class PrinterTest {
         }
 
         val numMapping = object: Mapping<CharSequence, AstNode> {
-            override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
+            override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                     NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
             override fun left(env: Environment, result: AstNode): CharSequence? =
@@ -149,7 +149,7 @@ class PrinterTest {
 
         // app = term+
         val appFold = object: Fold<AstNode, AstNode, AstNode> {
-            override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode {
+            override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode {
                 return AppNode(stream.createSourceInfo(), left, right)
             }
 
@@ -169,7 +169,7 @@ class PrinterTest {
         parser = expr
     }
 
-    fun initCstPrinter() {
+    private fun initCstPrinter() {
         this.outStream = StringOutStream()
         this.cstPrinter = object: CstPrinter(outStream) {
             var indent: Int = 0

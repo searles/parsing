@@ -18,12 +18,12 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
     }
 
     @Override
-    public V parse(Environment env, @NotNull T left, ParserStream stream) {
+    public V parse(Environment env, ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        U u = this.left.parse(env, left, stream);
+        U u = this.left.parse(env, stream, left);
 
         assert stream.start() == preStart;
 
@@ -31,7 +31,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
             return null;
         }
 
-        V v = this.right.parse(env, u, stream);
+        V v = this.right.parse(env, stream, u);
 
         assert stream.start() == preStart;
 

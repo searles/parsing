@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Optional recognizer. This one is different from reducer and parser
@@ -12,7 +13,7 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 public class RecognizerOpt implements Recognizer, Recognizable.Opt {
 
     private final Recognizer parent;
-    private boolean alwaysPrint;
+    private final boolean alwaysPrint;
 
     public RecognizerOpt(Recognizer parent, boolean alwaysPrint) {
         this.parent = parent;
@@ -24,6 +25,7 @@ public class RecognizerOpt implements Recognizer, Recognizable.Opt {
         return parent;
     }
 
+    @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
         if(alwaysPrint) {

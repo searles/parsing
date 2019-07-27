@@ -7,7 +7,7 @@ import at.searles.regex.Regex;
 public class LexerWithHidden implements Tokenizer {
 
     private final Lexer lexer;
-    private IntSet hiddenTokenIds;
+    private final IntSet hiddenTokenIds;
 
     public LexerWithHidden(Lexer lexer) {
         this.lexer = lexer;

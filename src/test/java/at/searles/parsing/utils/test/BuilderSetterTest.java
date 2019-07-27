@@ -13,11 +13,11 @@ import org.junit.Test;
 
 public class BuilderSetterTest {
 
-    private Lexer lexer = new Lexer();
-    private Parser<Object> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
+    private final Lexer lexer = new Lexer();
+    private final Parser<Object> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
             new Mapping<CharSequence, Object>() {
                 @Override
-                public Object parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+                public Object parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
                     return left.toString();
                 }
 
@@ -28,7 +28,7 @@ public class BuilderSetterTest {
                 }
             }, false);
 
-    private Environment env = new Environment() {
+    private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             throw new IllegalArgumentException();
@@ -39,7 +39,7 @@ public class BuilderSetterTest {
         }
     };
 
-    Parser<Object> parser =
+    final Parser<Object> parser =
             id.then(
                 Reducer.opt(
                     Recognizer.fromString("+", lexer, false)

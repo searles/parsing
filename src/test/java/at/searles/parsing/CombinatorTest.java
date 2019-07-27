@@ -5,6 +5,7 @@ import at.searles.parsing.printing.EmptyConcreteSyntaxTree;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,11 +79,11 @@ public class CombinatorTest {
         Assert.assertEquals("a,b,c", printResult.toString());
     }
 
-    private Lexer lexer = new Lexer();
-    private Parser<String> chr =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]")), new ToString(), false);
-    private Recognizer comma = Recognizer.fromString(",", lexer, false);
+    private final Lexer lexer = new Lexer();
+    private final Parser<String> chr =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]")), new ToString(), false);
+    private final Recognizer comma = Recognizer.fromString(",", lexer, false);
 
-    private Initializer<String> emptyString = new Initializer<String>() {
+    private final Initializer<String> emptyString = new Initializer<String>() {
         @Override
         public String parse(Environment env, ParserStream stream) {
             return "";
@@ -94,19 +95,19 @@ public class CombinatorTest {
         }
     };
 
-    private Fold<String, String, String> appendSingleChar = new Fold<String, String, String>() {
+    private final Fold<String, String, String> appendSingleChar = new Fold<String, String, String>() {
         @Override
-        public String apply(Environment env, String left, String right, ParserStream stream) {
+        public String apply(Environment env, ParserStream stream, @NotNull String left, @NotNull String right) {
             return left + right;
         }
 
         @Override
-        public String leftInverse(Environment env, String result) {
+        public String leftInverse(Environment env, @NotNull String result) {
             return !result.isEmpty() ? result.substring(0, result.length() - 1) : null;
         }
 
         @Override
-        public String rightInverse(Environment env, String result) {
+        public String rightInverse(Environment env, @NotNull String result) {
             return !result.isEmpty() ? result.substring(result.length() - 1) : null;
         }
 
@@ -116,7 +117,7 @@ public class CombinatorTest {
         }
     };
 
-    private Environment env = new Environment() {
+    private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             error = true;
@@ -140,15 +141,13 @@ public class CombinatorTest {
     private void actPrint() {
         try {
             printResult = parser.print(env, parseResult);
-        } catch(IllegalArgumentException e) {
-        }
+        } catch(IllegalArgumentException ignored) { }
     }
 
     private void actParse() {
         try {
             parseResult = parser.parse(env, input);
-        } catch(IllegalArgumentException e) {
-        }
+        } catch(IllegalArgumentException ignored) { }
     }
 
     private void withInput(String input) {

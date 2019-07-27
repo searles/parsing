@@ -7,7 +7,6 @@ import at.searles.regex.Regex;
 import at.searles.lexer.utils.Counter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Pretty much a more useable frontend for FSA. A lexer reads tokens from a buf.
@@ -35,7 +34,7 @@ public class Lexer implements Tokenizer {
 	 * fsa that accepts our current language. Empty language is not allowed,
 	 * add must be called at least once.
 	 */
-    private FSA fsa;
+    private final FSA fsa;
 
     public Lexer() {
         this.fsa = new FSA(this.fsaNodeCounter, false); // accept nothing.

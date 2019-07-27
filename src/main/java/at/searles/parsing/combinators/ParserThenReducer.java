@@ -32,7 +32,7 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
         }
 
         // reducer preserves start() in stream and only sets end().
-        U u = reducer.parse(env, t, stream);
+        U u = reducer.parse(env, stream, t);
 
         if(u == null) {
             env.notifyNoMatch(stream, this);

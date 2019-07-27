@@ -25,13 +25,13 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public U parse(Environment env, @NotNull T left, ParserStream stream) {
+    public U parse(Environment env, ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
 
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        U result = this.left.parse(env, left, stream);
+        U result = this.left.parse(env, stream, left);
 
         assert stream.start() == preStart;
 

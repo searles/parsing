@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ToInt implements Mapping<CharSequence, Integer> {
     @Override
-    public Integer parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+    public Integer parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         try {
             return Integer.parseInt(left.toString());
         } catch(NumberFormatException e) {

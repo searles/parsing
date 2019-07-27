@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -28,6 +29,7 @@ public class RecognizerThenRecognizer<C extends Environment> implements Recogniz
         return right;
     }
 
+    @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
         return left.print(env).consRight(right.print(env));

@@ -1,5 +1,7 @@
 package at.searles.lexer.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -83,6 +85,7 @@ public class IntervalSet<A> implements Iterable<A> {
 
     }
 
+    @NotNull
     public Iter<A> iterator() {
         return new Iter<>(this);
     }

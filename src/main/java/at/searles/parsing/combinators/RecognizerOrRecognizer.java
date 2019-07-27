@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Multiple recognizers combined with 'or'.
@@ -18,6 +19,7 @@ public class RecognizerOrRecognizer<C extends Environment> implements Recognizer
         this.second = second;
     }
 
+    @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
         return first.print(env);

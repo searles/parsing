@@ -2,9 +2,9 @@ package at.searles.regex;
 
 class RepRange implements Regex {
 
-    private Regex t;
-    private int min;
-    private int max;
+    private final Regex t;
+    private final int min;
+    private final int max;
 
     RepRange(Regex t, int min, int max) {
         this.t = t;

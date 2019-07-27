@@ -225,7 +225,7 @@ public class ParserAndPrinterTest {
         return new CharStream() {
             int countOpen = 0;
             int count = 0;
-            Random rnd = new Random();
+            final Random rnd = new Random();
 
             boolean justOpened = true;
 
@@ -292,25 +292,25 @@ public class ParserAndPrinterTest {
                 return false;
             }
 
-            Ref<Expr> exprParser = new Ref<>("expr");
+            final Ref<Expr> exprParser = new Ref<>("expr");
 
-            Parser<Expr> term = term(exprParser);
+            final Parser<Expr> term = term(exprParser);
 
-            Reducer<Expr, Expr> exprReducer = exprParser.fold(
+            final Reducer<Expr, Expr> exprReducer = exprParser.fold(
                     new Fold<Expr, Expr, Expr>() {
 
                         @Override
-                        public Expr apply(Environment env, Expr left, Expr right, ParserStream stream) {
+                        public Expr apply(Environment env, ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
                             return left.app(right);
                         }
 
                         @Override
-                        public Expr leftInverse(Environment env, Expr result) {
+                        public Expr leftInverse(Environment env, @NotNull Expr result) {
                             return result.left();
                         }
 
                         @Override
-                        public Expr rightInverse(Environment env, Expr result) {
+                        public Expr rightInverse(Environment env, @NotNull Expr result) {
                             return result.right();
                         }
                     }
@@ -336,24 +336,24 @@ public class ParserAndPrinterTest {
                 return false;
             }
 
-            Ref<Expr> exprParser = new Ref<>("expr");
+            final Ref<Expr> exprParser = new Ref<>("expr");
 
-            Parser<Expr> term = term(exprParser);
+            final Parser<Expr> term = term(exprParser);
 
-            Reducer<Expr, Expr> appReducer = term.fold(
+            final Reducer<Expr, Expr> appReducer = term.fold(
                     new Fold<Expr, Expr, Expr>() {
                         @Override
-                        public Expr apply(Environment env, Expr left, Expr right, ParserStream stream) {
+                        public Expr apply(Environment env, ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
                             return left.app(right);
                         }
 
                         @Override
-                        public Expr leftInverse(Environment env, Expr result) {
+                        public Expr leftInverse(Environment env, @NotNull Expr result) {
                             return result.left();
                         }
 
                         @Override
-                        public Expr rightInverse(Environment env, Expr result) {
+                        public Expr rightInverse(Environment env, @NotNull Expr result) {
                             return result.right();
                         }
                     });
@@ -382,12 +382,12 @@ public class ParserAndPrinterTest {
                     new Mapping<CharSequence, Expr>() {
                         @NotNull
                         @Override
-                        public Id parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+                        public Id parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
                             return new Id(left.toString());
                         }
 
                         @Override
-                        public CharSequence left(Environment env, Expr result) {
+                        public CharSequence left(Environment env, @NotNull Expr result) {
                             return result.id();
                         }
                     }, false);

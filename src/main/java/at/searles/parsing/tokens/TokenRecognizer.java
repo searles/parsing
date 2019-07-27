@@ -6,6 +6,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import org.jetbrains.annotations.NotNull;
 
 public class TokenRecognizer implements Recognizer {
 
@@ -27,6 +28,7 @@ public class TokenRecognizer implements Recognizer {
         return stream.parseToken(token, exclusive) != null;
     }
 
+    @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
         return ConcreteSyntaxTree.fromCharSequence(str);

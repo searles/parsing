@@ -1,7 +1,5 @@
 package at.searles.parsing.utils.ast
 
-import java.lang.RuntimeException
-
 /**
  * Instances of this class are assumed to be immutable wrt the methods defined
  * in this interface. Therefore, ParserStream does not implement this interface.

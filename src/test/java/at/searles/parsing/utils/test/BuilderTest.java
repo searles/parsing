@@ -12,10 +12,10 @@ import org.junit.Test;
 
 public class BuilderTest {
 
-    private Lexer lexer = new Lexer();
-    private Parser<String> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
+    private final Lexer lexer = new Lexer();
+    private final Parser<String> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
 
-    private Environment env = new Environment() {
+    private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             throw new IllegalArgumentException();
@@ -26,7 +26,7 @@ public class BuilderTest {
         }
     };
 
-    Parser<Object> parser = Utils.builder(Builder.class).then(
+    final Parser<Object> parser = Utils.builder(Builder.class).then(
             Recognizer.fromString(",", lexer, false).join(
                 Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
                 .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)

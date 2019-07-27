@@ -18,7 +18,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
         this.fold = fold;
     }
 
-    public V parse(Environment env, @NotNull T left, ParserStream stream) {
+    public V parse(Environment env, ParserStream stream, @NotNull T left) {
         // must preserve start position.
         long leftStart = stream.start();
 
@@ -30,7 +30,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
 
         stream.setStart(leftStart);
 
-        return fold.apply(env, left, right, stream);
+        return fold.apply(env, stream, left, right);
     }
 
     @Override

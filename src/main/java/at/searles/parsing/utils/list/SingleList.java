@@ -14,14 +14,14 @@ import java.util.List;
 public class SingleList<T> implements Mapping<T, List<T>> {
 
     @Override
-    public List<T> parse(Environment env, @NotNull T left, ParserStream stream) {
-        List<T> l = new ArrayList<T>();
+    public List<T> parse(Environment env, ParserStream stream, @NotNull T left) {
+        List<T> l = new ArrayList<>();
         l.add(left);
         return l;
     }
 
     @Override
-    public T left(Environment env, List<T> result) {
+    public T left(Environment env, @NotNull List<T> result) {
         return result.size() == 1 ? result.get(0) : null;
     }
 

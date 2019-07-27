@@ -49,11 +49,11 @@ public class ListTest {
 
 
 
-    private Lexer lexer = new Lexer();
+    private final Lexer lexer = new Lexer();
 
-    private Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new Mapping<CharSequence, Object>() {
+    private final Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new Mapping<CharSequence, Object>() {
         @Override
-        public Object parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+        public Object parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
             return left.toString();
         }
 
@@ -64,9 +64,9 @@ public class ListTest {
         }
     }, false);
 
-    private Parser<Object> num = Parser.fromToken(lexer.token(RegexParser.parse("[0-9]+")), new Mapping<CharSequence, Object>() {
+    private final Parser<Object> num = Parser.fromToken(lexer.token(RegexParser.parse("[0-9]+")), new Mapping<CharSequence, Object>() {
         @Override
-        public Object parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+        public Object parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
             return Integer.parseInt(left.toString());
         }
 
@@ -77,14 +77,14 @@ public class ListTest {
         }
     }, false);
 
-    private Fold<List<Object>, Object, List<Object>> add = new Fold<List<Object>, Object, List<Object>>() {
+    private final Fold<List<Object>, Object, List<Object>> add = new Fold<List<Object>, Object, List<Object>>() {
         @Override
-        public List<Object> apply(Environment env, List<Object> left, Object right, ParserStream stream) {
+        public List<Object> apply(Environment env, ParserStream stream, @NotNull List<Object> left, @NotNull Object right) {
             return ImmutableList.createFrom(left).pushBack(right);
         }
 
         @Override
-        public List<Object> leftInverse(Environment env, List<Object> result) {
+        public List<Object> leftInverse(Environment env, @NotNull List<Object> result) {
             if(rightInverse(env, result) == null) {
                 return null;
             }
@@ -93,7 +93,7 @@ public class ListTest {
         }
 
         @Override
-        public Object rightInverse(Environment env, List<Object> result) {
+        public Object rightInverse(Environment env, @NotNull List<Object> result) {
             if(result.isEmpty()) {
                 return null;
             }
@@ -102,23 +102,23 @@ public class ListTest {
         }
     };
 
-    private Recognizer comma = Recognizer.fromString(",", lexer, false);
-    private Recognizer colon = Recognizer.fromString(":", lexer, false);
+    private final Recognizer comma = Recognizer.fromString(",", lexer, false);
+    private final Recognizer colon = Recognizer.fromString(":", lexer, false);
 
-    private Recognizer stringsPrefix = Recognizer.fromString("S", lexer, false);
-    private Recognizer intsPrefix = Recognizer.fromString("I", lexer, false);
+    private final Recognizer stringsPrefix = Recognizer.fromString("S", lexer, false);
+    private final Recognizer intsPrefix = Recognizer.fromString("I", lexer, false);
 
-    private Reducer<List<Object>, List<Object>> strings = stringsPrefix.then(comma.joinPlus(id.fold(add)));
-    private Reducer<List<Object>, List<Object>> ints = intsPrefix.then(comma.joinPlus(num.fold(add)));
+    private final Reducer<List<Object>, List<Object>> strings = stringsPrefix.then(comma.joinPlus(id.fold(add)));
+    private final Reducer<List<Object>, List<Object>> ints = intsPrefix.then(comma.joinPlus(num.fold(add)));
 
-    private Parser<List<Object>> parser =
+    private final Parser<List<Object>> parser =
             Utils.empty().then(
                 colon.join(
                         strings.or(ints)
                 )
             );
 
-    private Environment env = new Environment() {
+    private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             throw new IllegalArgumentException();

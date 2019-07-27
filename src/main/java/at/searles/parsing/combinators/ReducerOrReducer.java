@@ -16,11 +16,11 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
     }
 
     @Override
-    public U parse(Environment env, @NotNull T left, ParserStream stream) {
+    public U parse(Environment env, ParserStream stream, @NotNull T left) {
         long start = stream.start();
         long end = stream.end();
 
-        U ret = r1.parse(env, left, stream);
+        U ret = r1.parse(env, stream, left);
 
         if(ret != null) {
             return ret;
@@ -28,7 +28,7 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
 
         assert (stream.start() == start && stream.end() == end);
 
-        return r2.parse(env, left, stream);
+        return r2.parse(env, stream, left);
     }
 
     @Override

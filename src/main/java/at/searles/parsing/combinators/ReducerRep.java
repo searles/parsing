@@ -19,11 +19,11 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public T parse(Environment env, @NotNull T left, ParserStream stream) {
+    public T parse(Environment env, ParserStream stream, @NotNull T left) {
         long preStart = stream.start();
 
         while(true) {
-            T t = parent.parse(env, left, stream);
+            T t = parent.parse(env, stream, left);
 
             // Contract of Reducer
             assert stream.start() == preStart;

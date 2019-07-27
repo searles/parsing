@@ -169,7 +169,7 @@ to convert it to a reducer using the fold-method: `num.fold(add)`.
 the left hand and the current parser. 
 
 ~~~ kotlin
-    val add = Fold<Int, Int, Int> { _, left, right, _ ->
+    val add = Fold<Int, Int, Int> { _, _, left, right ->
         left + right
     }
 ~~~
@@ -204,7 +204,7 @@ another reducer:
 ~~~ kotlin
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val sub = Fold<Int, Int, Int> { _, left, right, _ ->
+    val sub = Fold<Int, Int, Int> { _, _, left, right ->
         left - right
     }
 ~~~
@@ -390,7 +390,7 @@ an image of the mapping, and otherwise undo the `parse`-method.
 
 ~~~ kotlin
     val numMapping = object: Mapping<CharSequence, AstNode> {
-        override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
+        override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
         override fun left(env: Environment, result: AstNode): CharSequence? = 
@@ -408,7 +408,7 @@ argument.
 
 ~~~ kotlin
     val add = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
+        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
             OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =

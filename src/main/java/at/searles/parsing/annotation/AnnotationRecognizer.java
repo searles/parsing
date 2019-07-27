@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Using this parser we obtain recursion.
@@ -23,6 +24,7 @@ public class AnnotationRecognizer<A> implements Recognizer {
         return recognizer.recognize(env, stream);
     }
 
+    @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
         return recognizer.print(env).annotate(annotate);

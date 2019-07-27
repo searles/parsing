@@ -18,12 +18,12 @@ public class MapBuilder<L, V> implements Mapping<Map<L, V>, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, @NotNull Map<L, V> left, ParserStream stream) {
+    public AstNode parse(Environment env, ParserStream stream, @NotNull Map<L, V> left) {
         return builder.createMap(stream.createSourceInfo(), label, left);
     }
 
     @Override
-    public Map<L, V> left(Environment env, AstNode result) {
+    public Map<L, V> left(Environment env, @NotNull AstNode result) {
         return builder.matchMap(label, result);
     }
 

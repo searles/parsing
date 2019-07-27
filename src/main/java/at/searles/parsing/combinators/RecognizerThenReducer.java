@@ -15,7 +15,7 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public U parse(Environment env, @NotNull T left, ParserStream stream) {
+    public U parse(Environment env, ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
         long preStart = stream.start();
         long preEnd = stream.end();
@@ -26,7 +26,7 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
 
         stream.setStart(preStart);
 
-        U u = reducer.parse(env, left, stream);
+        U u = reducer.parse(env, stream, left);
 
         if(u == null) {
             env.notifyNoMatch(stream, this);

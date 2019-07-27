@@ -8,21 +8,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ParserPositionTest {
-    Lexer lexer = new Lexer();
-    Parser<String> a = Parser.fromToken(lexer.token("A"), ToString.getInstance(), false);
-    Parser<String> b = Parser.fromToken(lexer.token("B"), ToString.getInstance(), false);
-    Parser<String> c = Parser.fromToken(lexer.token("C"), ToString.getInstance(), false);
+    final Lexer lexer = new Lexer();
+    final Parser<String> a = Parser.fromToken(lexer.token("A"), ToString.getInstance(), false);
+    final Parser<String> b = Parser.fromToken(lexer.token("B"), ToString.getInstance(), false);
 
-    Recognizer z = Recognizer.fromString("Z", lexer, false);
+    final Recognizer z = Recognizer.fromString("Z", lexer, false);
 
-    Mapping<String, String> fail = (env, left, stream) -> null;
+    final Mapping<String, String> fail = (env, stream, left) -> null;
 
-    Fold<String, String, String> joiner = (env, left, right, stream) -> left + right;
+    final Fold<String, String, String> joiner = (env, stream, left, right) -> left + right;
     private Parser<String> parser;
     private String output;
 
     Mapping<String, String> positionAssert(int start, int end) {
-        return (env, left, stream) -> {
+        return (env, stream, left) -> {
             SourceInfo sourceInfo = stream.createSourceInfo();
             Assert.assertEquals(start, sourceInfo.start());
             Assert.assertEquals(end, sourceInfo.end());

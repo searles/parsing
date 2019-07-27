@@ -3,18 +3,19 @@ package at.searles.parsing.utils.common;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Append codePoint to String.
  */
 public class StringAppend implements Fold<String, Integer, String> {
     @Override
-    public String apply(Environment env, String left, Integer right, ParserStream stream) {
+    public String apply(Environment env, ParserStream stream, @NotNull String left, @NotNull Integer right) {
         return left + new String(Character.toChars(right));
     }
 
     @Override
-    public String leftInverse(Environment env, String result) {
+    public String leftInverse(Environment env, @NotNull String result) {
         if(result.isEmpty()) {
             return null;
         }
@@ -28,7 +29,7 @@ public class StringAppend implements Fold<String, Integer, String> {
     }
 
     @Override
-    public Integer rightInverse(Environment env, String result) {
+    public Integer rightInverse(Environment env, @NotNull String result) {
         if(result.isEmpty()) {
             return null;
         }

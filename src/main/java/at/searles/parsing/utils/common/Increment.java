@@ -14,12 +14,12 @@ public class Increment implements Mapping<Integer, Integer> {
     }
 
     @Override
-    public Integer parse(Environment env, @NotNull Integer left, ParserStream stream) {
+    public Integer parse(Environment env, ParserStream stream, @NotNull Integer left) {
         return left + 1;
     }
 
     @Override
-    public Integer left(Environment env, Integer result) {
+    public Integer left(Environment env, @NotNull Integer result) {
         return result > min ? result - 1 : null;
     }
 

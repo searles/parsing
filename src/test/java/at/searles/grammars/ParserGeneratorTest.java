@@ -30,12 +30,9 @@ public class ParserGeneratorTest {
     @Before
     public void setup() {
         this.generator = new ParserGenerator();
-        this.env = new Environment() {
-            @Override
-            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
-                error = true;
-                System.err.print("at '" + stream + "' when parsing '" + failedParser);
-            }
+        this.env = (stream, failedParser) -> {
+            error = true;
+            System.err.print("at '" + stream + "' when parsing '" + failedParser);
         };
         this.error = false;
     }

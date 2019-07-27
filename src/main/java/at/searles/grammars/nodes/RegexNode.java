@@ -1,6 +1,5 @@
 package at.searles.grammars.nodes;
 
-import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.SourceInfo;
 import at.searles.regex.Regex;
 

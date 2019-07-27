@@ -45,7 +45,7 @@ fun main() {
 
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val negate = Mapping<Int, Int> { _, value, _ -> -value }
+    val negate = Mapping<Int, Int> { _, _, value -> -value }
 
     val literal =
             minus.then(term).then(negate)
@@ -55,13 +55,13 @@ fun main() {
 
     val times = Recognizer.fromString("*", lexer, false)
 
-    val multiply = Fold<Int, Int, Int> { _, left, right, _ ->
+    val multiply = Fold<Int, Int, Int> { _, _, left, right ->
         left * right
     }
 
     val slash = Recognizer.fromString("/", lexer, false)
 
-    val divide = Fold<Int, Int, Int> { _, left, right, _ ->
+    val divide = Fold<Int, Int, Int> { _, _, left, right ->
         left / right
     }
 
@@ -76,11 +76,11 @@ fun main() {
 
     val plus = Recognizer.fromString("+", lexer, false)
 
-    val add = Fold<Int, Int, Int> { _, left, right, _ ->
+    val add = Fold<Int, Int, Int> { _, _, left, right ->
         left + right
     }
 
-    val sub = Fold<Int, Int, Int> { _, left, right, _ ->
+    val sub = Fold<Int, Int, Int> { _, _, left, right ->
         left - right
     }
 

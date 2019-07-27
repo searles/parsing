@@ -3,7 +3,7 @@ package at.searles.parsing.utils.list;
 import at.searles.parsing.Environment;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.utils.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 public class Prepend<T> implements Fold<T, List<T>, List<T>> {
 
     @Override
-    public List<T> apply(Environment env, T left, List<T> right, ParserStream stream) {
+    public List<T> apply(Environment env, ParserStream stream, @NotNull T left, @NotNull List<T> right) {
         ArrayList<T> list = new ArrayList<>(right.size() + 1);
         list.add(left);
         list.addAll(right);
@@ -23,7 +23,7 @@ public class Prepend<T> implements Fold<T, List<T>, List<T>> {
     }
 
     @Override
-    public T leftInverse(Environment env, List<T> result) {
+    public T leftInverse(Environment env, @NotNull List<T> result) {
         if(result.isEmpty()) {
             return null;
         }
@@ -32,7 +32,7 @@ public class Prepend<T> implements Fold<T, List<T>, List<T>> {
     }
 
     @Override
-    public List<T> rightInverse(Environment env, List<T> result) {
+    public List<T> rightInverse(Environment env, @NotNull List<T> result) {
         if(result.isEmpty()) {
             return null;
         }

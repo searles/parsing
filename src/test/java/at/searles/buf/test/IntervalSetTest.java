@@ -67,7 +67,7 @@ public class IntervalSetTest {
 
 	@Test
 	public void testIsEmpty() {
-		withSet(new IntervalSet<Integer>());
+		withSet(new IntervalSet<>());
 
 		Assert.assertTrue(set.isEmpty());
 
@@ -78,7 +78,7 @@ public class IntervalSetTest {
 
 	@Test
 	public void testFindInEmpty() {
-		withSet(new IntervalSet<Integer>());
+		withSet(new IntervalSet<>());
 
 		Assert.assertFalse(set.contains(1));
 		Assert.assertNull(set.find(1));
@@ -119,8 +119,8 @@ public class IntervalSetTest {
 	public void testSimpleOverlap() {
 		IntervalSet<Integer> set = new IntervalSet<>();
 
-		set.add(1, 6, 111, (a, b) -> a + b);
-		set.add(4, 9, 222, (a, b) -> a + b);
+		set.add(1, 6, 111, Integer::sum);
+		set.add(4, 9, 222, Integer::sum);
 
 		Assert.assertEquals(new IntervalSet<Integer>()
 				.add(1, 4, 111, null)
@@ -132,11 +132,11 @@ public class IntervalSetTest {
 	public void testComplexOverlap() {
 		IntervalSet<Integer> set = new IntervalSet<>();
 
-		set.add(1, 4, 111, (a, b) -> a + b);
-		set.add(7, 10, 444, (a, b) -> a + b);
-		set.add(4, 7, 222, (a, b) -> a + b);
+		set.add(1, 4, 111, Integer::sum);
+		set.add(7, 10, 444, Integer::sum);
+		set.add(4, 7, 222, Integer::sum);
 
-		set.add(1, 10, 1, (a, b) -> a + b);
+		set.add(1, 10, 1, Integer::sum);
 
 		Assert.assertEquals(new IntervalSet<Integer>()
 				.add(1, 4, 112, null)
@@ -148,8 +148,8 @@ public class IntervalSetTest {
 	public void testSameOverlap() {
 		IntervalSet<Integer> set = new IntervalSet<>();
 
-		set.add(1, 4, 111, (a, b) -> a + b);
-		set.add(1, 4, 222, (a, b) -> a + b);
+		set.add(1, 4, 111, Integer::sum);
+		set.add(1, 4, 222, Integer::sum);
 
 		Assert.assertEquals(new IntervalSet<Integer>()
 				.add(1, 4, 333, null), set);
@@ -159,8 +159,8 @@ public class IntervalSetTest {
 	public void testSameBack() {
 		IntervalSet<Integer> set = new IntervalSet<>();
 
-		set.add(1, 7, 111, (a, b) -> a + b);
-		set.add(4, 7, 222, (a, b) -> a + b);
+		set.add(1, 7, 111, Integer::sum);
+		set.add(4, 7, 222, Integer::sum);
 
 		Assert.assertEquals(new IntervalSet<Integer>()
 				.add(1, 4, 111, null)
@@ -171,8 +171,8 @@ public class IntervalSetTest {
 	public void testSameFront() {
 		IntervalSet<Integer> set = new IntervalSet<>();
 
-		set.add(1, 7, 111, (a, b) -> a + b);
-		set.add(1, 4, 222, (a, b) -> a + b);
+		set.add(1, 7, 111, Integer::sum);
+		set.add(1, 4, 222, Integer::sum);
 
 		Assert.assertEquals(new IntervalSet<Integer>()
 				.add(1, 4, 333, null)

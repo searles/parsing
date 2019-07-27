@@ -4,8 +4,8 @@ import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
-    private Recognizer parent;
-    private Parser<T> parser;
+    private final Recognizer parent;
+    private final Parser<T> parser;
 
     public RecognizerThenParser(Recognizer parent, Parser<T> parser) {
         this.parent = parent;

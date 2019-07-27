@@ -35,8 +35,8 @@ public class ReducerPlus<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public T parse(Environment env, @NotNull T left, ParserStream stream) {
-        return parser.parse(env, left, stream);
+    public T parse(Environment env, ParserStream stream, @NotNull T left) {
+        return parser.parse(env, stream, left);
     }
 
     @Nullable

@@ -32,7 +32,7 @@ public class TokenParser<A> implements Parser<A> {
             return null;
         }
 
-        return mapping.parse(env, seq, stream);
+        return mapping.parse(env, stream, seq);
     }
 
     @Override

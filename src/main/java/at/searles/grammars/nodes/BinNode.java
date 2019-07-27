@@ -1,7 +1,6 @@
 package at.searles.grammars.nodes;
 
 import at.searles.grammars.ParserGenerator;
-import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.SourceInfo;
 
 public class BinNode extends ExprNode {

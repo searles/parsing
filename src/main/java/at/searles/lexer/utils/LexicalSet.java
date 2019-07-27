@@ -1,5 +1,7 @@
 package at.searles.lexer.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -52,7 +54,8 @@ public class LexicalSet<A extends Comparable<A>> implements Comparable<LexicalSe
         return this;
     }
 
-    public LexicalSet<A> addAll(A...as) {
+    @SafeVarargs
+    public final LexicalSet<A> addAll(A... as) {
         for(A a : as) {
             add(a);
         }
@@ -64,6 +67,7 @@ public class LexicalSet<A extends Comparable<A>> implements Comparable<LexicalSe
         return set.contains(a);
     }
 
+    @NotNull
     public Iterator<A> iterator() {
         return set.iterator();
     }

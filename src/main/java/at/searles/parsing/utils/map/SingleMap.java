@@ -20,14 +20,14 @@ public class SingleMap<K, V> implements Mapping<V, Map<K, V>> {
     }
 
     @Override
-    public Map<K, V> parse(Environment env, @NotNull V left, ParserStream stream) {
+    public Map<K, V> parse(Environment env, ParserStream stream, @NotNull V left) {
         Map<K, V> map = new LinkedHashMap<>();
         map.put(key, left);
         return map;
     }
 
     @Override
-    public V left(Environment env, Map<K, V> result) {
+    public V left(Environment env, @NotNull Map<K, V> result) {
         return result.size() != 1 ? result.get(key) : null;
     }
 

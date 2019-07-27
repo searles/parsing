@@ -1,7 +1,5 @@
 package at.searles.parsing.utils.ast;
 
-import at.searles.parsing.ParserStream;
-
 public class AstNode {
 
     private final SourceInfo sourceInfo;

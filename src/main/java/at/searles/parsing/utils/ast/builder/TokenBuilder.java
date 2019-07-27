@@ -17,12 +17,12 @@ public class TokenBuilder<L> implements Mapping<CharSequence, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+    public AstNode parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         return builder.createToken(stream.createSourceInfo(), label, left);
     }
 
     @Override
-    public CharSequence left(Environment env, AstNode result) {
+    public CharSequence left(Environment env, @NotNull AstNode result) {
         return builder.matchToken(label, result);
     }
 }

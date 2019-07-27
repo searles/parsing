@@ -4,6 +4,7 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
+import org.jetbrains.annotations.NotNull;
 
 public class BinaryBuilder<L, V, R> implements Fold<V, R, AstNode> {
 
@@ -16,17 +17,17 @@ public class BinaryBuilder<L, V, R> implements Fold<V, R, AstNode> {
     }
 
     @Override
-    public AstNode apply(Environment env, V left, R right, ParserStream stream) {
+    public AstNode apply(Environment env, ParserStream stream, @NotNull V left, @NotNull R right) {
         return builder.createBin(stream.createSourceInfo(), label, left, right);
     }
 
     @Override
-    public V leftInverse(Environment env, AstNode result) {
+    public V leftInverse(Environment env, @NotNull AstNode result) {
         return builder.matchLeft(label);
     }
 
     @Override
-    public R rightInverse(Environment env, AstNode result) {
+    public R rightInverse(Environment env, @NotNull AstNode result) {
         return builder.matchRight(label);
     }
 

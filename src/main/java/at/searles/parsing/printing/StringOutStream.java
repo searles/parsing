@@ -2,7 +2,7 @@ package at.searles.parsing.printing;
 
 public class StringOutStream implements OutStream {
 
-    private StringBuilder sb = new StringBuilder();
+    private final StringBuilder sb = new StringBuilder();
 
     @Override
     public void append(CharSequence seq) {

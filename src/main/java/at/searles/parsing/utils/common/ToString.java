@@ -17,7 +17,7 @@ public class ToString implements Mapping<CharSequence, String> {
     }
 
     @Override
-    public String parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
+    public String parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         return left.toString();
     }
 

@@ -28,7 +28,7 @@ fun main() {
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
     val numMapping = object: Mapping<CharSequence, AstNode> {
-        override fun parse(env: Environment, left: CharSequence, stream: ParserStream): AstNode =
+        override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
         override fun left(env: Environment, result: AstNode): CharSequence? =
@@ -55,7 +55,7 @@ fun main() {
     val minus = Recognizer.fromString("-", lexer, false)
 
     val negate = object: Mapping<AstNode, AstNode> {
-        override fun parse(env: Environment, left: AstNode, stream: ParserStream): AstNode =
+        override fun parse(env: Environment, stream: ParserStream, left: AstNode): AstNode =
             OpNode(stream.createSourceInfo(), Op.Neg, left)
 
         override fun left(env: Environment, result: AstNode): AstNode? =
@@ -71,7 +71,7 @@ fun main() {
     val times = Recognizer.fromString("*", lexer, false)
 
     val multiply = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
+        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Mul, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
@@ -84,7 +84,7 @@ fun main() {
     val slash = Recognizer.fromString("/", lexer, false)
 
     val divide = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
+        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Div, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
@@ -106,7 +106,7 @@ fun main() {
     val plus = Recognizer.fromString("+", lexer, false)
 
     val add = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
+        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
             OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
@@ -117,7 +117,7 @@ fun main() {
     }
 
     val sub = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, left: AstNode, right: AstNode, stream: ParserStream): AstNode =
+        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Sub, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =

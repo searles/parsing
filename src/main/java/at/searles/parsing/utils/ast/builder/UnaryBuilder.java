@@ -17,12 +17,12 @@ public class UnaryBuilder<L, V> implements Mapping<V, AstNode> {
     }
 
     @Override
-    public AstNode parse(Environment env, @NotNull V left, ParserStream stream) {
+    public AstNode parse(Environment env, ParserStream stream, @NotNull V left) {
         return builder.createValue(stream.createSourceInfo(), label, left);
     }
 
     @Override
-    public V left(Environment env, AstNode result) {
+    public V left(Environment env, @NotNull AstNode result) {
         return builder.matchValue(label, result);
     }
 

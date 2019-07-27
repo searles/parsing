@@ -4,7 +4,6 @@ import at.searles.parsing.Environment;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.builder.BuilderInitializer;
-import at.searles.parsing.utils.builder.Setter;
 import at.searles.parsing.utils.builder.SetterUnsafe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,9 +20,14 @@ public class BuilderSetterUnsafe<T, V> implements Mapping<V, T> {
     }
 
     @Override
-    public T parse(Environment env, @NotNull V left, ParserStream stream) {
+    public T parse(Environment env, ParserStream stream, @NotNull V left) {
         T builder = builderInitializer.parse(env, stream);
-        return setterUnsafe.apply(env, builder, left, stream);
+
+        if(builder == null) {
+            return null;
+        }
+
+        return setterUnsafe.apply(env, stream, builder, left);
     }
 
     @Nullable

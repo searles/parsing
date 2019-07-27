@@ -1,5 +1,7 @@
 package at.searles.buf;
 
+import org.jetbrains.annotations.NotNull;
+
 public class StringWrapper implements FrameStream {
 
     private final String str;
@@ -8,7 +10,7 @@ public class StringWrapper implements FrameStream {
     private int frameStart;
     private int frameEnd;
 
-    private CharSequence frame; // singleton
+    private final CharSequence frame; // singleton
 
     public StringWrapper(String str) {
         this.str = str;
@@ -94,6 +96,7 @@ public class StringWrapper implements FrameStream {
             return str.substring(frameStart + start, frameStart + end);
         }
 
+        @NotNull
         @Override
         public String toString() {
             return str.substring(frameStart, frameEnd);

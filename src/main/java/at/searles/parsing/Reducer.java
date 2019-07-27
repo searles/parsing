@@ -10,11 +10,11 @@ public interface Reducer<T, U> extends Recognizable {
     /**
      * Parses elements from TokStream
      * @param env The env used to communicate parsing errors.
-     * @param left The element left of this reducer
      * @param stream The stream from which elements are read
+     * @param left The element left of this reducer
      * @return The parsed element, null if parsing was not successful.
      */
-    @Nullable U parse(Environment env, @NotNull T left, ParserStream stream); // null = fail.
+    @Nullable U parse(Environment env, ParserStream stream, @NotNull T left); // null = fail.
 
     // Since parse requires two arguments apart from the env,
     // the printer is split into two methods
