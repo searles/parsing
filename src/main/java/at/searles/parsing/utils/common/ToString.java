@@ -7,6 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ToString implements Mapping<CharSequence, String> {
+
+    private static class Holder {
+        static final ToString INSTANCE = new ToString();
+    }
+
+    public static ToString getInstance() {
+        return Holder.INSTANCE;
+    }
+
     @Override
     public String parse(Environment env, @NotNull CharSequence left, ParserStream stream) {
         return left.toString();

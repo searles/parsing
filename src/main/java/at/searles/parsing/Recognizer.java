@@ -9,16 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Recognizer extends Recognizable {
 
-    /**
-     * Must not return null!
-     */
     @NotNull
     ConcreteSyntaxTree print(Environment env);
-
-    default <T> Reducer<T, T> toReducer() {
-        // corresponds to prefix.
-        return new RecognizerToReducer<>(this);
-    }
 
     default Recognizer then(Recognizer recognizer) {
         return new RecognizerThenRecognizer<>(this, recognizer);
@@ -63,10 +55,6 @@ public interface Recognizer extends Recognizable {
 
     default <T> Reducer<T, T> joinPlus(Reducer<T, T> reducer) {
         return new ReducerJoinPlus<>(this, reducer);
-    }
-
-    default <T> Parser<T> join(Parser<T> parser, Fold<T, T, T> aggregate) {
-        return parser.then(Reducer.rep(this.then(parser.fold(aggregate))));
     }
 
     default <A> Recognizer annotate(A category) {

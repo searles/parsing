@@ -21,7 +21,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
     public V parse(Environment env, @NotNull T left, ParserStream stream) {
         long offset = stream.offset();
         long preStart = stream.start();
-        long preEnd = stream.start();
+        long preEnd = stream.end();
 
         U u = this.left.parse(env, left, stream);
 

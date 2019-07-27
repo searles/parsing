@@ -13,6 +13,9 @@ public class TokenRecognizer implements Recognizer {
     private final Token token;
     private final boolean exclusive;
 
+    /**
+     * @param str This string is also needed for inversion
+     */
     public TokenRecognizer(String str, Tokenizer lexer, boolean exclusive) {
         this.str = str;
         this.token = lexer.token(str);
