@@ -486,10 +486,10 @@ we print the result into a `StringOutStream`:
 
     val printer = object: CstPrinter(sourceStream) {
         override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter =
-                when(annotation) {
-                    FormatOp.Infix -> print(" ").print(tree).print(" ")
-                    else -> print(tree)
-                }
+            when(annotation) {
+                FormatOp.Infix -> append(" ").print(tree).append(" ")
+                else -> print(tree)
+            }
     }
 ~~~
 

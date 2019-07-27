@@ -102,7 +102,7 @@ class PrinterTest {
 
     private fun actPrint() {
         val cst = parser.print(env, ast)
-        cst?.print(cstPrinter)
+        cst?.printTo(cstPrinter)
         output = outStream.toString()
     }
 
@@ -176,7 +176,7 @@ class PrinterTest {
             var atBeginningOfLine: Boolean = false
 
             private fun newline() {
-                outStream.append("\n")
+                append("\n")
                 atBeginningOfLine = true
             }
 
@@ -191,7 +191,7 @@ class PrinterTest {
                         return this
                     }
                     Markers.Arg -> {
-                        print(" ").print(tree)
+                        append(" ").print(tree)
                     }
                     else -> print(tree)
                 }
@@ -200,10 +200,10 @@ class PrinterTest {
             override fun print(seq: CharSequence?): CstPrinter {
                 if(atBeginningOfLine) {
                     atBeginningOfLine = false
-                    super.print(" ".repeat(indent))
+                    append(" ".repeat(indent))
                 }
 
-                return super.print(seq)
+                return append(seq)
             }
         }
     }

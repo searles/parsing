@@ -173,19 +173,19 @@ fun main() {
     val stream = ParserStream.fromString(readLine())
     val ast = sum.parse(env, stream)
 
-    // now pretty-print the tree
+    // now pretty-printTo the tree
     val sourceStream = StringOutStream()
 
     val printer = object: CstPrinter(sourceStream) {
         override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter =
                 when(annotation) {
-                    FormatOp.Infix -> print(" ").print(tree).print(" ")
+                    FormatOp.Infix -> append(" ").print(tree).append(" ")
                     else -> print(tree)
                 }
     }
 
     val outTree = sum.print(env, ast)!!
-    outTree.print(printer)
+    outTree.printTo(printer)
     println("Pretty-Print: $sourceStream")
 }
 

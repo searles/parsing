@@ -8,7 +8,7 @@ public interface ConcreteSyntaxTree {
      * Print this syntax tree using the provided printer.
      * @param printer The non-null printer.
      */
-    void print(CstPrinter printer);
+    void printTo(CstPrinter printer);
 
     ConcreteSyntaxTree EMPTY = new EmptyConcreteSyntaxTree();
 

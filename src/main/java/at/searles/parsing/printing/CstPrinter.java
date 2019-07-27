@@ -6,7 +6,7 @@ package at.searles.parsing.printing;
  */
 public class CstPrinter {
 
-    protected final OutStream outStream;
+    private final OutStream outStream;
 
     public CstPrinter(OutStream outStream) {
         this.outStream = outStream;
@@ -27,22 +27,38 @@ public class CstPrinter {
     }
 
     /**
-     * Simple forward to ConcreteSyntaxTree.print(CstPrinter) that supports chaining.
-     * Keep this method as is.
-     */
-    public CstPrinter print(ConcreteSyntaxTree tree) {
-        tree.print(this);
-        return this;
-    }
-
-    /**
      * Print a concrete char sequence. Override this method if you want to apply
      * special formatting rules based on the current state of this printer. For instance,
      * if the beginning of a line should be indented, this method should check
      * whether it is at the beginning of a line.
      */
     public CstPrinter print(CharSequence seq) {
-        outStream.append(seq);
+        append(seq);
+        return this;
+    }
+
+    /**
+     * Simple forward to ConcreteSyntaxTree.printTo(CstPrinter) that supports chaining.
+     * Normally, keep this method as is.
+     */
+    public CstPrinter print(ConcreteSyntaxTree tree) {
+        tree.printTo(this);
+        return this;
+    }
+
+    /**
+     * Raw-print into the underlying outStream.
+     */
+    public CstPrinter append(CharSequence sequence) {
+        outStream.append(sequence);
+        return this;
+    }
+
+    /**
+     * Raw-print into the underlying outStream.
+     */
+    public CstPrinter append(int codePoint) {
+        outStream.append(codePoint);
         return this;
     }
 }

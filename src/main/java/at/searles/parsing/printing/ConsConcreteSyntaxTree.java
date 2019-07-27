@@ -14,16 +14,16 @@ public class ConsConcreteSyntaxTree implements ConcreteSyntaxTree {
     }
 
     @Override
-    public void print(CstPrinter printer) {
-        left.print(printer);
+    public void printTo(CstPrinter printer) {
+        left.printTo(printer);
 
         ConcreteSyntaxTree tree = right;
 
         while(tree instanceof ConsConcreteSyntaxTree) {
-            ((ConsConcreteSyntaxTree) tree).left.print(printer);
+            ((ConsConcreteSyntaxTree) tree).left.printTo(printer);
             tree = ((ConsConcreteSyntaxTree) tree).right;
         }
 
-        tree.print(printer);
+        tree.printTo(printer);
     }
 }

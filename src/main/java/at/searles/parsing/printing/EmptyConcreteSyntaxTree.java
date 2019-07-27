@@ -12,7 +12,7 @@ public class EmptyConcreteSyntaxTree implements ConcreteSyntaxTree {
     }
 
     @Override
-    public void print(CstPrinter printer) {
+    public void printTo(CstPrinter printer) {
     }
 
     public String toString() {

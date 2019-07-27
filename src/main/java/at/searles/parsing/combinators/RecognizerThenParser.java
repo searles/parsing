@@ -44,7 +44,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     public ConcreteSyntaxTree print(Environment env, T t) {
         ConcreteSyntaxTree output = parser.print(env, t);
 
-        // print in recognizer always succeeds.
+        // printTo in recognizer always succeeds.
         return output != null ? output.consLeft(parent.print(env)) : null;
     }
 

@@ -10,9 +10,9 @@ public class ListConcreteSyntaxTree implements ConcreteSyntaxTree {
     }
 
     @Override
-    public void print(CstPrinter printer) {
+    public void printTo(CstPrinter printer) {
         for(ConcreteSyntaxTree tree : list) {
-            tree.print(printer);
+            tree.printTo(printer);
         }
     }
 

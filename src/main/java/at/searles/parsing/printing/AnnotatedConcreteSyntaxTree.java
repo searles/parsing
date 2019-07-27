@@ -14,7 +14,7 @@ public class AnnotatedConcreteSyntaxTree<C> implements ConcreteSyntaxTree {
     }
 
     @Override
-    public void print(CstPrinter printer) {
+    public void printTo(CstPrinter printer) {
         printer.print(parent, annotation);
     }
 }
