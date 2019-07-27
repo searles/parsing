@@ -12,7 +12,7 @@ import java.util.Map;
 public class SyntaxTreeBuilder implements AstNodeBuilder<ParserGenerator.Type> {
     @Override
     public <V, R> AstNode createBin(SourceInfo info, ParserGenerator.Type label, V left, R right) {
-        switch(label) {
+        switch (label) {
             case Rule:
                 return new RuleNode(info, (String) left, (ExprNode) right);
             case Choice:

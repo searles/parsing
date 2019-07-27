@@ -1,13 +1,17 @@
 package at.searles.parsing;
 
 import at.searles.lexer.Tokenizer;
-import at.searles.parsing.combinators.*;
 import at.searles.parsing.annotation.AnnotationRecognizer;
+import at.searles.parsing.combinators.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenRecognizer;
 import org.jetbrains.annotations.NotNull;
 
 public interface Recognizer extends Recognizable {
+
+    static Recognizer fromString(String string, Tokenizer tokenizer, boolean exclusive) {
+        return new TokenRecognizer(string, tokenizer, exclusive);
+    }
 
     @NotNull
     ConcreteSyntaxTree print(Environment env);
@@ -59,9 +63,5 @@ public interface Recognizer extends Recognizable {
 
     default <A> Recognizer annotate(A category) {
         return new AnnotationRecognizer<>(category, this);
-    }
-
-    static Recognizer fromString(String string, Tokenizer tokenizer, boolean exclusive) {
-        return new TokenRecognizer(string, tokenizer, exclusive);
     }
 }

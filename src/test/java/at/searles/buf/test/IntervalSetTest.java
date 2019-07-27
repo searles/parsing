@@ -7,204 +7,204 @@ import org.junit.Test;
 
 public class IntervalSetTest {
 
-	private IntervalSet<Integer> set;
-	private IntervalSet<Integer> set2;
-	
-	private void withSet(IntervalSet<Integer> set) {
-		this.set = set;
-	}
+    private IntervalSet<Integer> set;
+    private IntervalSet<Integer> set2;
 
-	@Test
-	public void testCopy() {
-		withSet(new IntervalSet<Integer>()
-				.add(0, 3, 100, null)
-				.add(6, 9, 200, null)
-		);
+    private void withSet(IntervalSet<Integer> set) {
+        this.set = set;
+    }
 
-		// act
-		set2 = set.copy(a -> 1 + a);
+    @Test
+    public void testCopy() {
+        withSet(new IntervalSet<Integer>()
+                .add(0, 3, 100, null)
+                .add(6, 9, 200, null)
+        );
 
-		// assert
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(0, 3, 101, null)
-				.add(6, 9, 201, null), set2);
-	}
+        // act
+        set2 = set.copy(a -> 1 + a);
 
-	@Test
-	public void testCopyMapToConstant() {
-		withSet(new IntervalSet<Integer>()
-				.add(0, 3, 100, null)
-				.add(3, 6, 200, null)
-		);
+        // assert
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(0, 3, 101, null)
+                .add(6, 9, 201, null), set2);
+    }
 
-		// act
-		set2 = set.copy(a -> 300);
+    @Test
+    public void testCopyMapToConstant() {
+        withSet(new IntervalSet<Integer>()
+                .add(0, 3, 100, null)
+                .add(3, 6, 200, null)
+        );
 
-		// assert
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(0, 6, 300, null), set2);
-	}
+        // act
+        set2 = set.copy(a -> 300);
 
-	@Test
-	public void testIterSetValue() {
-		withSet(new IntervalSet<Integer>()
-				.add(0, 3, 100, null)
-				.add(3, 6, 200, null)
-				.add(6, 9, 100, null)
-		);
-		
-		// act
-		IntervalSet.Iter<Integer> it = set.iterator();
-		
-		it.next();
-		it.next();
-		it.setValue(100);
-		
-		// assert
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(0, 9, 100, null), set);
-	}
+        // assert
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(0, 6, 300, null), set2);
+    }
 
-	@Test
-	public void testIsEmpty() {
-		withSet(new IntervalSet<>());
+    @Test
+    public void testIterSetValue() {
+        withSet(new IntervalSet<Integer>()
+                .add(0, 3, 100, null)
+                .add(3, 6, 200, null)
+                .add(6, 9, 100, null)
+        );
 
-		Assert.assertTrue(set.isEmpty());
+        // act
+        IntervalSet.Iter<Integer> it = set.iterator();
 
-		set.add(1,  2, 100, null);
+        it.next();
+        it.next();
+        it.setValue(100);
 
-		Assert.assertFalse(set.isEmpty());
-	}
+        // assert
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(0, 9, 100, null), set);
+    }
 
-	@Test
-	public void testFindInEmpty() {
-		withSet(new IntervalSet<>());
+    @Test
+    public void testIsEmpty() {
+        withSet(new IntervalSet<>());
 
-		Assert.assertFalse(set.contains(1));
-		Assert.assertNull(set.find(1));
-	}
+        Assert.assertTrue(set.isEmpty());
 
-	@Test
-	public void testAddIntervalSetToEmptySet() {
-		withSet(new IntervalSet<>());
+        set.add(1, 2, 100, null);
 
-		set2 = new IntervalSet<Integer>().add(0, 1, 100, null);
+        Assert.assertFalse(set.isEmpty());
+    }
 
-		set.add(set2, null);
+    @Test
+    public void testFindInEmpty() {
+        withSet(new IntervalSet<>());
 
-		Assert.assertTrue(set.contains(0));
-		Assert.assertFalse(set.contains(1));
-		Assert.assertFalse(set.contains(-1));
-	}
+        Assert.assertFalse(set.contains(1));
+        Assert.assertNull(set.find(1));
+    }
 
-	@Test
-	public void testContains() {
-		withSet(new IntervalSet<Integer>()
-				.add(0, 3, 100, null)
-				.add(3, 6, 200, null)
-				.add(7, 9, 100, null)
-		);
-		
-		Assert.assertFalse(set.contains(-1));
-		Assert.assertTrue(set.find(0).equals(100));
-		Assert.assertTrue(set.find(2).equals(100));
-		Assert.assertTrue(set.find(3).equals(200));
-		Assert.assertFalse(set.contains(6));
-		Assert.assertTrue(set.find(7).equals(100));
-		Assert.assertTrue(set.find(8).equals(100));
-		Assert.assertFalse(set.contains(9));
-	}
+    @Test
+    public void testAddIntervalSetToEmptySet() {
+        withSet(new IntervalSet<>());
 
-	@Test
-	public void testSimpleOverlap() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        set2 = new IntervalSet<Integer>().add(0, 1, 100, null);
 
-		set.add(1, 6, 111, Integer::sum);
-		set.add(4, 9, 222, Integer::sum);
+        set.add(set2, null);
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 4, 111, null)
-				.add(4, 6, 333, null)
-				.add(6, 9, 222, null), set);
-	}
+        Assert.assertTrue(set.contains(0));
+        Assert.assertFalse(set.contains(1));
+        Assert.assertFalse(set.contains(-1));
+    }
 
-	@Test
-	public void testComplexOverlap() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+    @Test
+    public void testContains() {
+        withSet(new IntervalSet<Integer>()
+                .add(0, 3, 100, null)
+                .add(3, 6, 200, null)
+                .add(7, 9, 100, null)
+        );
 
-		set.add(1, 4, 111, Integer::sum);
-		set.add(7, 10, 444, Integer::sum);
-		set.add(4, 7, 222, Integer::sum);
+        Assert.assertFalse(set.contains(-1));
+        Assert.assertTrue(set.find(0).equals(100));
+        Assert.assertTrue(set.find(2).equals(100));
+        Assert.assertTrue(set.find(3).equals(200));
+        Assert.assertFalse(set.contains(6));
+        Assert.assertTrue(set.find(7).equals(100));
+        Assert.assertTrue(set.find(8).equals(100));
+        Assert.assertFalse(set.contains(9));
+    }
 
-		set.add(1, 10, 1, Integer::sum);
+    @Test
+    public void testSimpleOverlap() {
+        IntervalSet<Integer> set = new IntervalSet<>();
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 4, 112, null)
-				.add(4, 7, 223, null)
-				.add(7, 10, 445, null), set);
-	}
+        set.add(1, 6, 111, Integer::sum);
+        set.add(4, 9, 222, Integer::sum);
 
-	@Test
-	public void testSameOverlap() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 4, 111, null)
+                .add(4, 6, 333, null)
+                .add(6, 9, 222, null), set);
+    }
 
-		set.add(1, 4, 111, Integer::sum);
-		set.add(1, 4, 222, Integer::sum);
+    @Test
+    public void testComplexOverlap() {
+        IntervalSet<Integer> set = new IntervalSet<>();
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 4, 333, null), set);
-	}
+        set.add(1, 4, 111, Integer::sum);
+        set.add(7, 10, 444, Integer::sum);
+        set.add(4, 7, 222, Integer::sum);
 
-	@Test
-	public void testSameBack() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        set.add(1, 10, 1, Integer::sum);
 
-		set.add(1, 7, 111, Integer::sum);
-		set.add(4, 7, 222, Integer::sum);
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 4, 112, null)
+                .add(4, 7, 223, null)
+                .add(7, 10, 445, null), set);
+    }
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 4, 111, null)
-				.add(4, 7, 333, null), set);
-	}
+    @Test
+    public void testSameOverlap() {
+        IntervalSet<Integer> set = new IntervalSet<>();
 
-	@Test
-	public void testSameFront() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        set.add(1, 4, 111, Integer::sum);
+        set.add(1, 4, 222, Integer::sum);
 
-		set.add(1, 7, 111, Integer::sum);
-		set.add(1, 4, 222, Integer::sum);
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 4, 333, null), set);
+    }
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 4, 333, null)
-				.add(4, 7, 111, null), set);
-	}
+    @Test
+    public void testSameBack() {
+        IntervalSet<Integer> set = new IntervalSet<>();
 
-	@Test
-	public void testFusion() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        set.add(1, 7, 111, Integer::sum);
+        set.add(4, 7, 222, Integer::sum);
 
-		set.add(1, 4, 111, null);
-		set.add(7, 10, 111, null);
-		set.add(4, 7, 111, null);
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 4, 111, null)
+                .add(4, 7, 333, null), set);
+    }
 
-		Assert.assertEquals(new IntervalSet<Integer>()
-				.add(1, 10, 111, null), set);
-	}
+    @Test
+    public void testSameFront() {
+        IntervalSet<Integer> set = new IntervalSet<>();
 
-	public void testFindMultipleIntervals() {
-		IntervalSet<Integer> set = new IntervalSet<>();
+        set.add(1, 7, 111, Integer::sum);
+        set.add(1, 4, 222, Integer::sum);
 
-		set.add(1, 4, 111, (a, b) -> a * b);
-		set.add(7, 10, 111, (a, b) -> a * b);
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 4, 333, null)
+                .add(4, 7, 111, null), set);
+    }
 
-		Assert.assertFalse(set.contains(0));
-		Assert.assertEquals((Integer) 111, set.find(1));
-		Assert.assertEquals((Integer) 111, set.find(3));
-		Assert.assertFalse(set.contains(4));
-		Assert.assertFalse(set.contains(6));
-		Assert.assertEquals((Integer) 111, set.find(7));
-		Assert.assertEquals((Integer) 111, set.find(9));
-		Assert.assertFalse(set.contains(10));
-	}
+    @Test
+    public void testFusion() {
+        IntervalSet<Integer> set = new IntervalSet<>();
+
+        set.add(1, 4, 111, null);
+        set.add(7, 10, 111, null);
+        set.add(4, 7, 111, null);
+
+        Assert.assertEquals(new IntervalSet<Integer>()
+                .add(1, 10, 111, null), set);
+    }
+
+    public void testFindMultipleIntervals() {
+        IntervalSet<Integer> set = new IntervalSet<>();
+
+        set.add(1, 4, 111, (a, b) -> a * b);
+        set.add(7, 10, 111, (a, b) -> a * b);
+
+        Assert.assertFalse(set.contains(0));
+        Assert.assertEquals((Integer) 111, set.find(1));
+        Assert.assertEquals((Integer) 111, set.find(3));
+        Assert.assertFalse(set.contains(4));
+        Assert.assertFalse(set.contains(6));
+        Assert.assertEquals((Integer) 111, set.find(7));
+        Assert.assertEquals((Integer) 111, set.find(9));
+        Assert.assertFalse(set.contains(10));
+    }
 
 }

@@ -12,7 +12,9 @@ class EscChars implements Mapping<CharSequence, Integer> {
     @Override
     public Integer parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         switch (left.charAt(1)) {
-            case 'x':case 'u':case'U':
+            case 'x':
+            case 'u':
+            case 'U':
                 return parseHex(left);
             case 'n':
                 return (int) '\n';

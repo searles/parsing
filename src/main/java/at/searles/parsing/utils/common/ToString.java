@@ -8,10 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ToString implements Mapping<CharSequence, String> {
 
-    private static class Holder {
-        static final ToString INSTANCE = new ToString();
-    }
-
     public static ToString getInstance() {
         return Holder.INSTANCE;
     }
@@ -25,5 +21,9 @@ public class ToString implements Mapping<CharSequence, String> {
     @Override
     public CharSequence left(Environment env, @NotNull String result) {
         return result;
+    }
+
+    private static class Holder {
+        static final ToString INSTANCE = new ToString();
     }
 }

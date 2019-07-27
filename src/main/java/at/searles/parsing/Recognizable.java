@@ -9,6 +9,7 @@ public interface Recognizable {
 
     interface Then extends Recognizable {
         Recognizable left();
+
         Recognizable right();
 
         @Override
@@ -40,11 +41,11 @@ public interface Recognizable {
             String leftString = left().toString();
             String rightString = right().toString();
 
-            if(left() instanceof Or) {
+            if (left() instanceof Or) {
                 leftString = "(" + leftString + ")";
             }
 
-            if(right() instanceof Or || right() instanceof Then) {
+            if (right() instanceof Or || right() instanceof Then) {
                 rightString = "(" + rightString + ")";
             }
 
@@ -54,6 +55,7 @@ public interface Recognizable {
 
     interface Or extends Recognizable {
         Recognizable first();
+
         Recognizable second();
 
         @Override
@@ -65,7 +67,7 @@ public interface Recognizable {
             String firstString = first().toString();
             String secondString = second().toString();
 
-            if(second() instanceof Or) {
+            if (second() instanceof Or) {
                 secondString = "(" + secondString + ")";
             }
 
@@ -87,7 +89,7 @@ public interface Recognizable {
         default String createString() {
             String parentString = parent().toString();
 
-            if(parent() instanceof Or || parent() instanceof Then) {
+            if (parent() instanceof Or || parent() instanceof Then) {
                 parentString = "(" + parentString + ")";
             }
 
@@ -102,7 +104,7 @@ public interface Recognizable {
         default boolean recognize(Environment env, ParserStream stream) {
             long start = stream.start();
 
-            while(parent().recognize(env, stream)) {
+            while (parent().recognize(env, stream)) {
                 // do nothing. Everything is done in 'recognize'
                 stream.setStart(start);
             }
@@ -113,7 +115,7 @@ public interface Recognizable {
         default String createString() {
             String parentString = parent().toString();
 
-            if(parent() instanceof Or || parent() instanceof Then) {
+            if (parent() instanceof Or || parent() instanceof Then) {
                 parentString = "(" + parentString + ")";
             }
 

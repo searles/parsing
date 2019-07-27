@@ -6,15 +6,21 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;
 import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
-import at.searles.utils.GenericBuilder;
+import at.searles.utils.GenericStruct;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BuilderTest {
 
     private final Lexer lexer = new Lexer();
-    private final Parser<String> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
-
+    private final Parser<String> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
+    final Parser<Object> parser = Utils.builder(Builder.class).then(
+            Recognizer.fromString(",", lexer, false).join(
+                    Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
+                            .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
+            )
+                    .then(Utils.build(Builder.class))
+    );
     private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
@@ -25,15 +31,6 @@ public class BuilderTest {
         public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
         }
     };
-
-    final Parser<Object> parser = Utils.builder(Builder.class).then(
-            Recognizer.fromString(",", lexer, false).join(
-                Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
-                .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
-            )
-        .then(Utils.build(Builder.class))
-    );
-
     private ParserStream input;
     private Object item; // using object to test inheritance
     private String output;
@@ -75,7 +72,7 @@ public class BuilderTest {
 
     private void actPrint() {
         ConcreteSyntaxTree tree = parser.print(env, item);
-        output = tree != null ? tree.toString(): null;
+        output = tree != null ? tree.toString() : null;
     }
 
     private void actParse() {
@@ -97,7 +94,7 @@ public class BuilderTest {
         }
     }
 
-    public static class Builder extends GenericBuilder<Builder, Item> {
+    public static class Builder extends GenericStruct<Builder> {
         public String a;
         public String b;
 

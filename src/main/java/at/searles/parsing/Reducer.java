@@ -7,24 +7,39 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Reducer<T, U> extends Recognizable {
 
-    /**
-     * Parses elements from TokStream
-     * @param env The env used to communicate parsing errors.
-     * @param stream The stream from which elements are read
-     * @param left The element left of this reducer
-     * @return The parsed element, null if parsing was not successful.
-     */
-    @Nullable U parse(Environment env, ParserStream stream, @NotNull T left); // null = fail.
+    static <T> Reducer<T, T> opt(Reducer<T, T> reducer) {
+        return new ReducerOpt<>(reducer);
+    }
 
     // Since parse requires two arguments apart from the env,
     // the printer is split into two methods
+
+    static <T> Reducer<T, T> rep(Reducer<T, T> reducer) {
+        return new ReducerRep<>(reducer);
+    }
+
+    static <T> Reducer<T, T> plus(Reducer<T, T> reducer) {
+        return new ReducerPlus<>(reducer, 1);
+    }
+
+    /**
+     * Parses elements from TokStream
+     *
+     * @param env    The env used to communicate parsing errors.
+     * @param stream The stream from which elements are read
+     * @param left   The element left of this reducer
+     * @return The parsed element, null if parsing was not successful.
+     */
+    @Nullable
+    U parse(Environment env, ParserStream stream, @NotNull T left); // null = fail.
 
     /**
      * Prints the argument that is split of u on its right. It is the
      * counterpart of the left method. This method always succeeds if left succeeds.
      * Otherwise, it will trigger an error via env.
+     *
      * @param env The env
-     * @param u The argument
+     * @param u   The argument
      * @return null if fail
      */
     @Nullable
@@ -44,17 +59,5 @@ public interface Reducer<T, U> extends Recognizable {
 
     default Reducer<T, U> or(Reducer<T, U> alternative, boolean swapOnInvert) {
         return new ReducerOrReducer<>(this, alternative, swapOnInvert);
-    }
-
-    static <T> Reducer<T, T> opt(Reducer<T, T> reducer) {
-        return new ReducerOpt<>(reducer);
-    }
-
-    static <T> Reducer<T, T> rep(Reducer<T, T> reducer) {
-        return new ReducerRep<>(reducer);
-    }
-
-    static <T> Reducer<T, T> plus(Reducer<T, T> reducer) {
-        return new ReducerPlus<>(reducer, 1);
     }
 }

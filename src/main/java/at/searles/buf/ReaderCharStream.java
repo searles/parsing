@@ -20,20 +20,20 @@ public class ReaderCharStream implements CharStream {
         try {
             int ch = r.read();
 
-            if(ch == -1) {
+            if (ch == -1) {
                 return -1;
             }
 
-            offset ++;
+            offset++;
 
-            if(Character.isHighSurrogate((char) ch)) {
+            if (Character.isHighSurrogate((char) ch)) {
                 int low = r.read();
 
-                if(low == -1) {
+                if (low == -1) {
                     throw new IllegalArgumentException("no lo surrogate from this reader");
                 }
 
-                offset ++;
+                offset++;
 
                 return Character.toCodePoint((char) ch, (char) low);
             }

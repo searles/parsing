@@ -16,11 +16,11 @@ public class StringAppend implements Fold<String, Integer, String> {
 
     @Override
     public String leftInverse(Environment env, @NotNull String result) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
 
-        if(Character.isHighSurrogate(result.charAt(result.length() - 1))) {
+        if (Character.isHighSurrogate(result.charAt(result.length() - 1))) {
             // TODO check
             return result.substring(0, result.length() - 2);
         } else {
@@ -30,7 +30,7 @@ public class StringAppend implements Fold<String, Integer, String> {
 
     @Override
     public Integer rightInverse(Environment env, @NotNull String result) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Fold to prepend elements to a list.
+ *
  * @param <T>
  */
 public class Prepend<T> implements Fold<T, List<T>, List<T>> {
@@ -24,7 +25,7 @@ public class Prepend<T> implements Fold<T, List<T>, List<T>> {
 
     @Override
     public T leftInverse(Environment env, @NotNull List<T> result) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
 
@@ -33,7 +34,7 @@ public class Prepend<T> implements Fold<T, List<T>, List<T>> {
 
     @Override
     public List<T> rightInverse(Environment env, @NotNull List<T> result) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
 

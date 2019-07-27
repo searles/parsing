@@ -5,7 +5,7 @@ import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;
 import at.searles.regex.RegexParser;
-import at.searles.utils.GenericBuilder;
+import at.searles.utils.GenericStruct;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -14,7 +14,7 @@ import org.junit.Test;
 public class BuilderSetterTest {
 
     private final Lexer lexer = new Lexer();
-    private final Parser<Object> id =  Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
+    private final Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
             new Mapping<CharSequence, Object>() {
                 @Override
                 public Object parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
@@ -27,7 +27,13 @@ public class BuilderSetterTest {
                     return result instanceof String ? result.toString() : null;
                 }
             }, false);
-
+    final Parser<Object> parser =
+            id.then(
+                    Reducer.opt(
+                            Recognizer.fromString("+", lexer, false)
+                                    .then(Utils.builder(Builder.class, "a"))
+                                    .then(Utils.build(Builder.class))
+                    ));
     private final Environment env = new Environment() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
@@ -38,15 +44,6 @@ public class BuilderSetterTest {
         public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
         }
     };
-
-    final Parser<Object> parser =
-            id.then(
-                Reducer.opt(
-                    Recognizer.fromString("+", lexer, false)
-                    .then(Utils.builder(Builder.class, "a"))
-                    .then(Utils.build(Builder.class))
-                ));
-
     private ParserStream input;
     private Object item; // using object to test inheritance
     private String output;
@@ -87,7 +84,7 @@ public class BuilderSetterTest {
 
     private void actPrint() {
         ConcreteSyntaxTree tree = parser.print(env, item);
-        output = tree != null ? tree.toString(): null;
+        output = tree != null ? tree.toString() : null;
     }
 
     private void actParse() {
@@ -107,7 +104,7 @@ public class BuilderSetterTest {
         }
     }
 
-    public static class Builder extends GenericBuilder<Builder, Item> {
+    public static class Builder extends GenericStruct<Builder> {
         public String a;
 
         public static Builder toBuilder(Item item) {
@@ -118,7 +115,6 @@ public class BuilderSetterTest {
             return builder;
         }
 
-        @Override
         public Item build(Environment env, ParserStream stream) {
             return new Item(a);
         }

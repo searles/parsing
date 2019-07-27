@@ -123,7 +123,7 @@ class PrinterTest {
         val openPar = Recognizer.fromString("(", lexer, false)
         val closePar = Recognizer.fromString(")", lexer, false)
 
-        val idMapping = object: Mapping<CharSequence, AstNode> {
+        val idMapping = object : Mapping<CharSequence, AstNode> {
             override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                     IdNode(stream.createSourceInfo(), left.toString())
 
@@ -131,7 +131,7 @@ class PrinterTest {
                     if (result is IdNode) result.value else null
         }
 
-        val numMapping = object: Mapping<CharSequence, AstNode> {
+        val numMapping = object : Mapping<CharSequence, AstNode> {
             override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                     NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
@@ -148,17 +148,17 @@ class PrinterTest {
         val term = id.or(num).or(openPar.then(expr.annotate(Markers.Block)).then(closePar))
 
         // app = term+
-        val appFold = object: Fold<AstNode, AstNode, AstNode> {
+        val appFold = object : Fold<AstNode, AstNode, AstNode> {
             override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode {
                 return AppNode(stream.createSourceInfo(), left, right)
             }
 
             override fun leftInverse(env: Environment, result: AstNode): AstNode? {
-                return if(result is AppNode) result.left else null
+                return if (result is AppNode) result.left else null
             }
 
             override fun rightInverse(env: Environment, result: AstNode): AstNode? {
-                return if(result is AppNode) result.right else null
+                return if (result is AppNode) result.right else null
             }
         }
 
@@ -171,7 +171,7 @@ class PrinterTest {
 
     private fun initCstPrinter() {
         this.outStream = StringOutStream()
-        this.cstPrinter = object: CstPrinter(outStream) {
+        this.cstPrinter = object : CstPrinter(outStream) {
             var indent: Int = 0
             var atBeginningOfLine: Boolean = false
 
@@ -181,7 +181,7 @@ class PrinterTest {
             }
 
             override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter {
-                return when(annotation) {
+                return when (annotation) {
                     Markers.Block -> {
                         newline()
                         indent++
@@ -198,7 +198,7 @@ class PrinterTest {
             }
 
             override fun print(seq: CharSequence?): CstPrinter {
-                if(atBeginningOfLine) {
+                if (atBeginningOfLine) {
                     atBeginningOfLine = false
                     append(" ".repeat(indent))
                 }
@@ -208,10 +208,10 @@ class PrinterTest {
         }
     }
 
-    class NumNode(info: SourceInfo, val value: Int): AstNode(info)
-    class IdNode(info: SourceInfo, val value: String): AstNode(info)
+    class NumNode(info: SourceInfo, val value: Int) : AstNode(info)
+    class IdNode(info: SourceInfo, val value: String) : AstNode(info)
 
-    class AppNode(info: SourceInfo, val left: AstNode, val right: AstNode): AstNode(info)
+    class AppNode(info: SourceInfo, val left: AstNode, val right: AstNode) : AstNode(info)
 
     enum class Markers { Block, Arg }
 }

@@ -9,12 +9,22 @@ import java.util.Iterator;
 
 public class CharSet implements Regex, Iterable<Interval> {
 
-    public static CharSet chars(int...chars) {
+    private final IntervalSet<Void> set;
+
+    private CharSet(IntervalSet<Void> set) {
+        this.set = set;
+    }
+
+    private CharSet() {
+        this(new IntervalSet<>());
+    }
+
+    public static CharSet chars(int... chars) {
         Arrays.sort(chars);
 
         IntervalSet<Void> set = new IntervalSet<>();
 
-        for(int ch : chars) {
+        for (int ch : chars) {
             set.add(ch, ch + 1, null, (a, b) -> null);
         }
 
@@ -22,18 +32,17 @@ public class CharSet implements Regex, Iterable<Interval> {
     }
 
     /**
-     *
      * @param intervals [a, b], b is inclusive!
-     * @return
+     * @return The CharSet convaining the intervals provided
      */
-    public static CharSet interval(int...intervals) {
-        if(intervals.length % 2 != 0) {
+    public static CharSet interval(int... intervals) {
+        if (intervals.length % 2 != 0) {
             throw new IllegalArgumentException("must have an even number of ranges");
         }
 
         IntervalSet<Void> set = new IntervalSet<>();
 
-        for(int i = 0; i < intervals.length; i += 2) {
+        for (int i = 0; i < intervals.length; i += 2) {
             set.add(intervals[i], intervals[i + 1] + 1, null, (a, b) -> null);
         }
 
@@ -43,7 +52,7 @@ public class CharSet implements Regex, Iterable<Interval> {
     public static CharSet fromIntervals(Iterable<Interval> intervals) {
         CharSet set = empty();
 
-        for(Interval i : intervals) {
+        for (Interval i : intervals) {
             set.set.add(i.start, i.end, null, (a, b) -> null);
         }
 
@@ -58,16 +67,6 @@ public class CharSet implements Regex, Iterable<Interval> {
         return interval(Integer.MIN_VALUE, Integer.MAX_VALUE - 1);
     }
 
-    private final IntervalSet<Void> set;
-
-    private CharSet(IntervalSet<Void> set) {
-        this.set = set;
-    }
-
-    private CharSet() {
-        this(new IntervalSet<>());
-    }
-
     public <A> IntervalSet<A> copyIntervalSet(A a) {
         return set.copy(ignore -> a);
     }
@@ -75,7 +74,7 @@ public class CharSet implements Regex, Iterable<Interval> {
     public boolean isAll() {
         IntervalSet.Iter<Void> it = set.iterator();
 
-        if(it.hasNext()) {
+        if (it.hasNext()) {
             it.next();
 
             return it.start() == Integer.MIN_VALUE && it.end() == Integer.MAX_VALUE;
@@ -93,7 +92,7 @@ public class CharSet implements Regex, Iterable<Interval> {
     }
 
     public boolean isInverted() {
-        if(!set.isEmpty()) {
+        if (!set.isEmpty()) {
             IntervalSet.Iter<Void> it = set.iterator();
             it.next();
 
@@ -110,7 +109,7 @@ public class CharSet implements Regex, Iterable<Interval> {
 
         IntervalSet.Iter<Void> it = set.iterator();
 
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             it.next();
             inverted.add(start, it.start(), null, (a, b) -> null);
             start = it.end();

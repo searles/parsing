@@ -17,15 +17,14 @@ public class ParserStream {
      */
     private long parsedEnd;
 
-    public static ParserStream fromString(String string) {
-        return new ParserStream(TokStream.fromString(string));
-    }
-
     public ParserStream(TokStream stream) {
         this.stream = stream;
         this.parsedStart = this.parsedEnd = stream.offset();
     }
 
+    public static ParserStream fromString(String string) {
+        return new ParserStream(TokStream.fromString(string));
+    }
 
     public long start() {
         return this.parsedStart;
@@ -50,7 +49,7 @@ public class ParserStream {
     public CharSequence parseToken(Token token, boolean exclusive) {
         CharSequence seq = token.parseToken(stream, exclusive);
 
-        if(seq == null) {
+        if (seq == null) {
             return null;
         }
 
@@ -65,6 +64,7 @@ public class ParserStream {
      * the next token matched will start at the given parameter.
      * The caller must take care of start and end of the parsed
      * unit.
+     *
      * @param offset The new offset.
      */
     public void setOffset(long offset) {

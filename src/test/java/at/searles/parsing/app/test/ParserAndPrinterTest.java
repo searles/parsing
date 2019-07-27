@@ -223,10 +223,9 @@ public class ParserAndPrinterTest {
 
     private CharStream stream(int sizeLimit) {
         return new CharStream() {
+            final Random rnd = new Random();
             int countOpen = 0;
             int count = 0;
-            final Random rnd = new Random();
-
             boolean justOpened = true;
 
             @Override
@@ -244,17 +243,17 @@ public class ParserAndPrinterTest {
 
                 count++;
 
-                if(count > sizeLimit)
+                if (count > sizeLimit)
                     random = random % 26;
                 else
                     random = random % 40;
 
-                if(random < 26) {
+                if (random < 26) {
                     justOpened = false;
                     return random + 'a';
                 }
 
-                if(countOpen > 0 && random % 3 != 0 && !justOpened) {
+                if (countOpen > 0 && random % 3 != 0 && !justOpened) {
                     countOpen--;
                     return ')';
                 }
@@ -317,7 +316,9 @@ public class ParserAndPrinterTest {
             );
 
             // this one is recursive, hence
-            { exprParser.set(term.then(Reducer.opt(exprReducer))); }
+            {
+                exprParser.set(term.then(Reducer.opt(exprReducer)));
+            }
 
             @Override
             public Expr parse(Environment environment, ParserStream stream) {
@@ -328,8 +329,7 @@ public class ParserAndPrinterTest {
             public ConcreteSyntaxTree print(Environment environment, Expr expr) {
                 return exprParser.print(environment, expr);
             }
-        }
-        ,
+        },
         ITERATIVE {
             @Override
             public boolean recognize(Environment env, ParserStream stream) {
@@ -379,18 +379,18 @@ public class ParserAndPrinterTest {
             Lexer lexer = new Lexer();
             Parser<Expr> idParser =
                     Parser.fromToken(lexer.token(CharSet.interval('a', 'z')),
-                    new Mapping<CharSequence, Expr>() {
-                        @NotNull
-                        @Override
-                        public Id parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
-                            return new Id(left.toString());
-                        }
+                            new Mapping<CharSequence, Expr>() {
+                                @NotNull
+                                @Override
+                                public Id parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
+                                    return new Id(left.toString());
+                                }
 
-                        @Override
-                        public CharSequence left(Environment env, @NotNull Expr result) {
-                            return result.id();
-                        }
-                    }, false);
+                                @Override
+                                public CharSequence left(Environment env, @NotNull Expr result) {
+                                    return result.id();
+                                }
+                            }, false);
 
             Parser<Expr> wrappedExprParser =
                     Recognizer.fromString("(", lexer, false).

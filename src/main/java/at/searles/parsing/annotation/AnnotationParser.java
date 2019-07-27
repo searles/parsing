@@ -29,7 +29,7 @@ public class AnnotationParser<C, T> implements Parser<T> {
     public ConcreteSyntaxTree print(Environment env, T t) {
         ConcreteSyntaxTree output = parser.print(env, t);
 
-        if(output == null) {
+        if (output == null) {
             return null;
         }
 

@@ -1,8 +1,8 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.Then {
@@ -35,11 +35,11 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
 
         assert stream.start() == preStart;
 
-        if(result == null) {
+        if (result == null) {
             return null;
         }
 
-        if(!right.recognize(env, stream)) {
+        if (!right.recognize(env, stream)) {
             env.notifyNoMatch(stream, this);
 
             stream.setOffset(offset);
@@ -61,7 +61,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
 
         boolean status = Recognizable.Then.super.recognize(env, stream);
 
-        if(status) {
+        if (status) {
             stream.setStart(preStart);
         }
 
@@ -72,7 +72,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u) {
         PartialConcreteSyntaxTree<T> leftOutput = left.print(env, u);
 
-        if(leftOutput == null) {
+        if (leftOutput == null) {
             return null;
         }
 

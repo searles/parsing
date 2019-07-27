@@ -21,10 +21,10 @@ public class IntSet {
     }
 
     private void ensureSize(int requiredSize) {
-        if(elements.length < requiredSize) {
+        if (elements.length < requiredSize) {
             int newSize = elements.length;
 
-            while(newSize < requiredSize) {
+            while (newSize < requiredSize) {
                 newSize *= 2;
             }
 
@@ -37,7 +37,7 @@ public class IntSet {
     public boolean add(int item) {
         int index = Arrays.binarySearch(elements, 0, size, item);
 
-        if(index >= 0) {
+        if (index >= 0) {
             // it exists.
             return false;
         }
@@ -66,7 +66,7 @@ public class IntSet {
 
     public void addAll(IntSet other) {
         // XXX could be faster...
-        for(int i = 0; i < other.size(); ++i) {
+        for (int i = 0; i < other.size(); ++i) {
             this.add(other.getAt(i));
         }
     }
@@ -77,8 +77,8 @@ public class IntSet {
 
     public void retainAll(IntSet other) {
         // XXX can be made faster
-        for(int i = size() - 1; i >= 0; --i) {
-            if(!other.contains(getAt(i))) {
+        for (int i = size() - 1; i >= 0; --i) {
+            if (!other.contains(getAt(i))) {
                 removeAt(i);
             }
         }
@@ -86,7 +86,7 @@ public class IntSet {
 
     public void removeAll(IntSet other) {
         // XXX can be made faster
-        for(int i = 0; i < other.size(); ++i) {
+        for (int i = 0; i < other.size(); ++i) {
             remove(other.getAt(i));
         }
     }
@@ -95,10 +95,11 @@ public class IntSet {
         System.arraycopy(elements, index + 1, elements, index, size - 1 - index);
         this.size--;
     }
+
     public boolean remove(int item) {
         int index = Arrays.binarySearch(elements, 0, size, item);
 
-        if(index < 0) {
+        if (index < 0) {
             return false;
         }
 
@@ -111,10 +112,10 @@ public class IntSet {
         int i0 = 0;
         int i1 = 0;
 
-        while(i0 < this.size() && i1 < other.size()) {
-            if(getAt(i0) < other.getAt(i1)) {
+        while (i0 < this.size() && i1 < other.size()) {
+            if (getAt(i0) < other.getAt(i1)) {
                 i0++;
-            } else if(getAt(i0) > other.getAt(i1)) {
+            } else if (getAt(i0) > other.getAt(i1)) {
                 i1++;
             } else {
                 return true;
@@ -133,8 +134,8 @@ public class IntSet {
 
         sb.append("{");
 
-        for(int i = 0; i < size; ++i) {
-            if(i > 0) {
+        for (int i = 0; i < size; ++i) {
+            if (i > 0) {
                 sb.append(", ");
             }
 

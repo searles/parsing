@@ -16,7 +16,8 @@ public class CstPrinter {
      * Prints a CST that is marked with a certain annotation. Override this
      * method for custom formattings. The default implementation
      * ignores them.
-     * @param tree The cst that is wrapped inside the annotation
+     *
+     * @param tree       The cst that is wrapped inside the annotation
      * @param annotation The object that is used in the annotation parser. Useful
      *                   elements here can be enums that indicate that the wrapped cst
      *                   is a block or an infix symbol.

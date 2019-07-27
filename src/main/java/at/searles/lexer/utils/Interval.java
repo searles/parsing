@@ -25,7 +25,7 @@ public class Interval implements Comparable<Interval> {
 
     @Override
     public boolean equals(Object o) {
-        if(getClass() == o.getClass()) {
+        if (getClass() == o.getClass()) {
             return compareTo((Interval) o) == 0;
         }
 

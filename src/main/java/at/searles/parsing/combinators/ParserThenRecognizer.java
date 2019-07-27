@@ -32,14 +32,14 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
 
         T result = left.parse(env, stream);
 
-        if(result == null) {
+        if (result == null) {
             return null;
         }
 
         // The start position of left.
         long start = stream.start();
 
-        if(!right.recognize(env, stream)) {
+        if (!right.recognize(env, stream)) {
             env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);

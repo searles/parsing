@@ -48,7 +48,7 @@ public class Setter<T, V> implements Fold<T, V, T> {
         try {
             Object value = field.get(result);
 
-            if(value == null) {
+            if (value == null) {
                 return null;
             }
 
@@ -67,7 +67,7 @@ public class Setter<T, V> implements Fold<T, V, T> {
         try {
             Object value = field.get(result);
 
-            if(value == null) {
+            if (value == null) {
                 return null;
             }
 

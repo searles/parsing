@@ -1,7 +1,7 @@
 package at.searles.buf.test;
 
-import at.searles.regex.CharSet;
 import at.searles.lexer.utils.Interval;
+import at.searles.regex.CharSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class CharSetTest {
 
         List<Interval> l = new LinkedList<>();
 
-        for(Interval i : set) {
+        for (Interval i : set) {
             l.add(i);
         }
 

@@ -27,6 +27,7 @@ public class Token {
     /**
      * Returns a char sequence (that is always an instance of TokenSet) that matches
      * this token.
+     *
      * @param tokStream The TokStream from which the token is fetched
      * @return null, if the next item is not a Token.
      */
@@ -39,15 +40,15 @@ public class Token {
      */
     public CharSequence parseToken(TokStream tokStream, boolean exclusive) {
         // Fetch next (current?) token.
-        if(!tokStream.fetchToken(lexer)) {
+        if (!tokStream.fetchToken(lexer)) {
             return null;
         }
 
-        if(exclusive && tokStream.acceptedTokens().size() != 1) {
+        if (exclusive && tokStream.acceptedTokens().size() != 1) {
             return null;
         }
 
-        if(!tokStream.acceptedTokens().contains(tokIndex)) {
+        if (!tokStream.acceptedTokens().contains(tokIndex)) {
             return null;
         }
 

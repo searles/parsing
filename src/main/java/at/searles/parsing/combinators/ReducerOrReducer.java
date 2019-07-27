@@ -1,5 +1,9 @@
 package at.searles.parsing.combinators;
-import at.searles.parsing.*;
+
+import at.searles.parsing.Environment;
+import at.searles.parsing.ParserStream;
+import at.searles.parsing.Recognizable;
+import at.searles.parsing.Reducer;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +26,7 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
 
         U ret = r1.parse(env, stream, left);
 
-        if(ret != null) {
+        if (ret != null) {
             return ret;
         }
 

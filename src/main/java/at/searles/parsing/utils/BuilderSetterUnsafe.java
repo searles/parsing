@@ -23,7 +23,7 @@ public class BuilderSetterUnsafe<T, V> implements Mapping<V, T> {
     public T parse(Environment env, ParserStream stream, @NotNull V left) {
         T builder = builderInitializer.parse(env, stream);
 
-        if(builder == null) {
+        if (builder == null) {
             return null;
         }
 
@@ -35,13 +35,13 @@ public class BuilderSetterUnsafe<T, V> implements Mapping<V, T> {
     public V left(Environment env, @NotNull T result) {
         V left = setterUnsafe.rightInverse(env, result);
 
-        if(left == null) {
+        if (left == null) {
             return null;
         }
 
         T leftBuilder = setterUnsafe.leftInverse(env, result);
 
-        if(leftBuilder == null || !builderInitializer.consume(env, leftBuilder)) {
+        if (leftBuilder == null || !builderInitializer.consume(env, leftBuilder)) {
             return null;
         }
 

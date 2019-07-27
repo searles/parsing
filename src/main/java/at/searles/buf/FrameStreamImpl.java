@@ -5,11 +5,10 @@ import org.jetbrains.annotations.NotNull;
 public class FrameStreamImpl implements FrameStream {
 
     private final Impl stream;
+    private final CharSeq frame;
     private long frameStart;
     private long frameEnd;
-
     private boolean invalid;
-    private final CharSeq frame;
 
     public FrameStreamImpl(Impl stream) {
         this.stream = stream;
@@ -20,7 +19,7 @@ public class FrameStreamImpl implements FrameStream {
     @Override
     public int next() {
         // if frame becomes too big, increase buffer size
-        if(frameEnd - frameStart >= stream.bufSize()) {
+        if (frameEnd - frameStart >= stream.bufSize()) {
             throw new IllegalArgumentException("buffer size is too small");
         }
 
@@ -79,10 +78,10 @@ public class FrameStreamImpl implements FrameStream {
         private String str;
 
         private void update() {
-            if(invalid) {
+            if (invalid) {
                 StringBuilder sb = new StringBuilder();
 
-                for(long index = frameStart; index < frameEnd; ++index) {
+                for (long index = frameStart; index < frameEnd; ++index) {
                     sb.appendCodePoint(stream.cached(index));
                 }
 

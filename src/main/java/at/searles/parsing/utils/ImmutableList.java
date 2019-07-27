@@ -8,6 +8,7 @@ import java.util.List;
  * To avoid side effects when backtracking but at the same time avoid excessive copying,
  * this class wraps a mutable list into an immutable list that though supports backtracking
  * by using a pushBack-method.
+ *
  * @param <E>
  */
 public class ImmutableList<E> extends AbstractList<E> {
@@ -35,7 +36,7 @@ public class ImmutableList<E> extends AbstractList<E> {
     }
 
     public static <T> ImmutableList<T> createFrom(List<T> list) {
-        if(list instanceof ImmutableList) {
+        if (list instanceof ImmutableList) {
             return (ImmutableList<T>) list;
         }
 
@@ -43,7 +44,7 @@ public class ImmutableList<E> extends AbstractList<E> {
     }
 
     public ImmutableList<E> pushBack(E element) {
-        if(element == null) {
+        if (element == null) {
             throw new NullPointerException();
         }
 

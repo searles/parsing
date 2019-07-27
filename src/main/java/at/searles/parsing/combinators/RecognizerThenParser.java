@@ -19,7 +19,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        if(!parent.recognize(env, stream)) {
+        if (!parent.recognize(env, stream)) {
             return null;
         }
 
@@ -27,7 +27,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
 
         T t = parser.parse(env, stream);
 
-        if(t == null) {
+        if (t == null) {
             env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);

@@ -13,61 +13,61 @@ public class RegexParser {
     public static Regex parse(String string) {
         ParserInstance parser = new ParserInstance(string);
         Regex regex = parser.choice();
-        
-        if(parser.hasNext()) {
+
+        if (parser.hasNext()) {
             parser.error(NOT_FULLY_PARSED);
         }
-        
+
         return regex;
     }
-    
+
     public static class ParserException extends RuntimeException {
         public ParserException(String string, int position, int code) {
             super(String.format("Could not parse regex %s at %s, error code: %d", string, position, code));
         }
     }
-    
+
     private static class ParserInstance {
-        int i = 0;
         final String string;
-        
+        int i = 0;
+
         ParserInstance(String string) {
             this.string = string;
         }
-        
+
         void error(int errorCode) {
             throw new ParserException(string, i, errorCode);
         }
 
         char ch() {
             // XXX if whitechars should not matter they can be skipped here.
-            if(!hasNext()) {
+            if (!hasNext()) {
                 error(UNEXPECTED_END);
             }
-            
+
             return string.charAt(i);
         }
-        
+
         boolean hasNext() {
             return i < string.length();
         }
-        
+
         void next() {
             ++i;
         }
 
         // # Single character, possibly escaped.
-        
+
         char chr() {
             char ch = ch();
             next();
             return ch == '\\' ? escaped() : ch;
         }
-        
+
         char escaped() {
             char ch = ch();
             next();
-            switch(ch) {
+            switch (ch) {
                 case 'u':
                     return hex(4);
                 case 'x':
@@ -86,16 +86,16 @@ public class RegexParser {
         char hex(int digits) {
             char ch = 0;
 
-            for(int i = 0; i < digits; ++i) {
+            for (int i = 0; i < digits; ++i) {
                 ch *= 16;
 
                 char digit = ch();
 
-                if('0' <= digit && digit <= '9') {
+                if ('0' <= digit && digit <= '9') {
                     ch += digit - '0';
-                } else if('A' <= digit && digit <= 'F') {
+                } else if ('A' <= digit && digit <= 'F') {
                     ch += digit - 'A' + 10;
-                } else if('a' <= digit && digit <= 'f') {
+                } else if ('a' <= digit && digit <= 'f') {
                     ch += digit - 'a' + 10;
                 } else {
                     error(NO_HEX_DIGIT);
@@ -112,13 +112,13 @@ public class RegexParser {
 
             int length = 0;
 
-            for(char digit = ch(); '0' <= digit && digit <= '9'; digit = ch()) {
+            for (char digit = ch(); '0' <= digit && digit <= '9'; digit = ch()) {
                 num = num * 10 + digit - '0';
                 length++;
                 next();
             }
 
-            if(length == 0) {
+            if (length == 0) {
                 error(NO_DIGIT);
             }
 
@@ -127,51 +127,51 @@ public class RegexParser {
 
         // single quoted string, returns null if not single-quoted.
         String singleQuoted() {
-            if(ch() != '\'') {
+            if (ch() != '\'') {
                 return null;
             }
-            
+
             next(); // consume initializing '
-            
+
             StringBuilder sb = new StringBuilder();
-            
-            while(ch() != '\'') {
+
+            while (ch() != '\'') {
                 sb.append(chr());
             }
-            
+
             next(); // consume terminating '
-            
+
             return sb.toString();
         }
-        
+
         // quoted string may contain charsets and .
-        
+
         CharSet charSet() {
-            if(ch() == '.') {
+            if (ch() == '.') {
                 next();
                 return CharSet.all();
             }
-            
-            if(ch() != '[') {
+
+            if (ch() != '[') {
                 return null;
             }
-            
+
             next();
-            
+
             boolean invert = false;
-            
-            if(ch() == '^') {
+
+            if (ch() == '^') {
                 invert = true;
                 next();
             }
-            
+
             CharSet set = CharSet.empty();
-            
+
             do {
                 // there must be at least one element
                 char start = chr();
-                
-                if(ch() == '-') {
+
+                if (ch() == '-') {
                     next();
                     char end = ch();
                     set = set.union(CharSet.interval(start, end));
@@ -179,13 +179,13 @@ public class RegexParser {
                     set = set.union(CharSet.chars(start));
                 }
             } while (ch() != ']');
-            
+
             next(); // consume closing ]
-            
-            if(invert) {
+
+            if (invert) {
                 set = set.invert();
             }
-            
+
             return set;
         }
 
@@ -195,54 +195,54 @@ public class RegexParser {
 
         // Quoted may contain charsets in between.
         Regex quoted() {
-            if(ch() != '\"') {
+            if (ch() != '\"') {
                 return null;
             }
-            
+
             next(); // consume initializing "
-            
+
             Regex regex = null;
 
             StringBuilder sb = new StringBuilder();
-            
-            while(ch() != '\"') {
+
+            while (ch() != '\"') {
                 CharSet set = charSet();
-                
-                if(set != null) {
-                    if(sb.length() != 0) {
+
+                if (set != null) {
+                    if (sb.length() != 0) {
                         regex = then(regex, Regex.text(sb.toString()));
                         sb.setLength(0);
                     }
-                    
+
                     regex = then(regex, set);
                 } else {
                     sb.append(CharSet.chars(chr()));
                 }
-                
+
                 regex = then(regex, set);
             }
-            
+
             next(); // consume terminating "
-            
-            if(sb.length() != 0) {
+
+            if (sb.length() != 0) {
                 regex = then(regex, Regex.text(sb.toString()));
             }
 
-            
+
             return regex;
         }
-        
+
         // the only thing that terminates a regex is a closing ).
         Regex term() {
-            if(!hasNext() || ch() == ')' || ch() == '|') {
+            if (!hasNext() || ch() == ')' || ch() == '|') {
                 return null;
             }
-            
-            if(ch() == '(') {
+
+            if (ch() == '(') {
                 next();
                 Regex regex = choice();
-                
-                if(ch() != ')') {
+
+                if (ch() != ')') {
                     error(MISSING_CLOSING);
                 } else {
                     next();
@@ -250,19 +250,19 @@ public class RegexParser {
 
                 return regex;
             }
-            
+
             CharSet set = charSet();
-            
-            if(set != null) {
+
+            if (set != null) {
                 return set;
             }
 
             String str = singleQuoted();
 
-            if(str != null) {
+            if (str != null) {
                 return Regex.text(str);
             }
-            
+
             char chr = chr();
 
             return Regex.text(Character.toString(chr));
@@ -271,8 +271,7 @@ public class RegexParser {
         /**
          * regex{min,max} or regex{count} or
          * regex{min,} or regex{,max}
-         * @param regex
-         * @return
+         *
          */
         Regex repeat(Regex regex) {
             if (ch() != '{') {
@@ -281,7 +280,7 @@ public class RegexParser {
 
             next();
 
-            if(ch() == ',') {
+            if (ch() == ',') {
                 next();
                 int max = integer();
 
@@ -289,10 +288,10 @@ public class RegexParser {
             } else {
                 int min = integer();
 
-                if(ch() == ',') {
+                if (ch() == ',') {
                     next();
 
-                    if(ch() != '}') {
+                    if (ch() != '}') {
                         int max = integer();
 
                         regex = regex.range(min, max);
@@ -304,7 +303,7 @@ public class RegexParser {
                 }
             }
 
-            if(ch() != '}') {
+            if (ch() != '}') {
                 error(MISSING_CLOSING_RANGE);
             }
 
@@ -312,16 +311,16 @@ public class RegexParser {
 
             return regex;
         }
-        
+
         Regex qualified() {
             // may return null
             Regex regex = term();
-            
-            if(regex == null) {
+
+            if (regex == null) {
                 return null;
             }
 
-            if(hasNext()) {
+            if (hasNext()) {
                 if (ch() == '*') {
                     next();
                     regex = regex.rep();
@@ -338,7 +337,7 @@ public class RegexParser {
                 } else {
                     Regex repeat = repeat(regex);
 
-                    if(repeat != null) {
+                    if (repeat != null) {
                         regex = repeat;
                     }
                 }
@@ -346,26 +345,26 @@ public class RegexParser {
 
             return regex;
         }
-        
+
         Regex concat() {
             // never returns null
             Regex regex = null;
 
-            for(Regex next = qualified(); next != null; next = qualified()) {
+            for (Regex next = qualified(); next != null; next = qualified()) {
                 regex = then(regex, next);
             }
 
             return regex;
         }
-        
+
         Regex choice() {
             Regex regex = concat();
 
-            if(regex == null) {
+            if (regex == null) {
                 return null;
             }
-            
-            while(hasNext() && ch() == '|') {
+
+            while (hasNext() && ch() == '|') {
                 next();
 
                 Regex next = concat();

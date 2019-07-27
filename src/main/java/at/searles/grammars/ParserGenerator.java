@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer;
 import at.searles.lexer.LexerWithHidden;
 import at.searles.parsing.*;
 import at.searles.parsing.utils.Utils;
-import at.searles.parsing.utils.ast.*;
+import at.searles.parsing.utils.ast.AstNode;
 import at.searles.parsing.utils.ast.builder.AstNodeBuilder;
 import at.searles.regex.CharSet;
 import at.searles.regex.Regex;
@@ -13,13 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class ParserGenerator {
-
-    /**
-     * Grammar
-     */
-
-    public enum Type {
-        Expr, Concat, Literal, Term, Text, Rule, Identifier, Choice, Opt, Plus, Rep, Eager, EscChar, Annotate, Fold, JavaRef, None, Range, Reference, JavaCode, CharSet }
 
     private final Ref<AstNode> rule = new Ref<>(Type.Rule.toString());
     private final Ref<AstNode> expr = new Ref<>(Type.Expr.toString());
@@ -32,13 +25,10 @@ public class ParserGenerator {
     private final Ref<AstNode> charSet = new Ref<>(Type.CharSet.toString());
     private final Ref<Integer> escChar = new Ref<>(Type.EscChar.toString());
     private final Ref<AstNode> ref = new Ref<>(Type.Reference.toString());
-
     private final Ref<String> identifier = new Ref<>(Type.Identifier.toString());
     private final Ref<String> javaCode = new Ref<>(Type.JavaCode.toString());
-
     private final LexerWithHidden lexer = new LexerWithHidden();
     private final Lexer rawLexer = new Lexer();
-
     private final AstNodeBuilder<Type> builder = new SyntaxTreeBuilder();
 
     public ParserGenerator() {
@@ -78,11 +68,11 @@ public class ParserGenerator {
 
         rule.set(
                 identifier.then(t(":"))
-                .then(
-                        expr
-                        .or(builder.empty(Type.None))
-                        .fold(builder.binary(Type.Rule))
-                )
+                        .then(
+                                expr
+                                        .or(builder.empty(Type.None))
+                                        .fold(builder.binary(Type.Rule))
+                        )
         );
 
         // expr: concat ('|'concat)* ;
@@ -90,7 +80,7 @@ public class ParserGenerator {
         expr.set(concat
                 .then(Reducer.rep(
                         t("|").then(concat)
-                        .fold(builder.binary(Type.Choice))
+                                .fold(builder.binary(Type.Choice))
                 ))
         );
 
@@ -99,7 +89,7 @@ public class ParserGenerator {
         concat.set(annotated
                 .then(Reducer.rep(
                         annotated
-                        .fold(builder.binary(Type.Concat))
+                                .fold(builder.binary(Type.Concat))
                 ))
         );
 
@@ -107,7 +97,7 @@ public class ParserGenerator {
                 folded.then(
                         Reducer.opt(t("@").then(
                                 javaCode
-                                .fold(builder.binary(Type.Annotate))
+                                        .fold(builder.binary(Type.Annotate))
                         ))
                 )
         );
@@ -116,7 +106,7 @@ public class ParserGenerator {
                 literal.then(
                         Reducer.opt(t(">").then(
                                 javaCode
-                                .fold(builder.binary(Type.Fold))
+                                        .fold(builder.binary(Type.Fold))
                         ))
                 )
         );
@@ -173,28 +163,28 @@ public class ParserGenerator {
 
         Regex escHexRex =
                 Regex.text("\\u").then(hexDigit.count(4))
-                .or(Regex.text("\\U").then(hexDigit.count(8)))
-                .or(Regex.text("\\x").then(hexDigit.count(2)));
+                        .or(Regex.text("\\U").then(hexDigit.count(8)))
+                        .or(Regex.text("\\x").then(hexDigit.count(2)));
 
         Regex escCharRex =
                 escHexRex
-                .or(Regex.text("\\").then(
-                        Regex.text("n")
-                                .or(Regex.text("r"))
-                                .or(Regex.text("t"))
-                                .or(Regex.text("b"))
-                                .or(Regex.text("f"))
-                                .or(Regex.text("\\"))
-                                .or(Regex.text("]"))
-                                .or(Regex.text("-"))
-                                .or(Regex.text("\'"))
-                                .or(Regex.text("\""))
-                ));
+                        .or(Regex.text("\\").then(
+                                Regex.text("n")
+                                        .or(Regex.text("r"))
+                                        .or(Regex.text("t"))
+                                        .or(Regex.text("b"))
+                                        .or(Regex.text("f"))
+                                        .or(Regex.text("\\"))
+                                        .or(Regex.text("]"))
+                                        .or(Regex.text("-"))
+                                        .or(Regex.text("\'"))
+                                        .or(Regex.text("\""))
+                        ));
 
         escChar.set(
                 Parser.fromToken(rawLexer.token(escCharRex),
-                new EscChars(),
-                false)
+                        new EscChars(),
+                        false)
         );
     }
 
@@ -259,7 +249,7 @@ public class ParserGenerator {
                 Recognizer.fromString("[", rawLexer, false)
                         .then(ranges)
                         .then(Recognizer.fromString("]", rawLexer, false)
-                );
+                        );
 
         Mapping<CharSet, CharSet> invert = (env, stream, set) -> set.invert();
 
@@ -295,15 +285,23 @@ public class ParserGenerator {
         // IDENTIFIER
         Regex idRex =
                 CharSet.interval('A', 'Z', 'a', 'z').or(CharSet.chars('_'))
-                .then(
-                        CharSet.interval('A', 'Z', 'a', 'z', '0', '9')
-                        .or(CharSet.chars('_')).rep()
-                );
+                        .then(
+                                CharSet.interval('A', 'Z', 'a', 'z', '0', '9')
+                                        .or(CharSet.chars('_')).rep()
+                        );
 
         identifier.set(Parser.fromToken(lexer.token(idRex), (env, stream, seq) -> seq.toString(), false));
 
         // REF
         ref.set(javaCode.or(identifier).then(builder.value(Type.Reference)));
+    }
+
+    /**
+     * Grammar
+     */
+
+    public enum Type {
+        Expr, Concat, Literal, Term, Text, Rule, Identifier, Choice, Opt, Plus, Rep, Eager, EscChar, Annotate, Fold, JavaRef, None, Range, Reference, JavaCode, CharSet
     }
 
     private static class JavaCode implements Mapping<CharSequence, String> {
@@ -312,10 +310,10 @@ public class ParserGenerator {
         public String parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
             StringBuilder sb = new StringBuilder();
 
-            for(int i = 1; i < left.length() - 1; ++i) {
+            for (int i = 1; i < left.length() - 1; ++i) {
                 char ch = left.charAt(i);
                 sb.append(ch);
-                if(ch == '`') {
+                if (ch == '`') {
                     // skip char after `. It can only be `
                     i++;
                 }

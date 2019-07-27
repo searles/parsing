@@ -1,6 +1,7 @@
 package at.searles.parsing.utils;
 
 import at.searles.parsing.*;
+import at.searles.parsing.utils.builder.*;
 import at.searles.parsing.utils.common.PairFold;
 import at.searles.parsing.utils.common.SwapPairFold;
 import at.searles.parsing.utils.common.ValueInitializer;
@@ -10,10 +11,11 @@ import at.searles.parsing.utils.map.PutFold;
 import at.searles.parsing.utils.map.SingleMap;
 import at.searles.parsing.utils.opt.NoneInitializer;
 import at.searles.parsing.utils.opt.SomeMapping;
-import at.searles.parsing.utils.builder.*;
 import at.searles.utils.Pair;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class contains utilities to create lists out of parsers for convenience.
@@ -22,13 +24,14 @@ public class Utils {
 
     /**
      * Parser for a separated list.
-     * @param <T> The base type.
+     *
+     * @param <T>       The base type.
      * @param separator The separator, eg a comma
-     * @param parser The parser for all elements
+     * @param parser    The parser for all elements
      * @return An inversible parser for a list of items.
      */
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
-         return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
+        return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
     }
 
     public static <T> Parser<List<T>> list1(Parser<T> parser) {
@@ -39,7 +42,7 @@ public class Utils {
         return Utils.<T>empty().then(
                 Reducer.opt(
                         append(parser, 0)
-                        .then(Reducer.rep(separator.then(append(parser, 1))))
+                                .then(Reducer.rep(separator.then(append(parser, 1))))
                 )
         );
     }
@@ -48,9 +51,9 @@ public class Utils {
         return Utils.<T>empty()
                 .then(Reducer.opt(
                         append(parser, 0)
-                        .then(Reducer.rep(append(parser, 1)))
-                )
-        );
+                                .then(Reducer.rep(append(parser, 1)))
+                        )
+                );
     }
 
     public static <T> Parser<Optional<T>> opt(Parser<T> parser) {
@@ -79,6 +82,7 @@ public class Utils {
 
     /**
      * Creates a reducer that appends a parsed element to the left list
+     *
      * @param minLeftElements The minimum number of elements that are asserted to be in the left list. This is
      *                        needed for inversion.
      */
@@ -116,30 +120,30 @@ public class Utils {
     /**
      * Creates an empty builder
      */
-    public static<T> Initializer<T> builder(Class<T> cls) {
+    public static <T> Initializer<T> builder(Class<T> cls) {
         return new BuilderInitializer<>(cls);
     }
 
     /**
      * Creates a builder and adds the left item to it.
      */
-    public static<T, V> Mapping<V, T> builder(Class<T> builder, String property) {
+    public static <T, V> Mapping<V, T> builder(Class<T> builder, String property) {
         return new BuilderSetterUnsafe<>(builder, property);
     }
 
-    public static<T, V> Reducer<T, T> setter(String property, Parser<V> parser, Class<T> builderType, Class<V> parameterType) {
+    public static <T, V> Reducer<T, T> setter(String property, Parser<V> parser, Class<T> builderType, Class<V> parameterType) {
         return parser.fold(new Setter<>(builderType, property, parameterType));
     }
 
-    public static<T, V> Reducer<T, T> setter(String property, Parser<V> parser) {
+    public static <T, V> Reducer<T, T> setter(String property, Parser<V> parser) {
         return parser.fold(new SetterUnsafe<>(property));
     }
 
-    public static<T, U> Mapping<T, U> build(Class<T> builderType, Class<U> itemType) {
+    public static <T, U> Mapping<T, U> build(Class<T> builderType, Class<U> itemType) {
         return new Build<>(builderType, itemType);
     }
 
-    public static<T, U> Mapping<T, U> build(Class<T> builderType) {
+    public static <T, U> Mapping<T, U> build(Class<T> builderType) {
         return new BuildUnsafe<>(builderType);
     }
 }

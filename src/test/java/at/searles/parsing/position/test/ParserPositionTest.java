@@ -66,7 +66,7 @@ public class ParserPositionTest {
     public void backtrackingRecognizerResetTest() {
         withParser(z.then(
                 a.then(fail)
-                .or(positionInitAssert(0, 1))
+                        .or(positionInitAssert(0, 1))
         ));
         actParse("ZB");
         Assert.assertEquals("", output);
@@ -76,7 +76,7 @@ public class ParserPositionTest {
     public void backtrackingParserThenRecognizerTest() {
         withParser(a.then(
                 z.then(fail)
-                .or(positionAssert(0, 1))
+                        .or(positionAssert(0, 1))
         ));
         actParse("AB");
         Assert.assertEquals("A", output);
@@ -88,7 +88,8 @@ public class ParserPositionTest {
 
     private void actParse(String str) {
         ParserStream parserStream = ParserStream.fromString(str);
-        Environment env = (stream, failedParser) -> {};
+        Environment env = (stream, failedParser) -> {
+        };
         output = parser.parse(env, parserStream);
     }
 }

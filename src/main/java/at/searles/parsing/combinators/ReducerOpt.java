@@ -1,8 +1,11 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.Environment;
+import at.searles.parsing.ParserStream;
+import at.searles.parsing.Recognizable;
+import at.searles.parsing.Reducer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 public class ReducerOpt<T> implements Reducer<T, T>, Recognizable.Opt {

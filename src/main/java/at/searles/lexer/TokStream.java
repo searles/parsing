@@ -8,25 +8,24 @@ import at.searles.lexer.utils.IntSet;
  * as long as characters can be fetched from the used lexer.
  * The internal fields then indicate which tokens in the given matcher
  * were fetched.
- *
+ * <p>
  * If the token then is consumed, the underlying frame stream
  * is flushed so that it is ready for the next token.
- *
+ * <p>
  * If no token could be found, then the token set is empty.
- *
+ * <p>
  * If there is a match but it is not used, the reset-method
  * will revert all changes.
  */
 public class TokStream {
 
+    // underlying buffer
+    private final FrameStream stream;
     /**
      * Values to determine current match
      */
     private Tokenizer tokenizer;
     private IntSet acceptedTokens;
-
-    // underlying buffer
-    private final FrameStream stream;
 
     public TokStream(FrameStream stream) {
         this.stream = stream;
@@ -68,7 +67,7 @@ public class TokStream {
      * in the underlying frameStream.
      */
     public boolean fetchToken(Tokenizer tokenizer) {
-        if(this.tokenizer == tokenizer) {
+        if (this.tokenizer == tokenizer) {
             // nothing to do.
             return acceptedTokens != null;
         }
@@ -106,6 +105,7 @@ public class TokStream {
     /**
      * Do not modify the set; otherwise the lexer will return
      * wrong results in subsequent calls.
+     *
      * @return The intset of accepted tokens from the last
      * fetchToken-Call.
      */

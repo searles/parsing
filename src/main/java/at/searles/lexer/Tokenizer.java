@@ -9,8 +9,7 @@ public interface Tokenizer {
 
     /**
      * Simplified for creating a token from a simple string.
-     * @param str
-     * @return
+     *
      */
     default Token token(String str) {
         return token(Regex.text(str));
@@ -18,6 +17,7 @@ public interface Tokenizer {
 
     /**
      * Creates a token from a regex
+     *
      * @param rex the regex
      * @return the token
      */
@@ -28,6 +28,7 @@ public interface Tokenizer {
 
     /**
      * Optional. Add a regular expression
+     *
      * @param regex The regular expression
      * @return the token id.
      */

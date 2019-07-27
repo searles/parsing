@@ -6,7 +6,6 @@ import at.searles.buf.ReaderCharStream;
 import at.searles.lexer.TokStream;
 import at.searles.parsing.Environment;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizable;
 import at.searles.parsing.utils.ast.AstNode;
 import org.junit.Assert;
 import org.junit.Before;
@@ -108,35 +107,35 @@ public class ParserGeneratorTest {
     }
 
     @Test
-    public void invSet(){
+    public void invSet() {
         withString("~[a-c]");
         parseExpr();
         Assert.assertNotNull(expr);
     }
 
     @Test
-    public void unicodeSmallUString(){
+    public void unicodeSmallUString() {
         withString("'\\u0000'");
         parseExpr();
         Assert.assertNotNull(expr);
     }
 
     @Test
-    public void unicodeLargeUString(){
+    public void unicodeLargeUString() {
         withString("'\\U00000000'");
         parseExpr();
         Assert.assertNotNull(expr);
     }
 
     @Test
-    public void unicodeXString(){
+    public void unicodeXString() {
         withString("'\\U00000000'");
         parseExpr();
         Assert.assertNotNull(expr);
     }
 
     @Test
-    public void unicodeSet(){
+    public void unicodeSet() {
         withString("[\\u0000-\\u007F\\uD800-\\uDBFF]");
         parseExpr();
         Assert.assertNotNull(expr);

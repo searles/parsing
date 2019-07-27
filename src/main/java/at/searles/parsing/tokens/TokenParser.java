@@ -28,7 +28,7 @@ public class TokenParser<A> implements Parser<A> {
     public A parse(Environment env, ParserStream stream) {
         CharSequence seq = stream.parseToken(token, exclusive);
 
-        if(seq == null) {
+        if (seq == null) {
             return null;
         }
 
@@ -39,7 +39,7 @@ public class TokenParser<A> implements Parser<A> {
     public ConcreteSyntaxTree print(Environment env, A a) {
         CharSequence seq = mapping.left(env, a);
 
-        if(seq == null) {
+        if (seq == null) {
             return null;
         }
 

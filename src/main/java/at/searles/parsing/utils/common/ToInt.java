@@ -11,7 +11,7 @@ public class ToInt implements Mapping<CharSequence, Integer> {
     public Integer parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
         try {
             return Integer.parseInt(left.toString());
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }

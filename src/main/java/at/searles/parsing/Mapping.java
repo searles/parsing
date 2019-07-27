@@ -1,7 +1,7 @@
 package at.searles.parsing;
 
-import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ public interface Mapping<T, U> extends Reducer<T, U> {
     default PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u) {
         T left = left(env, u);
 
-        if(left == null) {
+        if (left == null) {
             return null;
         }
 

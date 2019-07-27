@@ -29,7 +29,7 @@ public class LexerWithHidden implements Tokenizer {
 
     @Override
     public IntSet nextToken(FrameStream stream) {
-        for(;;) {
+        for (; ; ) {
             IntSet tokIds = lexer.nextToken(stream);
 
             if (tokIds == null) {

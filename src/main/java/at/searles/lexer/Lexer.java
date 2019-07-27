@@ -2,9 +2,9 @@ package at.searles.lexer;
 
 import at.searles.buf.FrameStream;
 import at.searles.lexer.fsa.FSA;
+import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
-import at.searles.lexer.utils.Counter;
 
 import java.util.ArrayList;
 
@@ -18,23 +18,20 @@ import java.util.ArrayList;
  */
 public class Lexer implements Tokenizer {
 
-    /**
-     * Counter used to get unique IDs.
-     */
-	private int tokenCounter = 0;
-
     private static final int RESERVATION = Integer.MIN_VALUE; // mark nodes that will be added for the next token.
-
     /**
      * Data that is shared amongst all FSAs that are generated in this lexer.
      */
     final Counter fsaNodeCounter = new Counter();
-
-	/**
-	 * fsa that accepts our current language. Empty language is not allowed,
-	 * add must be called at least once.
-	 */
+    /**
+     * fsa that accepts our current language. Empty language is not allowed,
+     * add must be called at least once.
+     */
     private final FSA fsa;
+    /**
+     * Counter used to get unique IDs.
+     */
+    private int tokenCounter = 0;
 
     public Lexer() {
         this.fsa = new FSA(this.fsaNodeCounter, false); // accept nothing.
@@ -51,8 +48,9 @@ public class Lexer implements Tokenizer {
      * tokenIndex can be returned. Theoretically this means
      * that this method can verify whether two regexes are
      * equivalent.
-     * @param newFSA
-     * @return
+     *
+     * @param newFSA The fsa to be added
+     * @return the added token
      */
     private int add(FSA newFSA) {
         // fetch all accepting nodes of newFSA.
@@ -76,11 +74,11 @@ public class Lexer implements Tokenizer {
         ArrayList<FSA.Node> reservedNodes = new ArrayList<>();
 
         // XXX could be speeded up by removing outside from inside sooner.
-        for(FSA.Node n : fsa.accepting()) {
-            if(n.acceptors.contains(RESERVATION)) {
+        for (FSA.Node n : fsa.accepting()) {
+            if (n.acceptors.contains(RESERVATION)) {
                 reservedNodes.add(n);
 
-                if(inside == null) {
+                if (inside == null) {
                     inside = new IntSet();
                     inside.addAll(n.acceptors);
                 } else {
@@ -100,10 +98,10 @@ public class Lexer implements Tokenizer {
 
         assert inside.size() <= 2;
 
-        if(inside.size() == 1) {
+        if (inside.size() == 1) {
             // we need a new token.
             int tok = tokenCounter++;
-            for(FSA.Node n : reservedNodes) {
+            for (FSA.Node n : reservedNodes) {
                 n.acceptors.add(tok);
                 n.acceptors.remove(RESERVATION);
             }
@@ -111,18 +109,19 @@ public class Lexer implements Tokenizer {
             return tok;
         } else {
             // we found a token already that is equivalent to this one.
-            for(FSA.Node n : reservedNodes) {
+            for (FSA.Node n : reservedNodes) {
                 n.acceptors.remove(RESERVATION);
             }
 
             // return the larger token. (RESERVATION is negative.)
             return inside.last();
         }
-	}
+    }
 
     /**
      * Adds a regular expression as a token.
-     * @param regex
+     *
+     * @param regex The regex to be added.
      * @return the index for this regex. If
      * there has already been a semantically
      * identical regex, an already existing
@@ -142,12 +141,13 @@ public class Lexer implements Tokenizer {
 
     /**
      * Fetches the next token from the token stream.
+     *
      * @return A set that should not be modified.
      */
     public IntSet nextToken(FrameStream stream) {
         FSA.Node node = fsa.accept(stream);
 
-        if(node == null) {
+        if (node == null) {
             return null;
         }
 

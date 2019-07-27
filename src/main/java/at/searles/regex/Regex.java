@@ -5,12 +5,12 @@ package at.searles.regex;
  */
 public interface Regex {
 
-    <A> A accept(Visitor<A> visitor);
-
     // 'abc'
     static Regex text(String s) {
         return new Text(s);
     }
+
+    <A> A accept(Visitor<A> visitor);
 
     // A B
     default Regex then(Regex that) {

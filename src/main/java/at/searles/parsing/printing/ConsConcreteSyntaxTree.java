@@ -19,7 +19,7 @@ public class ConsConcreteSyntaxTree implements ConcreteSyntaxTree {
 
         ConcreteSyntaxTree tree = right;
 
-        while(tree instanceof ConsConcreteSyntaxTree) {
+        while (tree instanceof ConsConcreteSyntaxTree) {
             ((ConsConcreteSyntaxTree) tree).left.printTo(printer);
             tree = ((ConsConcreteSyntaxTree) tree).right;
         }

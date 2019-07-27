@@ -1,6 +1,8 @@
 package at.searles.parsing.utils.ast.builder;
 
-import at.searles.parsing.*;
+import at.searles.parsing.Fold;
+import at.searles.parsing.Initializer;
+import at.searles.parsing.Mapping;
 import at.searles.parsing.utils.ast.AstNode;
 import at.searles.parsing.utils.ast.SourceInfo;
 
@@ -12,6 +14,7 @@ import java.util.Map;
  * abstract syntax tree nodes. For this purpose, it provides various builder
  * methods (createXXX) and their (partly and not necessarily total) inverts
  * (matchXXX).
+ *
  * @param <L> A label that indicates the type of the node.
  */
 public interface AstNodeBuilder<L> {

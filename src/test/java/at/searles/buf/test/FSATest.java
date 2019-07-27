@@ -3,8 +3,8 @@ package at.searles.buf.test;
 import at.searles.buf.FrameStream;
 import at.searles.buf.StringWrapper;
 import at.searles.lexer.fsa.FSA;
-import at.searles.regex.CharSet;
 import at.searles.lexer.utils.Counter;
+import at.searles.regex.CharSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,14 +12,13 @@ import org.junit.Test;
 public class FSATest {
 
     private Counter counter;
+    private FSA fsa;
+    private String s;
 
     @Before
     public void setup() {
         this.counter = new Counter();
     }
-
-    private FSA fsa;
-    private String s;
 
     private void withFSA(FSA fsa) {
         this.fsa = fsa;
@@ -29,20 +28,20 @@ public class FSATest {
         this.s = s;
     }
 
-    private FSA step(int...chs) {
+    private FSA step(int... chs) {
         return new FSA(counter, CharSet.chars(chs));
     }
 
     private void assertFullMatch(boolean match, boolean full) {
         FrameStream stream = new StringWrapper(s);
 
-        if(match) {
+        if (match) {
             Assert.assertNotNull(fsa.accept(stream));
         } else {
             Assert.assertNull(fsa.accept(stream));
         }
 
-        if(match) Assert.assertEquals(full, stream.frame().toString().equals(s));
+        if (match) Assert.assertEquals(full, stream.frame().toString().equals(s));
     }
 
     @Test

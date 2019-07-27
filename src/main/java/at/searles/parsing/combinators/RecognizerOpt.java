@@ -28,7 +28,7 @@ public class RecognizerOpt implements Recognizer, Recognizable.Opt {
     @NotNull
     @Override
     public ConcreteSyntaxTree print(Environment env) {
-        if(alwaysPrint) {
+        if (alwaysPrint) {
             return parent.print(env);
         }
 

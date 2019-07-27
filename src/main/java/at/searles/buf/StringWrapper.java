@@ -5,12 +5,10 @@ import org.jetbrains.annotations.NotNull;
 public class StringWrapper implements FrameStream {
 
     private final String str;
+    private final CharSequence frame; // singleton
     private int ptr;
-
     private int frameStart;
     private int frameEnd;
-
-    private final CharSequence frame; // singleton
 
     public StringWrapper(String str) {
         this.str = str;
@@ -21,7 +19,7 @@ public class StringWrapper implements FrameStream {
 
     @Override
     public int next() {
-        if(ptr >= str.length()) {
+        if (ptr >= str.length()) {
             return -1;
         }
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Fold to append elements to a list.
+ *
  * @param <T>
  */
 public class Append<T> implements Fold<List<T>, T, List<T>> {
@@ -31,7 +32,7 @@ public class Append<T> implements Fold<List<T>, T, List<T>> {
 
     @Override
     public List<T> leftInverse(Environment env, @NotNull List<T> result) {
-        if(cannotInvert(result)) {
+        if (cannotInvert(result)) {
             return null;
         }
 
@@ -40,7 +41,7 @@ public class Append<T> implements Fold<List<T>, T, List<T>> {
 
     @Override
     public T rightInverse(Environment env, @NotNull List<T> result) {
-        if(cannotInvert(result)) {
+        if (cannotInvert(result)) {
             return null;
         }
 

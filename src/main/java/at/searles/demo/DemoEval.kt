@@ -3,7 +3,6 @@ package at.searles.demo
 import at.searles.lexer.LexerWithHidden
 import at.searles.parsing.*
 import at.searles.regex.RegexParser
-import java.lang.RuntimeException
 
 /**
  * Demo of a simple evaluator of mathematical expressions for
@@ -24,8 +23,8 @@ fun main() {
 
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
-    val numMapping = Mapping<CharSequence, Int> {
-        _, left, _ -> Integer.parseInt(left.toString())
+    val numMapping = Mapping<CharSequence, Int> { _, left, _ ->
+        Integer.parseInt(left.toString())
     }
     val num = Parser.fromToken(numToken, numMapping, false).ref("num")
 
@@ -49,7 +48,7 @@ fun main() {
 
     val literal =
             minus.then(term).then(negate)
-            .or(term).ref("literal")
+                    .or(term).ref("literal")
 
     // product: term ('*' term | '/' term)* ;
 
@@ -67,8 +66,8 @@ fun main() {
 
     val product = literal.then(
             Reducer.rep(
-                times.then(literal).fold(multiply)
-                .or(slash.then(literal).fold(divide))
+                    times.then(literal).fold(multiply)
+                            .or(slash.then(literal).fold(divide))
             )
     ).ref("product")
 
@@ -85,17 +84,17 @@ fun main() {
     }
 
     sum.set(
-        product.then(
-            Reducer.rep(
-                plus.then(product).fold(add)
-                .or(minus.then(product).fold(sub))
+            product.then(
+                    Reducer.rep(
+                            plus.then(product).fold(add)
+                                    .or(minus.then(product).fold(sub))
+                    )
             )
-        )
     )
 
     val env = Environment { stream, failedParser ->
         throw ParserException(
-            "Error at ${stream.offset()}, expected ${failedParser.right()}"
+                "Error at ${stream.offset()}, expected ${failedParser.right()}"
         )
     }
 

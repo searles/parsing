@@ -1,8 +1,8 @@
 package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
-import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
+import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 
 /**
  * Parser for chaining parsers. Eg for 5 + 6 where + 6 is the reducer.
@@ -26,15 +26,15 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
         long preEnd = stream.end();
 
         T t = parent.parse(env, stream);
-        
-        if(t == null) {
+
+        if (t == null) {
             return null;
         }
 
         // reducer preserves start() in stream and only sets end().
         U u = reducer.parse(env, stream, t);
 
-        if(u == null) {
+        if (u == null) {
             env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setStart(preStart);
@@ -60,13 +60,13 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     public ConcreteSyntaxTree print(Environment env, U u) {
         PartialConcreteSyntaxTree<T> reducerOutput = reducer.print(env, u);
 
-        if(reducerOutput == null) {
+        if (reducerOutput == null) {
             return null;
         }
 
         ConcreteSyntaxTree parserOutput = parent.print(env, reducerOutput.left);
 
-        if(parserOutput == null) {
+        if (parserOutput == null) {
             env.notifyLeftPrintFailed(reducerOutput.right, this);
             return null;
         }

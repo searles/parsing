@@ -27,7 +27,7 @@ fun main() {
 
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
-    val numMapping = object: Mapping<CharSequence, AstNode> {
+    val numMapping = object : Mapping<CharSequence, AstNode> {
         override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
@@ -54,50 +54,50 @@ fun main() {
 
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val negate = object: Mapping<AstNode, AstNode> {
+    val negate = object : Mapping<AstNode, AstNode> {
         override fun parse(env: Environment, stream: ParserStream, left: AstNode): AstNode =
-            OpNode(stream.createSourceInfo(), Op.Neg, left)
+                OpNode(stream.createSourceInfo(), Op.Neg, left)
 
         override fun left(env: Environment, result: AstNode): AstNode? =
-            if(result is OpNode && result.op == Op.Neg) result.args[0] else null
+                if (result is OpNode && result.op == Op.Neg) result.args[0] else null
     }
 
     val literal =
             minus.then(term).then(negate)
-            .or(term).ref("literal")
+                    .or(term).ref("literal")
 
     // product: term ('*' term | '/' term)* ;
 
     val times = Recognizer.fromString("*", lexer, false)
 
-    val multiply = object: Fold<AstNode, AstNode, AstNode> {
+    val multiply = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Mul, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Mul) result.args[0] else null
+                if (result is OpNode && result.op == Op.Mul) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Mul) result.args[1] else null
+                if (result is OpNode && result.op == Op.Mul) result.args[1] else null
     }
 
     val slash = Recognizer.fromString("/", lexer, false)
 
-    val divide = object: Fold<AstNode, AstNode, AstNode> {
+    val divide = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Div, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Div) result.args[0] else null
+                if (result is OpNode && result.op == Op.Div) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Div) result.args[1] else null
+                if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
     val product = literal.then(
             Reducer.rep(
-                times.annotate(FormatOp.Infix).then(literal).fold(multiply)
-                .or(slash.annotate(FormatOp.Infix).then(literal).fold(divide))
+                    times.annotate(FormatOp.Infix).then(literal).fold(multiply)
+                            .or(slash.annotate(FormatOp.Infix).then(literal).fold(divide))
             )
     ).ref("product")
 
@@ -105,45 +105,45 @@ fun main() {
 
     val plus = Recognizer.fromString("+", lexer, false)
 
-    val add = object: Fold<AstNode, AstNode, AstNode> {
+    val add = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
-            OpNode(stream.createSourceInfo(), Op.Add, left, right)
+                OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is OpNode && result.op == Op.Add) result.args[0] else null
+                if (result is OpNode && result.op == Op.Add) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-            if(result is OpNode && result.op == Op.Add) result.args[1] else null
+                if (result is OpNode && result.op == Op.Add) result.args[1] else null
     }
 
-    val sub = object: Fold<AstNode, AstNode, AstNode> {
+    val sub = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Sub, left, right)
 
         override fun leftInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Sub) result.args[0] else null
+                if (result is OpNode && result.op == Op.Sub) result.args[0] else null
 
         override fun rightInverse(env: Environment, result: AstNode): AstNode? =
-                if(result is OpNode && result.op == Op.Sub) result.args[1] else null
+                if (result is OpNode && result.op == Op.Sub) result.args[1] else null
     }
 
     sum.set(
-        product.then(
-            Reducer.rep(
-                plus.annotate(FormatOp.Infix).then(product).fold(add)
-                .or(minus.annotate(FormatOp.Infix).then(product).fold(sub))
+            product.then(
+                    Reducer.rep(
+                            plus.annotate(FormatOp.Infix).then(product).fold(add)
+                                    .or(minus.annotate(FormatOp.Infix).then(product).fold(sub))
+                    )
             )
-        )
     )
 
     val env = Environment { stream, failedParser ->
         throw ParserException(
-            "Error at ${stream.offset()}, expected ${failedParser.right()}"
+                "Error at ${stream.offset()}, expected ${failedParser.right()}"
         )
     }
 
     // Printing a generic Ast
-    val emptySourceInfo = object: SourceInfo {
+    val emptySourceInfo = object : SourceInfo {
         override fun start(): Long = -1
         override fun end(): Long = -1
     }
@@ -176,9 +176,9 @@ fun main() {
     // now pretty-printTo the tree
     val sourceStream = StringOutStream()
 
-    val printer = object: CstPrinter(sourceStream) {
+    val printer = object : CstPrinter(sourceStream) {
         override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter =
-                when(annotation) {
+                when (annotation) {
                     FormatOp.Infix -> append(" ").print(tree).append(" ")
                     else -> print(tree)
                 }
@@ -189,11 +189,11 @@ fun main() {
     println("Pretty-Print: $sourceStream")
 }
 
-enum class Op {Add, Sub, Mul, Div, Neg}
+enum class Op { Add, Sub, Mul, Div, Neg }
 
 enum class FormatOp { Infix }
 
-class NumNode(info: SourceInfo, val value: Int): AstNode(info)
+class NumNode(info: SourceInfo, val value: Int) : AstNode(info)
 
-class OpNode(info: SourceInfo, val op: Op, vararg val args: AstNode): AstNode(info)
+class OpNode(info: SourceInfo, val op: Op, vararg val args: AstNode) : AstNode(info)
 

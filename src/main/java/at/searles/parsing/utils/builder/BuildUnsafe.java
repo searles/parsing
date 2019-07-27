@@ -36,6 +36,7 @@ public class BuildUnsafe<T, U> implements Mapping<T, U> {
     @Override
     public U parse(Environment env, ParserStream stream, @NotNull T left) {
         try {
+            //noinspection unchecked
             return (U) buildMethod.invoke(left, env, stream);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
@@ -45,11 +46,12 @@ public class BuildUnsafe<T, U> implements Mapping<T, U> {
     @Nullable
     @Override
     public T left(Environment env, @NotNull U result) {
-        if(!buildMethod.getReturnType().isInstance(result)) {
+        if (!buildMethod.getReturnType().isInstance(result)) {
             return null;
         }
 
         try {
+            //noinspection unchecked
             return (T) builderCreate.invoke(null, result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);

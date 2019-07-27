@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
  * or at least significantly more difficult for Apply and BuilderInitializer
  * because they need to fetch methods based on parameters. In this
  * case inheritance is an issue.
+ *
  * @param <T>
  * @param <V>
  */
@@ -29,12 +30,12 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     @Override
     public T apply(Environment env, ParserStream stream, @NotNull T left, @NotNull V right) {
         try {
-            Class<T> type = (Class<T>) left.getClass();
+            @SuppressWarnings("unchecked") Class<T> type = (Class<T>) left.getClass();
             Field field = type.getField(property);
             Method copyMethod = type.getMethod("copy");
 
             // clone to allow backtracking
-            T copy = (T) copyMethod.invoke(left);
+            @SuppressWarnings("unchecked") T copy = (T) copyMethod.invoke(left);
             field.set(copy, right);
             return copy;
         } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException e) {
@@ -45,18 +46,18 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     @Override
     public T leftInverse(Environment env, @NotNull T result) {
         try {
-            Class<T> type = (Class<T>) result.getClass();
+            @SuppressWarnings("unchecked") Class<T> type = (Class<T>) result.getClass();
             Field field = type.getField(property);
 
             Object value = field.get(result);
 
-            if(value == null) {
+            if (value == null) {
                 return null;
             }
 
             Method copyMethod = type.getMethod("copy");
 
-            T copy = (T) copyMethod.invoke(result);
+            @SuppressWarnings("unchecked") T copy = (T) copyMethod.invoke(result);
 
             field.set(copy, null);
 
@@ -69,15 +70,16 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     @Override
     public V rightInverse(Environment env, @NotNull T result) {
         try {
-            Class<T> type = (Class<T>) result.getClass();
+            @SuppressWarnings("unchecked") Class<T> type = (Class<T>) result.getClass();
             Field field = type.getField(property);
 
             Object value = field.get(result);
 
-            if(value == null) {
+            if (value == null) {
                 return null;
             }
 
+            // noinspection unchecked
             return (V) value;
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new IllegalArgumentException(e);

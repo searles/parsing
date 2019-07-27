@@ -11,7 +11,7 @@ public class ListConcreteSyntaxTree implements ConcreteSyntaxTree {
 
     @Override
     public void printTo(CstPrinter printer) {
-        for(ConcreteSyntaxTree tree : list) {
+        for (ConcreteSyntaxTree tree : list) {
             tree.printTo(printer);
         }
     }
@@ -20,7 +20,7 @@ public class ListConcreteSyntaxTree implements ConcreteSyntaxTree {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(ConcreteSyntaxTree cst : list) {
+        for (ConcreteSyntaxTree cst : list) {
             stringBuilder.append(cst);
         }
 

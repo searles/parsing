@@ -1,13 +1,16 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.*;
+import at.searles.parsing.Environment;
+import at.searles.parsing.ParserStream;
+import at.searles.parsing.Recognizable;
+import at.searles.parsing.Reducer;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Reducer followed by a reducer
  */
-public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable.Then {
+public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.Then {
 
     private final Reducer<T, U> left;
     private final Reducer<U, V> right;
@@ -27,7 +30,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
 
         assert stream.start() == preStart;
 
-        if(u == null) {
+        if (u == null) {
             return null;
         }
 
@@ -35,7 +38,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
 
         assert stream.start() == preStart;
 
-        if(v == null) {
+        if (v == null) {
             env.notifyNoMatch(stream, this);
             stream.setOffset(offset);
             stream.setEnd(preEnd);
@@ -52,7 +55,7 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
 
         boolean status = Recognizable.Then.super.recognize(env, stream);
 
-        if(status) {
+        if (status) {
             stream.setStart(preStart);
         }
 
@@ -63,13 +66,13 @@ public class ReducerThenReducer<T, U, V>  implements Reducer<T, V>, Recognizable
     public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull V v) {
         PartialConcreteSyntaxTree<U> midTree = right.print(env, v);
 
-        if(midTree == null) {
+        if (midTree == null) {
             return null;
         }
 
         PartialConcreteSyntaxTree<T> leftTree = left.print(env, midTree.left);
 
-        if(leftTree == null) {
+        if (leftTree == null) {
             env.notifyLeftPrintFailed(midTree.right, this);
             return null;
         }

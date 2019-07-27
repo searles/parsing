@@ -16,7 +16,7 @@ public class ReducerPlus<T> implements Reducer<T, T> {
     private final Reducer<T, T> printer;
 
     public ReducerPlus(Reducer<T, T> reducer, int minCount) {
-        if(minCount < 1) {
+        if (minCount < 1) {
             throw new IllegalArgumentException("minCount must be >= 1");
         }
 
@@ -25,7 +25,7 @@ public class ReducerPlus<T> implements Reducer<T, T> {
 
         Reducer<T, T> sequence = reducer;
 
-        for(int i = 1; i < minCount; ++i) {
+        for (int i = 1; i < minCount; ++i) {
             sequence = sequence.then(reducer);
         }
 
