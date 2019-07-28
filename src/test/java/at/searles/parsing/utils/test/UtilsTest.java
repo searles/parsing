@@ -2,7 +2,6 @@ package at.searles.parsing.utils.test;
 
 import at.searles.parsing.Fold;
 import at.searles.parsing.utils.list.Append;
-import at.searles.parsing.utils.list.Prepend;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,24 +37,6 @@ public class UtilsTest {
         l = cons.leftInverse(null, l);
 
         Assert.assertEquals(1, l.size());
-
-        Assert.assertNull(cons.leftInverse(null, l));
-        Assert.assertNull(cons.rightInverse(null, l));
-    }
-
-    @Test
-    public void testPrepend() {
-        Fold<Integer, List<Integer>, List<Integer>> cons = new Prepend<>();
-
-        List<Integer> l = Arrays.asList(1, 2);
-
-        Assert.assertEquals((Integer) 1, cons.leftInverse(null, l));
-        l = cons.rightInverse(null, l);
-        Assert.assertEquals((Integer) 2, cons.leftInverse(null, l));
-        l = cons.rightInverse(null, l);
-
-        Assert.assertNotNull(l);
-        Assert.assertTrue(l.isEmpty());
 
         Assert.assertNull(cons.leftInverse(null, l));
         Assert.assertNull(cons.rightInverse(null, l));

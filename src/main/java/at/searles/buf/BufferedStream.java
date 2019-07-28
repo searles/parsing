@@ -11,7 +11,7 @@ public interface BufferedStream extends CharStream {
 
     /**
      * Sets the pointer position to the argument. The underlying
-     * implementation must  specify the maximum difference between
+     * implementation must specify the maximum difference between
      * ptr() and the argument here.
      *
      * @param ptr The pointer is reverted
@@ -70,7 +70,7 @@ public interface BufferedStream extends CharStream {
 
         private void checkIfPtrInCache(long ptr) {
             if (this.ptr < ptr) {
-                throw new IllegalArgumentException("cannot forsee future");
+                throw new IllegalArgumentException("cannot foresee future");
             }
 
             if (this.ptr - ptr >= buffer.length) {

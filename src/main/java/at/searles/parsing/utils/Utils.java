@@ -31,10 +31,12 @@ public class Utils {
      * @return An inversible parser for a list of items.
      */
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
+        // FIXME there is joinPlus now!
         return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
     }
 
     public static <T> Parser<List<T>> list1(Parser<T> parser) {
+        // FIXME there is joinPlus now.
         return singleton(parser).then(Reducer.rep(append(parser, 1)));
     }
 
@@ -54,18 +56,6 @@ public class Utils {
                                 .then(Reducer.rep(append(parser, 1)))
                         )
                 );
-    }
-
-    public static <T> Parser<Optional<T>> opt(Parser<T> parser) {
-        return parser.then(new SomeMapping<>()).or(new NoneInitializer<>());
-    }
-
-    public static <T, U> Reducer<T, Pair<T, U>> pair(Parser<U> rightParser) {
-        return rightParser.fold(new PairFold<>());
-    }
-
-    public static <T, U> Reducer<T, Pair<U, T>> swapPair(Parser<U> leftParser) {
-        return leftParser.fold(new SwapPairFold<>());
     }
 
     public static <T> Initializer<List<T>> empty() {
@@ -90,8 +80,16 @@ public class Utils {
         return parser.fold(new Append<>(minLeftElements));
     }
 
-    public static <T> Reducer<T, List<T>> prepend(Parser<List<T>> parser) {
-        return parser.fold(new Prepend<>());
+    public static <T> Parser<Optional<T>> opt(Parser<T> parser) {
+        return parser.then(new SomeMapping<>()).or(new NoneInitializer<>());
+    }
+
+    public static <T, U> Reducer<T, Pair<T, U>> pair(Parser<U> rightParser) {
+        return rightParser.fold(new PairFold<>());
+    }
+
+    public static <T, U> Reducer<T, Pair<U, T>> swapPair(Parser<U> leftParser) {
+        return leftParser.fold(new SwapPairFold<>());
     }
 
     /**

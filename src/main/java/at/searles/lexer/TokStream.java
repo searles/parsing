@@ -19,7 +19,9 @@ import at.searles.lexer.utils.IntSet;
  */
 public class TokStream {
 
-    // underlying buffer
+    /**
+     * underlying buffer
+     */
     private final FrameStream stream;
     /**
      * Values to determine current match
