@@ -80,6 +80,16 @@ public class Utils {
         return parser.fold(new Append<>(minLeftElements));
     }
 
+    /**
+     * Use this to swap elements in the incoming list. If the lhs list contains
+     * the elements "A", "B", "C" in this order and 'order' is 1, 2, 0, then
+     * the returned list will be "B", "C", "A". Make sure to provide a meaningful
+     * order, otherwise, the return value is undetermined but most likely an exception.
+     */
+    public static <T> Mapping<List<T>, List<T>> permutate(int...order) {
+        return new PermutateList(order);
+    }
+
     public static <T> Parser<Optional<T>> opt(Parser<T> parser) {
         return parser.then(new SomeMapping<>()).or(new NoneInitializer<>());
     }
