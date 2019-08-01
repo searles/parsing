@@ -37,10 +37,11 @@ public class ImmutableList<E> extends AbstractList<E> {
 
     public static <T> ImmutableList<T> createFrom(List<T> list) {
         if (list instanceof ImmutableList) {
+            // Fast lane for immutable lists.
             return (ImmutableList<T>) list;
         }
 
-        return new ImmutableList<>(list);
+        return new ImmutableList<>(new ArrayList<>(list));
     }
 
     public ImmutableList<E> pushBack(E element) {
