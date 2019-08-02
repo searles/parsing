@@ -307,7 +307,12 @@ public class IntervalSet<A> implements Iterable<A> {
         }
 
         public A previous() {
-            index -= 2;
+            if(index == 0) {
+                index = set.list.size();
+            } else {
+                index -= 2;
+            }
+
             return value();
         }
 

@@ -23,6 +23,12 @@ public class TokenRecognizer implements Recognizer {
         this.exclusive = exclusive;
     }
 
+    public TokenRecognizer(Token token, boolean exclusive) {
+        this.str = token.toString();
+        this.token = token;
+        this.exclusive = exclusive;
+    }
+
     @Override
     public boolean recognize(Environment env, ParserStream stream) {
         return stream.parseToken(token, exclusive) != null;

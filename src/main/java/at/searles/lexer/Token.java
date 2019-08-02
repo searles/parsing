@@ -59,6 +59,6 @@ public class Token {
     }
 
     public String toString() {
-        return "token[" + tokIndex + "]";
+        return String.format("<%d>", tokIndex);
     }
 }

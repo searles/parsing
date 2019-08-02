@@ -49,6 +49,10 @@ public class CharSet implements Regex, Iterable<Interval> {
         return new CharSet(set);
     }
 
+    /**
+     * deprecated because it is not used.
+     */
+    @Deprecated
     public static CharSet fromIntervals(Iterable<Interval> intervals) {
         CharSet set = empty();
 
@@ -63,8 +67,11 @@ public class CharSet implements Regex, Iterable<Interval> {
         return new CharSet();
     }
 
+    /**
+     * Recognizes all positive integers except for Integer.MAX_VALUE.
+     */
     public static CharSet all() {
-        return interval(Integer.MIN_VALUE, Integer.MAX_VALUE - 1);
+        return interval(0, Integer.MAX_VALUE - 1);
     }
 
     public <A> IntervalSet<A> copyIntervalSet(A a) {
@@ -77,7 +84,7 @@ public class CharSet implements Regex, Iterable<Interval> {
         if (it.hasNext()) {
             it.next();
 
-            return it.start() == Integer.MIN_VALUE && it.end() == Integer.MAX_VALUE;
+            return it.start() == 0 && it.end() == Integer.MAX_VALUE;
         }
 
         return false;
@@ -94,9 +101,9 @@ public class CharSet implements Regex, Iterable<Interval> {
     public boolean isInverted() {
         if (!set.isEmpty()) {
             IntervalSet.Iter<Void> it = set.iterator();
-            it.next();
+            it.previous();
 
-            return it.start() == Integer.MIN_VALUE;
+            return it.end() == Integer.MAX_VALUE;
         }
 
         return false;
@@ -105,7 +112,7 @@ public class CharSet implements Regex, Iterable<Interval> {
     public CharSet invert() {
         IntervalSet<Void> inverted = new IntervalSet<>();
 
-        int start = Integer.MIN_VALUE;
+        int start = 0;
 
         IntervalSet.Iter<Void> it = set.iterator();
 
