@@ -81,11 +81,6 @@ public class FSA {
             // next char
             int ch = stream.next();
 
-            if (ch == -1) {
-                // buf is empty.
-                break;
-            }
-
             n = n.accept(ch);
         }
 

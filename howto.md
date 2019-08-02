@@ -1,7 +1,34 @@
-# How to use the Utils-class
+# How to - Various tweaks
 
 This document will contain some tasks and show their solutions. They
 can be sometimes a bit tricky. It will be extended on demand.
+
+## How to detect EOF
+
+In the underlying CharStream, EOF is represented by -1.
+The (integer-based) lexer interprets -1 like any other 
+integer, hence we can add -1 as a token and detect it.
+This is already done in `Recognizer.eof(tokenizer: Tokenizer)`.
+Thus, in order to check whether the parser stream has fully
+been consumed, simply check whether the eof-recognizer succeeds.
+
+~~~ kotlin
+    val stream: ParserStream = /* ... */
+    val eof = Recognizer.eof(lexer)
+    
+    // ... do parse
+    if(eof.recognize(env, stream)) {
+        // End of file
+    }
+~~~
+
+Be a bit cautious and make sure that hidden tokens (if there
+are any) have fully been consumed. This is usually the case
+if `eof` is proceeded by failed parse attempt, eg
+after a `rep`-Reducer (they must fail eventually).
+
+For a concrete implementation, consult the 
+[eof unit test](src/test/java/at/searles/parsing/test/EofTest.kt)
 
 ## Using Lists
 

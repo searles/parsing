@@ -5,12 +5,21 @@ import at.searles.parsing.annotation.AnnotationRecognizer;
 import at.searles.parsing.combinators.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenRecognizer;
+import at.searles.regex.CharSet;
 import org.jetbrains.annotations.NotNull;
 
 public interface Recognizer extends Recognizable {
 
     static Recognizer fromString(String string, Tokenizer tokenizer, boolean exclusive) {
         return new TokenRecognizer(string, tokenizer, exclusive);
+    }
+
+    /**
+     * Creates a recognizer that will detect EOf (which is -1 returned from
+     * the stream.
+     */
+    static Recognizer eof(Tokenizer tokenizer) {
+        return new TokenRecognizer(tokenizer.token(CharSet.chars(-1)), false);
     }
 
     @NotNull
