@@ -9,7 +9,7 @@ In the underlying CharStream, EOF is represented by -1.
 The (integer-based) lexer interprets -1 like any other 
 integer, hence we can add -1 as a token and detect it.
 This is already done in `Recognizer.eof(tokenizer: Tokenizer)`.
-Thus, in order to check whether the parser stream has fully
+Thus, in order to check whether all characters of the parser stream have 
 been consumed, simply check whether the eof-recognizer succeeds.
 
 ~~~ kotlin
@@ -21,11 +21,6 @@ been consumed, simply check whether the eof-recognizer succeeds.
         // End of file
     }
 ~~~
-
-Be a bit cautious and make sure that hidden tokens (if there
-are any) have fully been consumed. This is usually the case
-if `eof` is proceeded by failed parse attempt, eg
-after a `rep`-Reducer (they must fail eventually).
 
 For a concrete implementation, consult the 
 [eof unit test](src/test/java/at/searles/parsing/test/EofTest.kt)
