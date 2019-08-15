@@ -1,8 +1,9 @@
 package at.searles.parsing.utils;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.utils.builder.BuilderInitializer;
 import at.searles.parsing.utils.builder.SetterUnsafe;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public class BuilderSetterUnsafe<T, V> implements Mapping<V, T> {
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream, @NotNull V left) {
+    public T parse(ParserCallBack env, ParserStream stream, @NotNull V left) {
         T builder = builderInitializer.parse(env, stream);
 
         if (builder == null) {
@@ -32,7 +33,7 @@ public class BuilderSetterUnsafe<T, V> implements Mapping<V, T> {
 
     @Nullable
     @Override
-    public V left(Environment env, @NotNull T result) {
+    public V left(PrinterCallBack env, @NotNull T result) {
         V left = setterUnsafe.rightInverse(env, result);
 
         if (left == null) {

@@ -1,9 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
-import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizable;
-import at.searles.parsing.Reducer;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +18,7 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
     }
 
     @Override
-    public V parse(Environment env, ParserStream stream, @NotNull T left) {
+    public V parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
         long preStart = stream.start();
         long preEnd = stream.end();
@@ -50,7 +47,7 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
 
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         long preStart = stream.start();
 
         boolean status = Recognizable.Then.super.recognize(env, stream);
@@ -63,7 +60,7 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull V v) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull V v) {
         PartialConcreteSyntaxTree<U> midTree = right.print(env, v);
 
         if (midTree == null) {

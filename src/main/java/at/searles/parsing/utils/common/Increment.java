@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.common;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 public class Increment implements Mapping<Integer, Integer> {
@@ -14,12 +15,12 @@ public class Increment implements Mapping<Integer, Integer> {
     }
 
     @Override
-    public Integer parse(Environment env, ParserStream stream, @NotNull Integer left) {
+    public Integer parse(ParserCallBack env, ParserStream stream, @NotNull Integer left) {
         return left + 1;
     }
 
     @Override
-    public Integer left(Environment env, @NotNull Integer result) {
+    public Integer left(PrinterCallBack env, @NotNull Integer result) {
         return result > min ? result - 1 : null;
     }
 

@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.list;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.utils.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +23,7 @@ public class Append<T> implements Fold<List<T>, T, List<T>> {
     }
 
     @Override
-    public List<T> apply(Environment env, ParserStream stream, @NotNull List<T> left, @NotNull T right) {
+    public List<T> apply(ParserCallBack env, ParserStream stream, @NotNull List<T> left, @NotNull T right) {
         return ImmutableList.createFrom(left).pushBack(right);
     }
 
@@ -31,7 +32,7 @@ public class Append<T> implements Fold<List<T>, T, List<T>> {
     }
 
     @Override
-    public List<T> leftInverse(Environment env, @NotNull List<T> result) {
+    public List<T> leftInverse(PrinterCallBack env, @NotNull List<T> result) {
         if (cannotInvert(result)) {
             return null;
         }
@@ -40,7 +41,7 @@ public class Append<T> implements Fold<List<T>, T, List<T>> {
     }
 
     @Override
-    public T rightInverse(Environment env, @NotNull List<T> result) {
+    public T rightInverse(PrinterCallBack env, @NotNull List<T> result) {
         if (cannotInvert(result)) {
             return null;
         }

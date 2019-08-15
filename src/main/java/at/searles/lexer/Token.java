@@ -28,18 +28,14 @@ public class Token {
      * Returns a char sequence (that is always an instance of TokenSet) that matches
      * this token.
      *
+     * Single entry point for parsing token.
      * @param tokStream The TokStream from which the token is fetched
+     * @param exclusive if true, then no other token is allowed to match. Use eg for identifiers
+     *                  that should not be confused with keywords.
      * @return null, if the next item is not a Token.
      */
-    public CharSequence parseToken(TokStream tokStream) {
-        return parseToken(tokStream, false);
-    }
-
-    /**
-     * Single entry point for parsing token.
-     */
     public CharSequence parseToken(TokStream tokStream, boolean exclusive) {
-        // Fetch next (current?) token.
+        // Fetch next (current) token.
         if (!tokStream.fetchToken(lexer)) {
             return null;
         }

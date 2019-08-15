@@ -17,28 +17,28 @@ public class CombinatorTest {
     private final Recognizer comma = Recognizer.fromString(",", lexer, false);
     private final Initializer<String> emptyString = new Initializer<String>() {
         @Override
-        public String parse(Environment env, ParserStream stream) {
+        public String parse(ParserCallBack env, ParserStream stream) {
             return "";
         }
 
         @Override
-        public ConcreteSyntaxTree print(Environment env, String s) {
+        public ConcreteSyntaxTree print(PrinterCallBack env, String s) {
             return s.isEmpty() ? new EmptyConcreteSyntaxTree() : null;
         }
     };
     private final Fold<String, String, String> appendSingleChar = new Fold<String, String, String>() {
         @Override
-        public String apply(Environment env, ParserStream stream, @NotNull String left, @NotNull String right) {
+        public String apply(ParserCallBack env, ParserStream stream, @NotNull String left, @NotNull String right) {
             return left + right;
         }
 
         @Override
-        public String leftInverse(Environment env, @NotNull String result) {
+        public String leftInverse(PrinterCallBack env, @NotNull String result) {
             return !result.isEmpty() ? result.substring(0, result.length() - 1) : null;
         }
 
         @Override
-        public String rightInverse(Environment env, @NotNull String result) {
+        public String rightInverse(PrinterCallBack env, @NotNull String result) {
             return !result.isEmpty() ? result.substring(result.length() - 1) : null;
         }
 
@@ -52,13 +52,14 @@ public class CombinatorTest {
     private String parseResult;
     private ConcreteSyntaxTree printResult;
     private boolean error;
-    private final Environment env = new Environment() {
+    private final ParserCallBack env = new ParserCallBack() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             error = true;
             throw new IllegalArgumentException();
         }
-
+    };
+    private final PrinterCallBack env2 = new PrinterCallBack() {
         @Override
         public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
             error = true;
@@ -135,7 +136,7 @@ public class CombinatorTest {
 
     private void actPrint() {
         try {
-            printResult = parser.print(env, parseResult);
+            printResult = parser.print(env2, parseResult);
         } catch (IllegalArgumentException ignored) {
         }
     }

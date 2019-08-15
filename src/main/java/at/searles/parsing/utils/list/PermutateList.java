@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.list;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +18,7 @@ public class PermutateList<T> implements Mapping<List<T>, List<T>> {
     }
 
     @Override
-    public List<T> parse(Environment env, ParserStream stream, @NotNull List<T> left) {
+    public List<T> parse(ParserCallBack env, ParserStream stream, @NotNull List<T> left) {
         ArrayList<T> list = new ArrayList<>(left.size());
 
         for(int index: order) {
@@ -29,7 +30,7 @@ public class PermutateList<T> implements Mapping<List<T>, List<T>> {
 
     @Nullable
     @Override
-    public List<T> left(Environment env, @NotNull List<T> result) {
+    public List<T> left(PrinterCallBack env, @NotNull List<T> result) {
         if(result.size() != order.length) {
             return null;
         }

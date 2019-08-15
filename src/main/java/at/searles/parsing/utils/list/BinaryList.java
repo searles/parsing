@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.list;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -13,17 +14,17 @@ import java.util.List;
  */
 public class BinaryList<T> implements Fold<T, T, List<T>> {
     @Override
-    public List<T> apply(Environment env, ParserStream stream, @NotNull T left, @NotNull T right) {
+    public List<T> apply(ParserCallBack env, ParserStream stream, @NotNull T left, @NotNull T right) {
         return Arrays.asList(left, right);
     }
 
     @Override
-    public T leftInverse(Environment env, @NotNull List<T> result) {
+    public T leftInverse(PrinterCallBack env, @NotNull List<T> result) {
         return result.size() == 2 ? result.get(0) : null;
     }
 
     @Override
-    public T rightInverse(Environment env, @NotNull List<T> result) {
+    public T rightInverse(PrinterCallBack env, @NotNull List<T> result) {
         return result.size() == 2 ? result.get(1) : null;
     }
 

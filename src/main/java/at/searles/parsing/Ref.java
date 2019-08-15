@@ -17,17 +17,17 @@ public class Ref<T> implements Parser<T> {
     }
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         return ref.recognize(env, stream);
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream) {
+    public T parse(ParserCallBack env, ParserStream stream) {
         return ref.parse(env, stream);
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
         return ref.print(env, t);
     }
 

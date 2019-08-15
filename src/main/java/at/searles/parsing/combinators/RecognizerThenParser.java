@@ -13,7 +13,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream) {
+    public T parse(ParserCallBack env, ParserStream stream) {
         long offset = stream.offset();
 
         long preStart = stream.start();
@@ -41,7 +41,7 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
         ConcreteSyntaxTree output = parser.print(env, t);
 
         // printTo in recognizer always succeeds.

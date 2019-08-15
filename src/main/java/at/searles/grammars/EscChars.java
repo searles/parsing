@@ -1,6 +1,6 @@
 package at.searles.grammars;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 class EscChars implements Mapping<CharSequence, Integer> {
     @Override
-    public Integer parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
+    public Integer parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
         switch (left.charAt(1)) {
             case 'x':
             case 'u':

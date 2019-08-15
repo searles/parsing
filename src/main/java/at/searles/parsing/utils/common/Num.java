@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.common;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Initializer;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 
 /**
  * Created by searles on 01.04.19.
@@ -16,12 +17,12 @@ public class Num implements Initializer<Integer> {
     }
 
     @Override
-    public Integer parse(Environment env, ParserStream stream) {
+    public Integer parse(ParserCallBack env, ParserStream stream) {
         return num;
     }
 
     @Override
-    public boolean consume(Environment env, Integer integer) {
+    public boolean consume(PrinterCallBack env, Integer integer) {
         return integer == num;
     }
 

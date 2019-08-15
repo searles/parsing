@@ -17,13 +17,13 @@ public class BuilderSetterTest {
     private final Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")),
             new Mapping<CharSequence, Object>() {
                 @Override
-                public Object parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
+                public Object parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
                     return left.toString();
                 }
 
                 @Nullable
                 @Override
-                public CharSequence left(Environment env, @NotNull Object result) {
+                public CharSequence left(PrinterCallBack env, @NotNull Object result) {
                     return result instanceof String ? result.toString() : null;
                 }
             }, false);
@@ -34,16 +34,13 @@ public class BuilderSetterTest {
                                     .then(Utils.builder(Builder.class, "a"))
                                     .then(Utils.build(Builder.class))
                     ));
-    private final Environment env = new Environment() {
+    private final ParserCallBack env = new ParserCallBack() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             throw new IllegalArgumentException();
         }
-
-        @Override
-        public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
-        }
     };
+    private final PrinterCallBack env2 = (a, b) -> {};
     private ParserStream input;
     private Object item; // using object to test inheritance
     private String output;
@@ -83,7 +80,7 @@ public class BuilderSetterTest {
     }
 
     private void actPrint() {
-        ConcreteSyntaxTree tree = parser.print(env, item);
+        ConcreteSyntaxTree tree = parser.print(env2, item);
         output = tree != null ? tree.toString() : null;
     }
 
@@ -115,7 +112,7 @@ public class BuilderSetterTest {
             return builder;
         }
 
-        public Item build(Environment env, ParserStream stream) {
+        public Item build(ParserCallBack env, ParserStream stream) {
             return new Item(a);
         }
     }

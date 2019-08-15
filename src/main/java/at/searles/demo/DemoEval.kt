@@ -92,7 +92,7 @@ fun main() {
             )
     )
 
-    val env = Environment { stream, failedParser ->
+    val env = ParserCallBack { stream, failedParser ->
         throw ParserException(
                 "Error at ${stream.offset()}, expected ${failedParser.right()}"
         )

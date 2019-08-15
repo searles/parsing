@@ -21,16 +21,14 @@ public class BuilderTest {
             )
                     .then(Utils.build(Builder.class))
     );
-    private final Environment env = new Environment() {
+    private final ParserCallBack env = new ParserCallBack() {
         @Override
         public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
             throw new IllegalArgumentException();
         }
-
-        @Override
-        public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
-        }
     };
+    private final PrinterCallBack env2 = (a, b) -> {};
+
     private ParserStream input;
     private Object item; // using object to test inheritance
     private String output;
@@ -71,7 +69,7 @@ public class BuilderTest {
     }
 
     private void actPrint() {
-        ConcreteSyntaxTree tree = parser.print(env, item);
+        ConcreteSyntaxTree tree = parser.print(env2, item);
         output = tree != null ? tree.toString() : null;
     }
 
@@ -107,7 +105,7 @@ public class BuilderTest {
             return builder;
         }
 
-        public Item build(Environment env, ParserStream stream) {
+        public Item build(ParserCallBack env, ParserStream stream) {
             return new Item(a, b);
         }
     }

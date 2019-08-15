@@ -1,9 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
-import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizable;
-import at.searles.parsing.Reducer;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +17,7 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
     }
 
     @Override
-    public U parse(Environment env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         long start = stream.start();
         long end = stream.end();
 
@@ -36,7 +33,7 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U result) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U result) {
         Reducer<T, U> first = swapOnInvert ? r2 : r1;
         Reducer<T, U> second = swapOnInvert ? r1 : r2;
 

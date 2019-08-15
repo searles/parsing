@@ -40,15 +40,15 @@ public class ParserGenerator {
         init();
     }
 
-    public List<AstNode> rules(Environment env, ParserStream input) {
+    public List<AstNode> rules(ParserCallBack env, ParserStream input) {
         return Utils.list(rule.then(Recognizer.fromString(";", lexer, false))).parse(env, input);
     }
 
-    public AstNode rule(Environment env, ParserStream stream) {
+    public AstNode rule(ParserCallBack env, ParserStream stream) {
         return rule.parse(env, stream);
     }
 
-    public AstNode expr(Environment env, ParserStream input) {
+    public AstNode expr(ParserCallBack env, ParserStream input) {
         return expr.parse(env, input);
     }
 
@@ -307,7 +307,7 @@ public class ParserGenerator {
     private static class JavaCode implements Mapping<CharSequence, String> {
         @NotNull
         @Override
-        public String parse(Environment env, ParserStream stream, @NotNull CharSequence left) {
+        public String parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
             StringBuilder sb = new StringBuilder();
 
             for (int i = 1; i < left.length() - 1; ++i) {

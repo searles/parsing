@@ -31,7 +31,7 @@ public interface Reducer<T, U> extends Recognizable {
      * @return The parsed element, null if parsing was not successful.
      */
     @Nullable
-    U parse(Environment env, ParserStream stream, @NotNull T left); // null = fail.
+    U parse(ParserCallBack env, ParserStream stream, @NotNull T left); // null = fail.
 
     /**
      * Prints the argument that is split of u on its right. It is the
@@ -43,7 +43,7 @@ public interface Reducer<T, U> extends Recognizable {
      * @return null if fail
      */
     @Nullable
-    PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u);
+    PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U u);
 
     default <V> Reducer<T, V> then(Reducer<U, V> reducer) {
         return new ReducerThenReducer<>(this, reducer);

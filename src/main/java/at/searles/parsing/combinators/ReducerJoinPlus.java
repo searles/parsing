@@ -1,9 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
-import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizer;
-import at.searles.parsing.Reducer;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,18 +17,18 @@ public class ReducerJoinPlus<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public T parse(Environment env, ParserStream stream, @NotNull T left) {
+    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         return parserReducer.parse(env, stream, left);
     }
 
     @Nullable
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull T t) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
         return printerReducer.print(env, t);
     }
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         return parserReducer.recognize(env, stream);
     }
 

@@ -88,7 +88,7 @@ public class ParserPositionTest {
 
     private void actParse(String str) {
         ParserStream parserStream = ParserStream.fromString(str);
-        Environment env = (stream, failedParser) -> {
+        ParserCallBack env = (stream, failedParser) -> {
         };
         output = parser.parse(env, parserStream);
     }

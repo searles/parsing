@@ -18,7 +18,7 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     }
 
     @Override
-    public U parse(Environment env, ParserStream stream) {
+    public U parse(ParserCallBack env, ParserStream stream) {
         long offset = stream.offset();
 
         // to restore if backtracking
@@ -57,7 +57,7 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, U u) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, U u) {
         PartialConcreteSyntaxTree<T> reducerOutput = reducer.print(env, u);
 
         if (reducerOutput == null) {

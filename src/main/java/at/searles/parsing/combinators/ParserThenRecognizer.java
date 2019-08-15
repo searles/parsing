@@ -23,7 +23,7 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream) {
+    public T parse(ParserCallBack env, ParserStream stream) {
         long offset = stream.offset();
 
         // to restore if backtracking
@@ -53,7 +53,7 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
         ConcreteSyntaxTree output = left.print(env, t);
 
         // Recognizer.printTo always succeeds.

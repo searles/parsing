@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.builder;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -32,7 +33,7 @@ public class Setter<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public T apply(Environment env, ParserStream stream, @NotNull T left, @NotNull V right) {
+    public T apply(ParserCallBack env, ParserStream stream, @NotNull T left, @NotNull V right) {
         try {
             // clone to allow backtracking
             T copy = type.cast(copyMethod.invoke(left));
@@ -44,7 +45,7 @@ public class Setter<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public T leftInverse(Environment env, @NotNull T result) {
+    public T leftInverse(PrinterCallBack env, @NotNull T result) {
         try {
             Object value = field.get(result);
 
@@ -63,7 +64,7 @@ public class Setter<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public V rightInverse(Environment env, @NotNull T result) {
+    public V rightInverse(PrinterCallBack env, @NotNull T result) {
         try {
             Object value = field.get(result);
 

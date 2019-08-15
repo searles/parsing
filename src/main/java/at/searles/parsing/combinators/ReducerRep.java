@@ -1,9 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
-import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizable;
-import at.searles.parsing.Reducer;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +19,7 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream, @NotNull T left) {
+    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         long preStart = stream.start();
 
         while (true) {
@@ -46,7 +43,7 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull T t) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
         T left = t;
 
         ArrayList<ConcreteSyntaxTree> trees = new ArrayList<>();

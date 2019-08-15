@@ -5,7 +5,7 @@ package at.searles.parsing;
  */
 public interface Recognizable {
 
-    boolean recognize(Environment env, ParserStream stream);
+    boolean recognize(ParserCallBack env, ParserStream stream);
 
     interface Then extends Recognizable {
         Recognizable left();
@@ -13,7 +13,7 @@ public interface Recognizable {
         Recognizable right();
 
         @Override
-        default boolean recognize(Environment env, ParserStream stream) {
+        default boolean recognize(ParserCallBack env, ParserStream stream) {
             long offset = stream.offset();
 
             long preStart = stream.start();
@@ -59,7 +59,7 @@ public interface Recognizable {
         Recognizable second();
 
         @Override
-        default boolean recognize(Environment env, ParserStream stream) {
+        default boolean recognize(ParserCallBack env, ParserStream stream) {
             return first().recognize(env, stream) || second().recognize(env, stream);
         }
 
@@ -79,7 +79,7 @@ public interface Recognizable {
         Recognizable parent();
 
         @Override
-        default boolean recognize(Environment env, ParserStream stream) {
+        default boolean recognize(ParserCallBack env, ParserStream stream) {
             stream.setStart(stream.end());
             parent().recognize(env, stream);
 
@@ -101,7 +101,7 @@ public interface Recognizable {
         Recognizable parent();
 
         @Override
-        default boolean recognize(Environment env, ParserStream stream) {
+        default boolean recognize(ParserCallBack env, ParserStream stream) {
             long start = stream.start();
 
             while (parent().recognize(env, stream)) {

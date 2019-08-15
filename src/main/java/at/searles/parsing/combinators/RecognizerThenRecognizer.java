@@ -1,6 +1,7 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
+import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  *
  */
-public class RecognizerThenRecognizer<C extends Environment> implements Recognizer, Recognizable.Then {
+public class RecognizerThenRecognizer<C extends ParserCallBack> implements Recognizer, Recognizable.Then {
 
     private final Recognizer left;
     private final Recognizer right;
@@ -31,7 +32,7 @@ public class RecognizerThenRecognizer<C extends Environment> implements Recogniz
 
     @NotNull
     @Override
-    public ConcreteSyntaxTree print(Environment env) {
+    public ConcreteSyntaxTree print(PrinterCallBack env) {
         return left.print(env).consRight(right.print(env));
     }
 

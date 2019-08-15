@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.map;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -20,14 +21,14 @@ public class SingleMap<K, V> implements Mapping<V, Map<K, V>> {
     }
 
     @Override
-    public Map<K, V> parse(Environment env, ParserStream stream, @NotNull V left) {
+    public Map<K, V> parse(ParserCallBack env, ParserStream stream, @NotNull V left) {
         Map<K, V> map = new LinkedHashMap<>();
         map.put(key, left);
         return map;
     }
 
     @Override
-    public V left(Environment env, @NotNull Map<K, V> result) {
+    public V left(PrinterCallBack env, @NotNull Map<K, V> result) {
         return result.size() != 1 ? result.get(key) : null;
     }
 

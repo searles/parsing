@@ -19,11 +19,12 @@ class PrinterTest {
     fun setUp() {
         initParser()
         initCstPrinter()
-        env = Environment { stream, failedParser ->
+        parserCallBack = ParserCallBack { stream, failedParser ->
             throw ParserException(
                     "Error at ${stream.offset()}, expected ${failedParser.right()}"
             )
         }
+        printerCallBack = PrinterCallBack { _, _ -> }
     }
 
     @Test
@@ -97,18 +98,19 @@ class PrinterTest {
     }
 
     private fun actParse() {
-        ast = parser.parse(env, stream)
+        ast = parser.parse(parserCallBack, stream)
     }
 
     private fun actPrint() {
-        val cst = parser.print(env, ast)
+        val cst = parser.print(printerCallBack, ast)
         cst?.printTo(cstPrinter)
         output = outStream.toString()
     }
 
+    private lateinit var printerCallBack: PrinterCallBack
     private lateinit var outStream: StringOutStream
     private lateinit var stream: ParserStream
-    private lateinit var env: Environment
+    private lateinit var parserCallBack: ParserCallBack
     private lateinit var parser: Parser<AstNode>
     private var ast: AstNode? = null
     private var output: String? = null
@@ -124,18 +126,18 @@ class PrinterTest {
         val closePar = Recognizer.fromString(")", lexer, false)
 
         val idMapping = object : Mapping<CharSequence, AstNode> {
-            override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
+            override fun parse(env: ParserCallBack, stream: ParserStream, left: CharSequence): AstNode =
                     IdNode(stream.createSourceInfo(), left.toString())
 
-            override fun left(env: Environment, result: AstNode): CharSequence? =
+            override fun left(env: PrinterCallBack, result: AstNode): CharSequence? =
                     if (result is IdNode) result.value else null
         }
 
         val numMapping = object : Mapping<CharSequence, AstNode> {
-            override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
+            override fun parse(env: ParserCallBack, stream: ParserStream, left: CharSequence): AstNode =
                     NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
-            override fun left(env: Environment, result: AstNode): CharSequence? =
+            override fun left(env: at.searles.parsing.PrinterCallBack, result: AstNode): CharSequence? =
                     if (result is NumNode) result.value.toString() else null
         }
 
@@ -149,15 +151,15 @@ class PrinterTest {
 
         // app = term+
         val appFold = object : Fold<AstNode, AstNode, AstNode> {
-            override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode {
+            override fun apply(env: ParserCallBack, stream: ParserStream, left: AstNode, right: AstNode): AstNode {
                 return AppNode(stream.createSourceInfo(), left, right)
             }
 
-            override fun leftInverse(env: Environment, result: AstNode): AstNode? {
+            override fun leftInverse(env: at.searles.parsing.PrinterCallBack, result: AstNode): AstNode? {
                 return if (result is AppNode) result.left else null
             }
 
-            override fun rightInverse(env: Environment, result: AstNode): AstNode? {
+            override fun rightInverse(env: at.searles.parsing.PrinterCallBack, result: AstNode): AstNode? {
                 return if (result is AppNode) result.right else null
             }
         }

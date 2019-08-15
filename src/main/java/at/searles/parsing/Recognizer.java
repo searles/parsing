@@ -23,7 +23,7 @@ public interface Recognizer extends Recognizable {
     }
 
     @NotNull
-    ConcreteSyntaxTree print(Environment env);
+    ConcreteSyntaxTree print(PrinterCallBack env);
 
     default Recognizer then(Recognizer recognizer) {
         return new RecognizerThenRecognizer<>(this, recognizer);

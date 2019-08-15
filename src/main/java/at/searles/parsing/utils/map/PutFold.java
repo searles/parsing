@@ -1,8 +1,9 @@
 package at.searles.parsing.utils.map;
 
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
+import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
@@ -20,14 +21,14 @@ public class PutFold<K, V> implements Fold<Map<K, V>, V, Map<K, V>> {
     }
 
     @Override
-    public Map<K, V> apply(Environment env, ParserStream stream, @NotNull Map<K, V> left, @NotNull V right) {
+    public Map<K, V> apply(ParserCallBack env, ParserStream stream, @NotNull Map<K, V> left, @NotNull V right) {
         Map<K, V> map = new LinkedHashMap<>(left);
         map.put(key, right);
         return map;
     }
 
     @Override
-    public Map<K, V> leftInverse(Environment env, @NotNull Map<K, V> result) {
+    public Map<K, V> leftInverse(PrinterCallBack env, @NotNull Map<K, V> result) {
         if (!result.containsKey(key)) {
             return null;
         }
@@ -38,7 +39,7 @@ public class PutFold<K, V> implements Fold<Map<K, V>, V, Map<K, V>> {
     }
 
     @Override
-    public V rightInverse(Environment env, @NotNull Map<K, V> result) {
+    public V rightInverse(PrinterCallBack env, @NotNull Map<K, V> result) {
         if (!result.containsKey(key)) {
             return null;
         }

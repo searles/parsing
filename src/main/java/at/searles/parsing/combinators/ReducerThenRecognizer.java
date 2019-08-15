@@ -25,7 +25,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public U parse(Environment env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
 
         long preStart = stream.start();
@@ -56,7 +56,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
 
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         long preStart = stream.start();
 
         boolean status = Recognizable.Then.super.recognize(env, stream);
@@ -69,7 +69,7 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull U u) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U u) {
         PartialConcreteSyntaxTree<T> leftOutput = left.print(env, u);
 
         if (leftOutput == null) {

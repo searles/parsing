@@ -4,7 +4,7 @@ import at.searles.buf.BufferedStream;
 import at.searles.buf.FrameStreamImpl;
 import at.searles.buf.ReaderCharStream;
 import at.searles.lexer.TokStream;
-import at.searles.parsing.Environment;
+import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ public class ParserGeneratorTest {
 
     private ParserStream stream;
     private ParserGenerator generator;
-    private Environment env;
+    private ParserCallBack env;
 
     private boolean error = false;
     private AstNode expr;

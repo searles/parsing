@@ -2,30 +2,26 @@ package at.searles.parsing.test
 
 import at.searles.lexer.Lexer
 import at.searles.lexer.LexerWithHidden
-import at.searles.lexer.Token
-import at.searles.lexer.Tokenizer
-import at.searles.parsing.Environment
+import at.searles.parsing.ParserCallBack
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable
 import at.searles.parsing.Recognizer
-import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.regex.CharSet
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 
 class EofTest {
 
     private lateinit var parser: Recognizable
     private lateinit var eof: Recognizer
-    private lateinit var env: Environment
+    private lateinit var env: ParserCallBack
     private lateinit var stream: ParserStream
 
     @Test
     fun testEof() {
         // Set up phase
         val lexer = Lexer()
-        this.env = Environment { _, _ -> }
+        this.env = ParserCallBack { _, _ -> }
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(lexer)
 
@@ -39,7 +35,7 @@ class EofTest {
     fun testNoEof() {
         // Set up phase
         val lexer = Lexer()
-        this.env = Environment { _, _ -> }
+        this.env = ParserCallBack { _, _ -> }
         val b = Recognizer.fromString("b", lexer, false)
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(lexer)
@@ -54,7 +50,7 @@ class EofTest {
     fun testNoEofOtherLexer() {
         // Set up phase
         val lexer = Lexer()
-        this.env = Environment { _, _ -> }
+        this.env = ParserCallBack { _, _ -> }
         val b = Recognizer.fromString("b", lexer, false)
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(Lexer())
@@ -70,7 +66,7 @@ class EofTest {
         // Set up phase
         val lexer = LexerWithHidden()
         lexer.hiddenToken(CharSet.chars(' '.toInt()))
-        this.env = Environment { _, _ -> }
+        this.env = ParserCallBack { _, _ -> }
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(lexer)
 
@@ -86,7 +82,7 @@ class EofTest {
         // Set up phase
         val lexer = LexerWithHidden()
         lexer.hiddenToken(CharSet.chars(' '.toInt()))
-        this.env = Environment { _, _ -> }
+        this.env = ParserCallBack { _, _ -> }
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(Lexer())
 

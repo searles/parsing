@@ -1,9 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.Environment;
-import at.searles.parsing.Parser;
-import at.searles.parsing.ParserStream;
-import at.searles.parsing.Recognizable;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 /**
@@ -23,14 +20,14 @@ public class ParserOrParser<T> implements Parser<T>, Recognizable.Or {
     }
 
     @Override
-    public T parse(Environment env, ParserStream stream) {
+    public T parse(ParserCallBack env, ParserStream stream) {
         T ret = p1.parse(env, stream);
 
         return ret != null ? ret : p2.parse(env, stream);
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, T t) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
         Parser<T> first = swapOnInvert ? p2 : p1;
         Parser<T> second = swapOnInvert ? p1 : p2;
 

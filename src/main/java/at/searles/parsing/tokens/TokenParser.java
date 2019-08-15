@@ -1,10 +1,7 @@
 package at.searles.parsing.tokens;
 
 import at.searles.lexer.Token;
-import at.searles.parsing.Environment;
-import at.searles.parsing.Mapping;
-import at.searles.parsing.Parser;
-import at.searles.parsing.ParserStream;
+import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class TokenParser<A> implements Parser<A> {
@@ -20,12 +17,12 @@ public class TokenParser<A> implements Parser<A> {
     }
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         return stream.parseToken(token, exclusive) != null;
     }
 
     @Override
-    public A parse(Environment env, ParserStream stream) {
+    public A parse(ParserCallBack env, ParserStream stream) {
         CharSequence seq = stream.parseToken(token, exclusive);
 
         if (seq == null) {
@@ -36,7 +33,7 @@ public class TokenParser<A> implements Parser<A> {
     }
 
     @Override
-    public ConcreteSyntaxTree print(Environment env, A a) {
+    public ConcreteSyntaxTree print(PrinterCallBack env, A a) {
         CharSequence seq = mapping.left(env, a);
 
         if (seq == null) {

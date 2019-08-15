@@ -38,10 +38,10 @@ public interface Parser<T> extends Recognizable {
      * @return An instance of T or null if this parser cannot be used.
      */
     @Nullable
-    T parse(Environment env, ParserStream stream);
+    T parse(ParserCallBack env, ParserStream stream);
 
     default @Nullable
-    ConcreteSyntaxTree print(Environment env, T t) {
+    ConcreteSyntaxTree print(PrinterCallBack env, T t) {
         throw new UnsupportedOperationException("printing not supported");
     }
 

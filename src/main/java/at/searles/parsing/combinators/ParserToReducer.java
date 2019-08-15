@@ -18,7 +18,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
         this.fold = fold;
     }
 
-    public V parse(Environment env, ParserStream stream, @NotNull T left) {
+    public V parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
         // must preserve start position.
         long leftStart = stream.start();
 
@@ -34,7 +34,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(Environment env, @NotNull V v) {
+    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull V v) {
         U right = fold.rightInverse(env, v);
 
         if (right == null) {
@@ -57,7 +57,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
     }
 
     @Override
-    public boolean recognize(Environment env, ParserStream stream) {
+    public boolean recognize(ParserCallBack env, ParserStream stream) {
         return parent.recognize(env, stream);
     }
 
