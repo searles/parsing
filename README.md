@@ -15,7 +15,7 @@ that are invertible, ie, a parser using this project is also a pretty printer.
 
 ## Introduction
 
-These Java Classes provide parser combinators. A parser combinator is a function that combines
+These Java classes provide parser combinators. A parser combinator is a function that combines
 parsers in various ways (choice, sequence, repetition, ...) and they are widely used for instance
 in Scala.
 
