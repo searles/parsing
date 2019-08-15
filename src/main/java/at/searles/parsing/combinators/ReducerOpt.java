@@ -18,15 +18,15 @@ public class ReducerOpt<T> implements Reducer<T, T>, Recognizable.Opt {
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
+    public boolean recognize(ParserStream stream) {
         return true;
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public T parse(ParserStream stream, @NotNull T left) {
         long preStart = stream.start();
 
-        T nonOptResult = parent.parse(env, stream, left);
+        T nonOptResult = parent.parse(stream, left);
 
         assert stream.start() == preStart;
 
@@ -34,8 +34,8 @@ public class ReducerOpt<T> implements Reducer<T, T>, Recognizable.Opt {
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
-        PartialConcreteSyntaxTree<T> output = parent.print(env, t);
+    public PartialConcreteSyntaxTree<T> print(@NotNull T t) {
+        PartialConcreteSyntaxTree<T> output = parent.print(t);
         return output != null ? output : new PartialConcreteSyntaxTree<>(t, ConcreteSyntaxTree.empty());
     }
 

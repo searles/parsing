@@ -3,6 +3,7 @@ package at.searles.parsing.combinators;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.PrinterBacktrackException;
 
 /**
  * Parser for chaining parsers. Eg for 5 + 6 where + 6 is the reducer.
@@ -12,30 +13,35 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     private final Parser<T> parent;
     private final Reducer<T, U> reducer;
 
-    public ParserThenReducer(Parser<T> parent, Reducer<T, U> reducer) {
+    private final boolean allowParserBacktrack;
+    private final boolean allowPrinterBacktrack;
+
+    public ParserThenReducer(Parser<T> parent, Reducer<T, U> reducer, boolean allowParserBacktrack, boolean allowPrinterBacktrack) {
         this.parent = parent;
         this.reducer = reducer;
+        this.allowParserBacktrack = allowParserBacktrack;
+        this.allowPrinterBacktrack = allowPrinterBacktrack;
     }
 
     @Override
-    public U parse(ParserCallBack env, ParserStream stream) {
+    public U parse(ParserStream stream) {
         long offset = stream.offset();
 
         // to restore if backtracking
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        T t = parent.parse(env, stream);
+        T t = parent.parse(stream);
 
         if (t == null) {
             return null;
         }
 
         // reducer preserves start() in stream and only sets end().
-        U u = reducer.parse(env, stream, t);
+        U u = reducer.parse(stream, t);
 
         if (u == null) {
-            env.notifyNoMatch(stream, this);
+            throwIfNoBacktrack(stream);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);
@@ -57,17 +63,25 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, U u) {
-        PartialConcreteSyntaxTree<T> reducerOutput = reducer.print(env, u);
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
+    }
+
+    @Override
+    public ConcreteSyntaxTree print(U u) {
+        PartialConcreteSyntaxTree<T> reducerOutput = reducer.print(u);
 
         if (reducerOutput == null) {
             return null;
         }
 
-        ConcreteSyntaxTree parserOutput = parent.print(env, reducerOutput.left);
+        ConcreteSyntaxTree parserOutput = parent.print(reducerOutput.left);
 
         if (parserOutput == null) {
-            env.notifyLeftPrintFailed(reducerOutput.right, this);
+            if(!allowPrinterBacktrack) {
+                throw new PrinterBacktrackException(this, reducerOutput.right);
+            }
+
             return null;
         }
 

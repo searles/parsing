@@ -8,10 +8,12 @@ import org.jetbrains.annotations.NotNull;
 public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.Then {
     private final Reducer<T, U> left;
     private final Recognizer right;
+    private final boolean allowParserBacktrack;
 
-    public ReducerThenRecognizer(Reducer<T, U> left, Recognizer right) {
+    public ReducerThenRecognizer(Reducer<T, U> left, Recognizer right, boolean allowParserBacktrack) {
         this.left = left;
         this.right = right;
+        this.allowParserBacktrack = allowParserBacktrack;
     }
 
     @Override
@@ -25,13 +27,13 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
 
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        U result = this.left.parse(env, stream, left);
+        U result = this.left.parse(stream, left);
 
         assert stream.start() == preStart;
 
@@ -39,8 +41,8 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
             return null;
         }
 
-        if (!right.recognize(env, stream)) {
-            env.notifyNoMatch(stream, this);
+        if (!right.recognize(stream)) {
+            throwIfNoBacktrack(stream);
 
             stream.setOffset(offset);
             assert stream.start() == preStart;
@@ -56,10 +58,10 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
 
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
+    public boolean recognize(ParserStream stream) {
         long preStart = stream.start();
 
-        boolean status = Recognizable.Then.super.recognize(env, stream);
+        boolean status = Recognizable.Then.super.recognize(stream);
 
         if (status) {
             stream.setStart(preStart);
@@ -69,14 +71,19 @@ public class ReducerThenRecognizer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U u) {
-        PartialConcreteSyntaxTree<T> leftOutput = left.print(env, u);
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
+    }
+
+    @Override
+    public PartialConcreteSyntaxTree<T> print(@NotNull U u) {
+        PartialConcreteSyntaxTree<T> leftOutput = left.print(u);
 
         if (leftOutput == null) {
             return null;
         }
 
-        ConcreteSyntaxTree rightOutput = right.print(env);
+        ConcreteSyntaxTree rightOutput = right.print();
 
         return new PartialConcreteSyntaxTree<>(leftOutput.left, leftOutput.right.consRight(rightOutput));
     }

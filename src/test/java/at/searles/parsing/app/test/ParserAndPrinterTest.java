@@ -8,7 +8,6 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.regex.CharSet;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
@@ -16,27 +15,9 @@ import java.util.Random;
 public class ParserAndPrinterTest {
 
     private Parser<Expr> parser;
-    private ParserCallBack env;
     private ParserStream input;
     private Expr result;
     private ConcreteSyntaxTree output;
-    private PrinterCallBack env2;
-
-    @Before
-    public void setUp() {
-        this.env = new ParserCallBack() {
-            @Override
-            public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
-                throw new IllegalArgumentException();
-            }
-        };
-        this.env2 = new PrinterCallBack() {
-            @Override
-            public void notifyLeftPrintFailed(ConcreteSyntaxTree rightTree, Recognizable.Then failed) {
-            }
-        };
-    }
-
 
     @Test
     public void testIdIterativeParser() {
@@ -272,13 +253,13 @@ public class ParserAndPrinterTest {
     }
 
     private void parse() {
-        this.result = parser.parse(env, input);
+        this.result = parser.parse(input);
     }
 
     private void print() {
         assert result != null;
 
-        this.output = parser.print(env2, result);
+        this.output = parser.print(result);
     }
 
     private void withParser(Parser<Expr> parser) {
@@ -288,7 +269,7 @@ public class ParserAndPrinterTest {
     private enum Parsers implements Parser<Expr> {
         RECURSIVE {
             @Override
-            public boolean recognize(ParserCallBack env, ParserStream stream) {
+            public boolean recognize(ParserStream stream) {
                 return false;
             }
 
@@ -300,17 +281,17 @@ public class ParserAndPrinterTest {
                     new Fold<Expr, Expr, Expr>() {
 
                         @Override
-                        public Expr apply(ParserCallBack env, ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
+                        public Expr apply(ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
                             return left.app(right);
                         }
 
                         @Override
-                        public Expr leftInverse(PrinterCallBack env, @NotNull Expr result) {
+                        public Expr leftInverse(@NotNull Expr result) {
                             return result.left();
                         }
 
                         @Override
-                        public Expr rightInverse(PrinterCallBack env, @NotNull Expr result) {
+                        public Expr rightInverse(@NotNull Expr result) {
                             return result.right();
                         }
                     }
@@ -322,18 +303,18 @@ public class ParserAndPrinterTest {
             }
 
             @Override
-            public Expr parse(ParserCallBack parserCallBack, ParserStream stream) {
-                return exprParser.parse(parserCallBack, stream);
+            public Expr parse(ParserStream stream) {
+                return exprParser.parse(stream);
             }
 
             @Override
-            public ConcreteSyntaxTree print(PrinterCallBack parserCallBack, Expr expr) {
-                return exprParser.print(parserCallBack, expr);
+            public ConcreteSyntaxTree print(Expr expr) {
+                return exprParser.print(expr);
             }
         },
         ITERATIVE {
             @Override
-            public boolean recognize(ParserCallBack env, ParserStream stream) {
+            public boolean recognize(ParserStream stream) {
                 return false;
             }
 
@@ -344,17 +325,17 @@ public class ParserAndPrinterTest {
             final Reducer<Expr, Expr> appReducer = term.fold(
                     new Fold<Expr, Expr, Expr>() {
                         @Override
-                        public Expr apply(ParserCallBack env, ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
+                        public Expr apply(ParserStream stream, @NotNull Expr left, @NotNull Expr right) {
                             return left.app(right);
                         }
 
                         @Override
-                        public Expr leftInverse(PrinterCallBack env, @NotNull Expr result) {
+                        public Expr leftInverse(@NotNull Expr result) {
                             return result.left();
                         }
 
                         @Override
-                        public Expr rightInverse(PrinterCallBack env, @NotNull Expr result) {
+                        public Expr rightInverse(@NotNull Expr result) {
                             return result.right();
                         }
                     });
@@ -365,13 +346,13 @@ public class ParserAndPrinterTest {
 
 
             @Override
-            public Expr parse(ParserCallBack parserCallBack, ParserStream stream) {
-                return exprParser.parse(parserCallBack, stream);
+            public Expr parse(ParserStream stream) {
+                return exprParser.parse(stream);
             }
 
             @Override
-            public ConcreteSyntaxTree print(PrinterCallBack parserCallBack, Expr expr) {
-                return exprParser.print(parserCallBack, expr);
+            public ConcreteSyntaxTree print(Expr expr) {
+                return exprParser.print(expr);
             }
         },
         ;
@@ -383,12 +364,12 @@ public class ParserAndPrinterTest {
                             new Mapping<CharSequence, Expr>() {
                                 @NotNull
                                 @Override
-                                public Id parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
+                                public Id parse(ParserStream stream, @NotNull CharSequence left) {
                                     return new Id(left.toString());
                                 }
 
                                 @Override
-                                public CharSequence left(PrinterCallBack env, @NotNull Expr result) {
+                                public CharSequence left(@NotNull Expr result) {
                                     return result.id();
                                 }
                             }, false);

@@ -4,7 +4,6 @@ import at.searles.buf.BufferedStream;
 import at.searles.buf.FrameStreamImpl;
 import at.searles.buf.ReaderCharStream;
 import at.searles.lexer.TokStream;
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
 import org.junit.Assert;
@@ -19,9 +18,7 @@ public class ParserGeneratorTest {
 
     private ParserStream stream;
     private ParserGenerator generator;
-    private ParserCallBack env;
 
-    private boolean error = false;
     private AstNode expr;
     private List<AstNode> ruleSet;
     private AstNode rule;
@@ -29,11 +26,6 @@ public class ParserGeneratorTest {
     @Before
     public void setup() {
         this.generator = new ParserGenerator();
-        this.env = (stream, failedParser) -> {
-            error = true;
-            System.err.print("at '" + stream + "' when parsing '" + failedParser);
-        };
-        this.error = false;
     }
 
     @Test
@@ -152,14 +144,14 @@ public class ParserGeneratorTest {
     }
 
     private void parseExpr() {
-        this.expr = generator.expr(env, stream);
+        this.expr = generator.expr(stream);
     }
 
     private void parseRuleSet() {
-        this.ruleSet = generator.rules(env, stream);
+        this.ruleSet = generator.rules(stream);
     }
 
     private void parseRule() {
-        this.rule = generator.rule(env, stream);
+        this.rule = generator.rule(stream);
     }
 }

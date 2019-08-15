@@ -1,12 +1,10 @@
 package at.searles.parsing.utils.common;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Initializer;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 
 /**
- * Created by searles on 01.04.19.
+ * Initializer that introduces a simple number
  */
 public class Num implements Initializer<Integer> {
 
@@ -17,12 +15,12 @@ public class Num implements Initializer<Integer> {
     }
 
     @Override
-    public Integer parse(ParserCallBack env, ParserStream stream) {
+    public Integer parse(ParserStream stream) {
         return num;
     }
 
     @Override
-    public boolean consume(PrinterCallBack env, Integer integer) {
+    public boolean consume(Integer integer) {
         return integer == num;
     }
 

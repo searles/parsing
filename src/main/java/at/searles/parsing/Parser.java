@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * returns an object. Additionally it uses a env object
  * for feedback on errors.
  * <p>
- * Parsers are inversible. A syntax tree (a tree that is easily converted
+ * Parsers are invertible. A syntax tree (a tree that is easily converted
  * into a string) is returned by the inverse. For a proper inversion,
  * a set is maintained to avoid cycles.
  *
@@ -33,15 +33,14 @@ public interface Parser<T> extends Recognizable {
     /**
      * Returns the parsed value.
      *
-     * @param env    The environment.
      * @param stream The parser stream from which items are read.
      * @return An instance of T or null if this parser cannot be used.
      */
     @Nullable
-    T parse(ParserCallBack env, ParserStream stream);
+    T parse(ParserStream stream);
 
     default @Nullable
-    ConcreteSyntaxTree print(PrinterCallBack env, T t) {
+    ConcreteSyntaxTree print(T t) {
         throw new UnsupportedOperationException("printing not supported");
     }
 
@@ -49,11 +48,23 @@ public interface Parser<T> extends Recognizable {
      * A B
      */
     default <U> Parser<U> then(Reducer<T, U> reducer) {
-        return new ParserThenReducer<>(this, reducer);
+        return then(reducer, false);
+    }
+
+    default <U> Parser<U> then(Reducer<T, U> reducer, boolean allowParserBacktrack) {
+        return then(reducer, allowParserBacktrack, false);
+    }
+
+    default <U> Parser<U> then(Reducer<T, U> reducer, boolean allowParserBacktrack, boolean allowPrinterBacktrack) {
+        return new ParserThenReducer<>(this, reducer, allowParserBacktrack, allowPrinterBacktrack);
     }
 
     default Parser<T> then(Recognizer recognizer) {
-        return new ParserThenRecognizer<>(this, recognizer);
+        return then(recognizer, false);
+    }
+
+    default Parser<T> then(Recognizer recognizer, boolean allowParserBacktrack) {
+        return new ParserThenRecognizer<>(this, recognizer, allowParserBacktrack);
     }
 
     /**
@@ -85,7 +96,7 @@ public interface Parser<T> extends Recognizable {
     }
 
     /**
-     * Useful to simplify parser's toString output. Automtically
+     * Useful to simplify parser's toString output. Automatically
      * created for each rule.
      */
     default Parser<T> ref(String label) {

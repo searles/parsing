@@ -1,9 +1,9 @@
 package at.searles.parsing;
 
 public interface Consumer<T> {
-    boolean consume(ParserCallBack env, T t, ParserStream stream);
+    boolean consume(ParserStream stream, T t);
 
-    default T inverse(ParserCallBack env) {
+    default T inverse() {
         throw new UnsupportedOperationException();
     }
 }

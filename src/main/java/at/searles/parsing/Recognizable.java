@@ -5,7 +5,7 @@ package at.searles.parsing;
  */
 public interface Recognizable {
 
-    boolean recognize(ParserCallBack env, ParserStream stream);
+    boolean recognize(ParserStream stream);
 
     interface Then extends Recognizable {
         Recognizable left();
@@ -13,20 +13,21 @@ public interface Recognizable {
         Recognizable right();
 
         @Override
-        default boolean recognize(ParserCallBack env, ParserStream stream) {
+        default boolean recognize(ParserStream stream) {
             long offset = stream.offset();
 
             long preStart = stream.start();
             long preEnd = stream.end();
 
-            if (!left().recognize(env, stream)) {
+            if (!left().recognize(stream)) {
                 return false;
             }
 
             long start = stream.start();
 
-            if (!right().recognize(env, stream)) {
-                env.notifyNoMatch(stream, this);
+            if (!right().recognize(stream)) {
+                throwIfNoBacktrack(stream);
+
                 stream.setOffset(offset);
                 stream.setStart(preStart);
                 stream.setEnd(preEnd);
@@ -36,6 +37,14 @@ public interface Recognizable {
             stream.setStart(start);
             return true;
         }
+
+        default void throwIfNoBacktrack(ParserStream stream) {
+            if(!allowParserBacktrack()) {
+                throw new ParserLookaheadException(this, stream);
+            }
+        }
+
+        boolean allowParserBacktrack();
 
         default String createString() {
             String leftString = left().toString();
@@ -59,8 +68,8 @@ public interface Recognizable {
         Recognizable second();
 
         @Override
-        default boolean recognize(ParserCallBack env, ParserStream stream) {
-            return first().recognize(env, stream) || second().recognize(env, stream);
+        default boolean recognize(ParserStream stream) {
+            return first().recognize(stream) || second().recognize(stream);
         }
 
         default String createString() {
@@ -79,9 +88,9 @@ public interface Recognizable {
         Recognizable parent();
 
         @Override
-        default boolean recognize(ParserCallBack env, ParserStream stream) {
+        default boolean recognize(ParserStream stream) {
             stream.setStart(stream.end());
-            parent().recognize(env, stream);
+            parent().recognize(stream);
 
             return true;
         }
@@ -101,10 +110,10 @@ public interface Recognizable {
         Recognizable parent();
 
         @Override
-        default boolean recognize(ParserCallBack env, ParserStream stream) {
+        default boolean recognize(ParserStream stream) {
             long start = stream.start();
 
-            while (parent().recognize(env, stream)) {
+            while (parent().recognize(stream)) {
                 // do nothing. Everything is done in 'recognize'
                 stream.setStart(start);
             }

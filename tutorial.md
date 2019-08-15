@@ -423,9 +423,6 @@ necessary ones:
 Pretty-Print: (1+2)*(3+-4)
 ~~~
 
-The print-method also uses the `env`-object to propagate if backtracking
-is necessary when printing failed which might indicate a performance issue.
-
 ## Adding annotations for custom formatting
 
 Sometimes it is desirable to add white spaces to the output. 
@@ -449,7 +446,7 @@ enum class Annotation { Infix }
 The return type of the `print`-method is a `ConcreteSyntaxTree`.
 
 ~~~ kotlin
-    val outTree = sum.print(env, ast)!!
+    val outTree = sum.print(ast)!!
 ~~~
 
 The `toString()`-method of this concrete syntax tree will return the source code

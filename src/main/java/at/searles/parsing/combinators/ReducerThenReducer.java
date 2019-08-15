@@ -2,6 +2,7 @@ package at.searles.parsing.combinators;
 
 import at.searles.parsing.*;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
+import at.searles.parsing.printing.PrinterBacktrackException;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,19 +12,23 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
 
     private final Reducer<T, U> left;
     private final Reducer<U, V> right;
+    private final boolean allowParserBacktrack;
+    private final boolean allowPrinterBacktrack;
 
-    public ReducerThenReducer(Reducer<T, U> left, Reducer<U, V> right) {
+    public ReducerThenReducer(Reducer<T, U> left, Reducer<U, V> right, boolean allowParserBacktrack, boolean allowPrinterBacktrack) {
         this.left = left;
         this.right = right;
+        this.allowParserBacktrack = allowParserBacktrack;
+        this.allowPrinterBacktrack = allowPrinterBacktrack;
     }
 
     @Override
-    public V parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public V parse(ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        U u = this.left.parse(env, stream, left);
+        U u = this.left.parse(stream, left);
 
         assert stream.start() == preStart;
 
@@ -31,12 +36,12 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
             return null;
         }
 
-        V v = this.right.parse(env, stream, u);
+        V v = this.right.parse(stream, u);
 
         assert stream.start() == preStart;
 
         if (v == null) {
-            env.notifyNoMatch(stream, this);
+            throwIfNoBacktrack(stream);
             stream.setOffset(offset);
             stream.setEnd(preEnd);
             return null;
@@ -47,10 +52,10 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
 
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
+    public boolean recognize(ParserStream stream) {
         long preStart = stream.start();
 
-        boolean status = Recognizable.Then.super.recognize(env, stream);
+        boolean status = Recognizable.Then.super.recognize(stream);
 
         if (status) {
             stream.setStart(preStart);
@@ -60,17 +65,25 @@ public class ReducerThenReducer<T, U, V> implements Reducer<T, V>, Recognizable.
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull V v) {
-        PartialConcreteSyntaxTree<U> midTree = right.print(env, v);
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
+    }
+
+    @Override
+    public PartialConcreteSyntaxTree<T> print(@NotNull V v) {
+        PartialConcreteSyntaxTree<U> midTree = right.print(v);
 
         if (midTree == null) {
             return null;
         }
 
-        PartialConcreteSyntaxTree<T> leftTree = left.print(env, midTree.left);
+        PartialConcreteSyntaxTree<T> leftTree = left.print(midTree.left);
 
         if (leftTree == null) {
-            env.notifyLeftPrintFailed(midTree.right, this);
+            if(!allowPrinterBacktrack) {
+                throw new PrinterBacktrackException(this, midTree.right);
+            }
+
             return null;
         }
 

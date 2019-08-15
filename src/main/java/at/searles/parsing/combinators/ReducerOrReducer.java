@@ -17,11 +17,11 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
     }
 
     @Override
-    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserStream stream, @NotNull T left) {
         long start = stream.start();
         long end = stream.end();
 
-        U ret = r1.parse(env, stream, left);
+        U ret = r1.parse(stream, left);
 
         if (ret != null) {
             return ret;
@@ -29,17 +29,17 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
 
         assert (stream.start() == start && stream.end() == end);
 
-        return r2.parse(env, stream, left);
+        return r2.parse(stream, left);
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U result) {
+    public PartialConcreteSyntaxTree<T> print(@NotNull U result) {
         Reducer<T, U> first = swapOnInvert ? r2 : r1;
         Reducer<T, U> second = swapOnInvert ? r1 : r2;
 
-        PartialConcreteSyntaxTree<T> firstOutput = first.print(env, result);
+        PartialConcreteSyntaxTree<T> firstOutput = first.print(result);
 
-        return firstOutput != null ? firstOutput : second.print(env, result);
+        return firstOutput != null ? firstOutput : second.print(result);
     }
 
     @Override

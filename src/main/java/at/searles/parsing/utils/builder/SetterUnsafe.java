@@ -1,9 +1,7 @@
 package at.searles.parsing.utils.builder;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -29,7 +27,7 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public T apply(ParserCallBack env, ParserStream stream, @NotNull T left, @NotNull V right) {
+    public T apply(ParserStream stream, @NotNull T left, @NotNull V right) {
         try {
             @SuppressWarnings("unchecked") Class<T> type = (Class<T>) left.getClass();
             Field field = type.getField(property);
@@ -45,7 +43,7 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public T leftInverse(PrinterCallBack env, @NotNull T result) {
+    public T leftInverse(@NotNull T result) {
         try {
             @SuppressWarnings("unchecked") Class<T> type = (Class<T>) result.getClass();
             Field field = type.getField(property);
@@ -69,7 +67,7 @@ public class SetterUnsafe<T, V> implements Fold<T, V, T> {
     }
 
     @Override
-    public V rightInverse(PrinterCallBack env, @NotNull T result) {
+    public V rightInverse(@NotNull T result) {
         try {
             @SuppressWarnings("unchecked") Class<T> type = (Class<T>) result.getClass();
             Field field = type.getField(property);

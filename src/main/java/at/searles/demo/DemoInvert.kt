@@ -28,10 +28,10 @@ fun main() {
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
     val numMapping = object : Mapping<CharSequence, AstNode> {
-        override fun parse(env: ParserCallBack, stream: ParserStream, left: CharSequence): AstNode =
+        override fun parse(stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
-        override fun left(env: PrinterCallBack, result: AstNode): CharSequence? =
+        override fun left(result: AstNode): CharSequence? =
                 if (result is NumNode) result.value.toString() else null
     }
 
@@ -55,10 +55,10 @@ fun main() {
     val minus = Recognizer.fromString("-", lexer, false)
 
     val negate = object : Mapping<AstNode, AstNode> {
-        override fun parse(env: ParserCallBack, stream: ParserStream, left: AstNode): AstNode =
+        override fun parse(stream: ParserStream, left: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Neg, left)
 
-        override fun left(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun left(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Neg) result.args[0] else null
     }
 
@@ -71,26 +71,26 @@ fun main() {
     val times = Recognizer.fromString("*", lexer, false)
 
     val multiply = object : Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: ParserCallBack, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
+        override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Mul, left, right)
 
-        override fun leftInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun leftInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Mul) result.args[0] else null
 
-        override fun rightInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun rightInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Mul) result.args[1] else null
     }
 
     val slash = Recognizer.fromString("/", lexer, false)
 
     val divide = object : Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: ParserCallBack, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
+        override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Div, left, right)
 
-        override fun leftInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun leftInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Div) result.args[0] else null
 
-        override fun rightInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun rightInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
@@ -106,24 +106,24 @@ fun main() {
     val plus = Recognizer.fromString("+", lexer, false)
 
     val add = object : Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: ParserCallBack, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
+        override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
-        override fun leftInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun leftInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Add) result.args[0] else null
 
-        override fun rightInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun rightInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Add) result.args[1] else null
     }
 
     val sub = object : Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: ParserCallBack, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
+        override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
                 OpNode(stream.createSourceInfo(), Op.Sub, left, right)
 
-        override fun leftInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun leftInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Sub) result.args[0] else null
 
-        override fun rightInverse(env: PrinterCallBack, result: AstNode): AstNode? =
+        override fun rightInverse(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Sub) result.args[1] else null
     }
 
@@ -135,14 +135,6 @@ fun main() {
                     )
             )
     )
-
-    val parserCallBack = ParserCallBack { stream, failedParser ->
-        throw ParserException(
-                "Error at ${stream.offset()}, expected ${failedParser.right()}"
-        )
-    }
-
-    val printerCallBack = PrinterCallBack { _, _ -> }
 
     // Printing a generic Ast
     val emptySourceInfo = object : SourceInfo {
@@ -159,7 +151,7 @@ fun main() {
                     NumNode(emptySourceInfo, 2)),
             NumNode(emptySourceInfo, 3))
 
-    println("Pretty-Print: ${sum.print(printerCallBack, genericAst0)}")
+    println("Pretty-Print: ${sum.print(genericAst0)}")
 
     /*  (1+2)*3 */
     val genericAst1 = OpNode(emptySourceInfo,
@@ -171,10 +163,10 @@ fun main() {
             NumNode(emptySourceInfo, 3))
 
 
-    println("Pretty-Print: ${sum.print(printerCallBack, genericAst1)}")
+    println("Pretty-Print: ${sum.print(genericAst1)}")
 
     val stream = ParserStream.fromString(readLine())
-    val ast = sum.parse(parserCallBack, stream)
+    val ast = sum.parse(stream)
 
     // now pretty-printTo the tree
     val sourceStream = StringOutStream()
@@ -187,7 +179,7 @@ fun main() {
                 }
     }
 
-    val outTree = sum.print(printerCallBack, ast)!!
+    val outTree = sum.print(ast)!!
     outTree.printTo(printer)
     println("Pretty-Print: $sourceStream")
 }

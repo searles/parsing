@@ -23,9 +23,7 @@ fun main() {
 
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
-    val numMapping = Mapping<CharSequence, Int> { _, left, _ ->
-        Integer.parseInt(left.toString())
-    }
+    val numMapping = Mapping<CharSequence, Int> { _, left -> Integer.parseInt(left.toString()) }
     val num = Parser.fromToken(numToken, numMapping, false).ref("num")
 
     // term: num | '(' sum ')'
@@ -44,7 +42,7 @@ fun main() {
 
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val negate = Mapping<Int, Int> { _, _, value -> -value }
+    val negate = Mapping<Int, Int> { _, value -> -value }
 
     val literal =
             minus.then(term).then(negate)
@@ -54,15 +52,11 @@ fun main() {
 
     val times = Recognizer.fromString("*", lexer, false)
 
-    val multiply = Fold<Int, Int, Int> { _, _, left, right ->
-        left * right
-    }
+    val multiply = Fold<Int, Int, Int> { _, left, right -> left * right }
 
     val slash = Recognizer.fromString("/", lexer, false)
 
-    val divide = Fold<Int, Int, Int> { _, _, left, right ->
-        left / right
-    }
+    val divide = Fold<Int, Int, Int> { _, left, right -> left / right }
 
     val product = literal.then(
             Reducer.rep(
@@ -75,13 +69,9 @@ fun main() {
 
     val plus = Recognizer.fromString("+", lexer, false)
 
-    val add = Fold<Int, Int, Int> { _, _, left, right ->
-        left + right
-    }
+    val add = Fold<Int, Int, Int> { _, left, right -> left + right }
 
-    val sub = Fold<Int, Int, Int> { _, _, left, right ->
-        left - right
-    }
+    val sub = Fold<Int, Int, Int> { _, left, right -> left - right }
 
     sum.set(
             product.then(
@@ -92,18 +82,10 @@ fun main() {
             )
     )
 
-    val env = ParserCallBack { stream, failedParser ->
-        throw ParserException(
-                "Error at ${stream.offset()}, expected ${failedParser.right()}"
-        )
-    }
-
     val stream = ParserStream.fromString(readLine())
     // To use a reader, the following can be used:
     // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 
-    println("Result = ${sum.parse(env, stream)}")
+    println("Result = ${sum.parse(stream)}")
     println("Position in stream: ${stream.end()}")
 }
-
-class ParserException(msg: String) : RuntimeException(msg)

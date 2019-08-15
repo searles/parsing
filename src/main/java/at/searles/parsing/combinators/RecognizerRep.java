@@ -1,6 +1,5 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
@@ -24,7 +23,7 @@ public class RecognizerRep implements Recognizer, Recognizable.Rep {
 
     @NotNull
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env) {
+    public ConcreteSyntaxTree print() {
         return ConcreteSyntaxTree.empty();
     }
 

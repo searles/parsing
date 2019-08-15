@@ -1,9 +1,7 @@
 package at.searles.parsing.annotation;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Parser;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class AnnotationParser<C, T> implements Parser<T> {
@@ -17,18 +15,18 @@ public class AnnotationParser<C, T> implements Parser<T> {
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream) {
-        return parser.parse(env, stream);
+    public T parse(ParserStream stream) {
+        return parser.parse(stream);
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
-        return parser.recognize(env, stream);
+    public boolean recognize(ParserStream stream) {
+        return parser.recognize(stream);
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
-        ConcreteSyntaxTree output = parser.print(env, t);
+    public ConcreteSyntaxTree print(T t) {
+        ConcreteSyntaxTree output = parser.print(t);
 
         if (output == null) {
             return null;

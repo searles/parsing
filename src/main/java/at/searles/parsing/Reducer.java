@@ -25,32 +25,42 @@ public interface Reducer<T, U> extends Recognizable {
     /**
      * Parses elements from TokStream
      *
-     * @param env    The env used to communicate parsing errors.
      * @param stream The stream from which elements are read
      * @param left   The element left of this reducer
      * @return The parsed element, null if parsing was not successful.
      */
     @Nullable
-    U parse(ParserCallBack env, ParserStream stream, @NotNull T left); // null = fail.
+    U parse(ParserStream stream, @NotNull T left); // null = fail.
 
     /**
      * Prints the argument that is split of u on its right. It is the
      * counterpart of the left method. This method always succeeds if left succeeds.
      * Otherwise, it will trigger an error via env.
      *
-     * @param env The env
      * @param u   The argument
      * @return null if fail
      */
     @Nullable
-    PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U u);
+    PartialConcreteSyntaxTree<T> print(@NotNull U u);
 
     default <V> Reducer<T, V> then(Reducer<U, V> reducer) {
-        return new ReducerThenReducer<>(this, reducer);
+        return then(reducer, false);
+    }
+
+    default <V> Reducer<T, V> then(Reducer<U, V> reducer, boolean allowParserBacktrack) {
+        return then(reducer, allowParserBacktrack, false);
+    }
+
+    default <V> Reducer<T, V> then(Reducer<U, V> reducer, boolean allowParserBacktrack, boolean allowPrinterBacktrack) {
+        return new ReducerThenReducer<>(this, reducer, allowParserBacktrack, allowPrinterBacktrack);
     }
 
     default Reducer<T, U> then(Recognizer recognizer) {
-        return new ReducerThenRecognizer<>(this, recognizer);
+        return then(recognizer, false);
+    }
+
+    default Reducer<T, U> then(Recognizer recognizer, boolean allowParserBacktrack) {
+        return new ReducerThenRecognizer<>(this, recognizer, allowParserBacktrack);
     }
 
     default Reducer<T, U> or(Reducer<T, U> alternative) {

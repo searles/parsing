@@ -20,20 +20,20 @@ public class ParserOrParser<T> implements Parser<T>, Recognizable.Or {
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream) {
-        T ret = p1.parse(env, stream);
+    public T parse(ParserStream stream) {
+        T ret = p1.parse(stream);
 
-        return ret != null ? ret : p2.parse(env, stream);
+        return ret != null ? ret : p2.parse(stream);
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
+    public ConcreteSyntaxTree print(T t) {
         Parser<T> first = swapOnInvert ? p2 : p1;
         Parser<T> second = swapOnInvert ? p1 : p2;
 
-        ConcreteSyntaxTree output = first.print(env, t);
+        ConcreteSyntaxTree output = first.print(t);
 
-        return output != null ? output : second.print(env, t);
+        return output != null ? output : second.print(t);
     }
 
     @Override

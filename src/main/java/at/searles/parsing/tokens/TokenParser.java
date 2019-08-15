@@ -17,24 +17,24 @@ public class TokenParser<A> implements Parser<A> {
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
+    public boolean recognize(ParserStream stream) {
         return stream.parseToken(token, exclusive) != null;
     }
 
     @Override
-    public A parse(ParserCallBack env, ParserStream stream) {
+    public A parse(ParserStream stream) {
         CharSequence seq = stream.parseToken(token, exclusive);
 
         if (seq == null) {
             return null;
         }
 
-        return mapping.parse(env, stream, seq);
+        return mapping.parse(stream, seq);
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, A a) {
-        CharSequence seq = mapping.left(env, a);
+    public ConcreteSyntaxTree print(A a) {
+        CharSequence seq = mapping.left(a);
 
         if (seq == null) {
             return null;

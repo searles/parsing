@@ -6,29 +6,31 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     private final Recognizer parent;
     private final Parser<T> parser;
+    private final boolean allowParserBacktrack;
 
-    public RecognizerThenParser(Recognizer parent, Parser<T> parser) {
+    public RecognizerThenParser(Recognizer parent, Parser<T> parser, boolean allowParserBacktrack) {
         this.parent = parent;
         this.parser = parser;
+        this.allowParserBacktrack = allowParserBacktrack;
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream) {
+    public T parse(ParserStream stream) {
         long offset = stream.offset();
 
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        if (!parent.recognize(env, stream)) {
+        if (!parent.recognize(stream)) {
             return null;
         }
 
         long start = stream.start();
 
-        T t = parser.parse(env, stream);
+        T t = parser.parse(stream);
 
         if (t == null) {
-            env.notifyNoMatch(stream, this);
+            throwIfNoBacktrack(stream);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);
@@ -41,11 +43,11 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
-        ConcreteSyntaxTree output = parser.print(env, t);
+    public ConcreteSyntaxTree print(T t) {
+        ConcreteSyntaxTree output = parser.print(t);
 
         // printTo in recognizer always succeeds.
-        return output != null ? output.consLeft(parent.print(env)) : null;
+        return output != null ? output.consLeft(parent.print()) : null;
     }
 
     @Override
@@ -61,5 +63,10 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
     @Override
     public Recognizable right() {
         return parser;
+    }
+
+    @Override
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
     }
 }

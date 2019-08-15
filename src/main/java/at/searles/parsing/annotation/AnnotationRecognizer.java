@@ -1,8 +1,6 @@
 package at.searles.parsing.annotation;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +19,14 @@ public class AnnotationRecognizer<A> implements Recognizer {
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
-        return recognizer.recognize(env, stream);
+    public boolean recognize(ParserStream stream) {
+        return recognizer.recognize(stream);
     }
 
     @NotNull
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env) {
-        return recognizer.print(env).annotate(annotate);
+    public ConcreteSyntaxTree print() {
+        return recognizer.print().annotate(annotate);
     }
 
     @Override

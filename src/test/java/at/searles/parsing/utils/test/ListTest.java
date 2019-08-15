@@ -22,37 +22,37 @@ public class ListTest {
     private final Lexer lexer = new Lexer();
     private final Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new Mapping<CharSequence, Object>() {
         @Override
-        public Object parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
+        public Object parse(ParserStream stream, @NotNull CharSequence left) {
             return left.toString();
         }
 
         @Nullable
         @Override
-        public CharSequence left(PrinterCallBack env, @NotNull Object result) {
+        public CharSequence left(@NotNull Object result) {
             return result instanceof String ? result.toString() : null;
         }
     }, false);
     private final Parser<Object> num = Parser.fromToken(lexer.token(RegexParser.parse("[0-9]+")), new Mapping<CharSequence, Object>() {
         @Override
-        public Object parse(ParserCallBack env, ParserStream stream, @NotNull CharSequence left) {
+        public Object parse(ParserStream stream, @NotNull CharSequence left) {
             return Integer.parseInt(left.toString());
         }
 
         @Nullable
         @Override
-        public CharSequence left(PrinterCallBack env, @NotNull Object result) {
+        public CharSequence left(@NotNull Object result) {
             return result instanceof Integer ? result.toString() : null;
         }
     }, false);
     private final Fold<List<Object>, Object, List<Object>> add = new Fold<List<Object>, Object, List<Object>>() {
         @Override
-        public List<Object> apply(ParserCallBack env, ParserStream stream, @NotNull List<Object> left, @NotNull Object right) {
+        public List<Object> apply(ParserStream stream, @NotNull List<Object> left, @NotNull Object right) {
             return ImmutableList.createFrom(left).pushBack(right);
         }
 
         @Override
-        public List<Object> leftInverse(PrinterCallBack env, @NotNull List<Object> result) {
-            if (rightInverse(env, result) == null) {
+        public List<Object> leftInverse(@NotNull List<Object> result) {
+            if (rightInverse(result) == null) {
                 return null;
             }
 
@@ -60,7 +60,7 @@ public class ListTest {
         }
 
         @Override
-        public Object rightInverse(PrinterCallBack env, @NotNull List<Object> result) {
+        public Object rightInverse(@NotNull List<Object> result) {
             if (result.isEmpty()) {
                 return null;
             }
@@ -80,13 +80,6 @@ public class ListTest {
                             strings.or(ints)
                     )
             );
-    private final ParserCallBack env = new ParserCallBack() {
-        @Override
-        public void notifyNoMatch(ParserStream stream, Recognizable.Then failedParser) {
-            throw new IllegalArgumentException();
-        }
-    };
-    private final PrinterCallBack env2 = (a, b) -> {throw new IllegalArgumentException();};
     private ParserStream input;
     private List<Object> item;
     private String output;
@@ -119,12 +112,12 @@ public class ListTest {
     }
 
     private void actPrint() {
-        ConcreteSyntaxTree tree = parser.print(env2, item);
+        ConcreteSyntaxTree tree = parser.print(item);
         output = tree != null ? tree.toString() : null;
     }
 
     private void actParse() {
-        item = parser.parse(env, input);
+        item = parser.parse(input);
     }
 
     private void withInput(String input) {

@@ -17,19 +17,19 @@ public class ReducerJoin<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
-        return parserReducer.parse(env, stream, left);
+    public T parse(ParserStream stream, @NotNull T left) {
+        return parserReducer.parse(stream, left);
     }
 
     @Nullable
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
-        return printerReducer.print(env, t);
+    public PartialConcreteSyntaxTree<T> print(@NotNull T t) {
+        return printerReducer.print(t);
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
-        return parserReducer.recognize(env, stream);
+    public boolean recognize(ParserStream stream) {
+        return parserReducer.recognize(stream);
     }
 
     @Override

@@ -14,14 +14,14 @@ public class ParserPositionTest {
 
     final Recognizer z = Recognizer.fromString("Z", lexer, false);
 
-    final Mapping<String, String> fail = (env, stream, left) -> null;
+    final Mapping<String, String> fail = (stream, left) -> null;
 
-    final Fold<String, String, String> joiner = (env, stream, left, right) -> left + right;
+    final Fold<String, String, String> joiner = (stream, left, right) -> left + right;
     private Parser<String> parser;
     private String output;
 
     Mapping<String, String> positionAssert(int start, int end) {
-        return (env, stream, left) -> {
+        return (stream, left) -> {
             SourceInfo sourceInfo = stream.createSourceInfo();
             Assert.assertEquals(start, sourceInfo.start());
             Assert.assertEquals(end, sourceInfo.end());
@@ -30,7 +30,7 @@ public class ParserPositionTest {
     }
 
     Initializer<String> positionInitAssert(int start, int end) {
-        return (env, stream) -> {
+        return (stream) -> {
             SourceInfo sourceInfo = stream.createSourceInfo();
             Assert.assertEquals(start, sourceInfo.start());
             Assert.assertEquals(end, sourceInfo.end());
@@ -40,7 +40,7 @@ public class ParserPositionTest {
 
     @Test
     public void singleCharTest() {
-        withParser(a.then(positionAssert(0, 1)));
+        withParser(a.then(positionAssert(0, 1), true));
         actParse("A");
         Assert.assertEquals("A", output);
     }
@@ -55,7 +55,7 @@ public class ParserPositionTest {
     @Test
     public void backtrackingParserResetTest() {
         withParser(a.then(
-                b.fold(joiner).then(fail)
+                b.fold(joiner).then(fail, true)
                         .or(positionAssert(0, 1))
         ));
         actParse("AB");
@@ -88,8 +88,6 @@ public class ParserPositionTest {
 
     private void actParse(String str) {
         ParserStream parserStream = ParserStream.fromString(str);
-        ParserCallBack env = (stream, failedParser) -> {
-        };
-        output = parser.parse(env, parserStream);
+        output = parser.parse(parserStream);
     }
 }

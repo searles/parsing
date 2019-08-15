@@ -1,10 +1,7 @@
 package at.searles.parsing.utils.builder;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Initializer;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +30,7 @@ public class BuilderInitializer<T> implements Initializer<T> {
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream) {
+    public T parse(ParserStream stream) {
         try {
             return ctor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -42,7 +39,7 @@ public class BuilderInitializer<T> implements Initializer<T> {
     }
 
     @Override
-    public boolean consume(PrinterCallBack env, T builder) {
+    public boolean consume(T builder) {
         try {
             return (boolean) isEmptyMethod.invoke(builder);
         } catch (IllegalAccessException | InvocationTargetException e) {

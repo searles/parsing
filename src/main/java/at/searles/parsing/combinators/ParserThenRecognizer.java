@@ -6,10 +6,12 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
     private final Parser<T> left;
     private final Recognizer right;
+    private final boolean allowParserBacktrack;
 
-    public ParserThenRecognizer(Parser<T> left, Recognizer right) {
+    public ParserThenRecognizer(Parser<T> left, Recognizer right, boolean allowParserBacktrack) {
         this.left = left;
         this.right = right;
+        this.allowParserBacktrack = allowParserBacktrack;
     }
 
     @Override
@@ -23,14 +25,19 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream) {
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
+    }
+
+    @Override
+    public T parse(ParserStream stream) {
         long offset = stream.offset();
 
         // to restore if backtracking
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        T result = left.parse(env, stream);
+        T result = left.parse(stream);
 
         if (result == null) {
             return null;
@@ -39,8 +46,8 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
         // The start position of left.
         long start = stream.start();
 
-        if (!right.recognize(env, stream)) {
-            env.notifyNoMatch(stream, this);
+        if (!right.recognize(stream)) {
+            throwIfNoBacktrack(stream);
             stream.setOffset(offset);
             stream.setStart(preStart);
             stream.setEnd(preEnd);
@@ -53,11 +60,11 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
     }
 
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env, T t) {
-        ConcreteSyntaxTree output = left.print(env, t);
+    public ConcreteSyntaxTree print(T t) {
+        ConcreteSyntaxTree output = left.print(t);
 
         // Recognizer.printTo always succeeds.
-        return output != null ? output.consRight(right.print(env)) : null;
+        return output != null ? output.consRight(right.print()) : null;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.ParserCallBack;
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
@@ -10,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Multiple recognizers combined with 'or'.
  */
-public class RecognizerOrRecognizer<C extends ParserCallBack> implements Recognizer, Recognizable.Or {
+public class RecognizerOrRecognizer implements Recognizer, Recognizable.Or {
 
     private final Recognizer first;
     private final Recognizer second;
@@ -22,8 +20,8 @@ public class RecognizerOrRecognizer<C extends ParserCallBack> implements Recogni
 
     @NotNull
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env) {
-        return first.print(env);
+    public ConcreteSyntaxTree print() {
+        return first.print();
     }
 
     @Override

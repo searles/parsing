@@ -1,9 +1,7 @@
 package at.searles.parsing.utils.builder;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Mapping;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +19,7 @@ public class Build<T, U> implements Mapping<T, U> {
         this.builderType = builderType;
 
         try {
-            this.applyMethod = builderType.getMethod("build", ParserCallBack.class, ParserStream.class);
+            this.applyMethod = builderType.getMethod("build", ParserStream.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
@@ -39,9 +37,9 @@ public class Build<T, U> implements Mapping<T, U> {
     }
 
     @Override
-    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserStream stream, @NotNull T left) {
         try {
-            return itemType.cast(this.applyMethod.invoke(left, env, stream));
+            return itemType.cast(this.applyMethod.invoke(left, stream));
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
@@ -49,7 +47,7 @@ public class Build<T, U> implements Mapping<T, U> {
 
     @Nullable
     @Override
-    public T left(PrinterCallBack env, @NotNull U result) {
+    public T left(@NotNull U result) {
         try {
             return builderType.cast(builderCreate.invoke(null, result));
         } catch (IllegalAccessException | InvocationTargetException e) {

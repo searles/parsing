@@ -8,28 +8,30 @@ import org.jetbrains.annotations.NotNull;
 public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.Then {
     private final Recognizer parent;
     private final Reducer<T, U> reducer;
+    private final boolean allowParserBacktrack;
 
-    public RecognizerThenReducer(Recognizer parent, Reducer<T, U> reducer) {
+    public RecognizerThenReducer(Recognizer parent, Reducer<T, U> reducer, boolean allowParserBacktrack) {
         this.parent = parent;
         this.reducer = reducer;
+        this.allowParserBacktrack = allowParserBacktrack;
     }
 
     @Override
-    public U parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public U parse(ParserStream stream, @NotNull T left) {
         long offset = stream.offset();
         long preStart = stream.start();
         long preEnd = stream.end();
 
-        if (!parent.recognize(env, stream)) {
+        if (!parent.recognize(stream)) {
             return null;
         }
 
         stream.setStart(preStart);
 
-        U u = reducer.parse(env, stream, left);
+        U u = reducer.parse(stream, left);
 
         if (u == null) {
-            env.notifyNoMatch(stream, this);
+            throwIfNoBacktrack(stream);
             stream.setOffset(offset);
             stream.setEnd(preEnd);
             return null;
@@ -41,16 +43,21 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
+    public boolean recognize(ParserStream stream) {
         long preStart = stream.start();
 
-        boolean status = Recognizable.Then.super.recognize(env, stream);
+        boolean status = Recognizable.Then.super.recognize(stream);
 
         if (status) {
             stream.setStart(preStart);
         }
 
         return status;
+    }
+
+    @Override
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
     }
 
     @Override
@@ -64,14 +71,14 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull U u) {
-        PartialConcreteSyntaxTree<T> output = reducer.print(env, u);
+    public PartialConcreteSyntaxTree<T> print(@NotNull U u) {
+        PartialConcreteSyntaxTree<T> output = reducer.print(u);
 
         if (output == null) {
             return null;
         }
 
-        ConcreteSyntaxTree leftOutput = parent.print(env);
+        ConcreteSyntaxTree leftOutput = parent.print();
 
         return new PartialConcreteSyntaxTree<>(output.left, output.right.consLeft(leftOutput));
     }

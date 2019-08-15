@@ -19,11 +19,11 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
+    public T parse(ParserStream stream, @NotNull T left) {
         long preStart = stream.start();
 
         while (true) {
-            T t = parent.parse(env, stream, left);
+            T t = parent.parse(stream, left);
 
             // Contract of Reducer
             assert stream.start() == preStart;
@@ -43,13 +43,13 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
     }
 
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
+    public PartialConcreteSyntaxTree<T> print(@NotNull T t) {
         T left = t;
 
         ArrayList<ConcreteSyntaxTree> trees = new ArrayList<>();
 
         for (; ; ) {
-            PartialConcreteSyntaxTree<T> next = parent.print(env, left);
+            PartialConcreteSyntaxTree<T> next = parent.print(left);
 
             if (next == null) {
                 break;

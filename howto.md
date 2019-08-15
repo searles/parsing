@@ -17,7 +17,7 @@ been consumed, simply check whether the eof-recognizer succeeds.
     val eof = Recognizer.eof(lexer)
     
     // ... do parse
-    if(eof.recognize(env, stream)) {
+    if(eof.recognize(stream)) {
         // End of file
     }
 ~~~

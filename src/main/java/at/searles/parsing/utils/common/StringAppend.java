@@ -1,9 +1,7 @@
 package at.searles.parsing.utils.common;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,12 +9,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class StringAppend implements Fold<String, Integer, String> {
     @Override
-    public String apply(ParserCallBack env, ParserStream stream, @NotNull String left, @NotNull Integer right) {
+    public String apply(ParserStream stream, @NotNull String left, @NotNull Integer right) {
         return left + new String(Character.toChars(right));
     }
 
     @Override
-    public String leftInverse(PrinterCallBack env, @NotNull String result) {
+    public String leftInverse(@NotNull String result) {
         if (result.isEmpty()) {
             return null;
         }
@@ -30,7 +28,7 @@ public class StringAppend implements Fold<String, Integer, String> {
     }
 
     @Override
-    public Integer rightInverse(PrinterCallBack env, @NotNull String result) {
+    public Integer rightInverse(@NotNull String result) {
         if (result.isEmpty()) {
             return null;
         }

@@ -1,8 +1,6 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.ParserCallBack;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Reducer;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
@@ -36,19 +34,19 @@ public class ReducerPlus<T> implements Reducer<T, T> {
 
     @Nullable
     @Override
-    public T parse(ParserCallBack env, ParserStream stream, @NotNull T left) {
-        return parser.parse(env, stream, left);
+    public T parse(ParserStream stream, @NotNull T left) {
+        return parser.parse(stream, left);
     }
 
     @Nullable
     @Override
-    public PartialConcreteSyntaxTree<T> print(PrinterCallBack env, @NotNull T t) {
-        return printer.print(env, t);
+    public PartialConcreteSyntaxTree<T> print(@NotNull T t) {
+        return printer.print(t);
     }
 
     @Override
-    public boolean recognize(ParserCallBack env, ParserStream stream) {
-        return parser.recognize(env, stream);
+    public boolean recognize(ParserStream stream) {
+        return parser.recognize(stream);
     }
 
     public String toString() {

@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
  * set.
  *
  * In order to also use Utils.build, there must be a method
- * <code>B build(Environment env, ParserStream stream)</code> that returns the
+ * <code>B build(ParserStream stream)</code> that returns the
  * built object. For inversion, also create a static method
  * <code>public static A toBuilder(B object)</code>
  * that creates a builder out of an object. If it does not exist, inversion

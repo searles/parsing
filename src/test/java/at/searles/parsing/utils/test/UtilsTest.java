@@ -15,16 +15,16 @@ public class UtilsTest {
 
         List<Integer> l = Arrays.asList(1, 2);
 
-        Assert.assertEquals((Integer) 2, cons.rightInverse(null, l));
-        l = cons.leftInverse(null, l);
-        Assert.assertEquals((Integer) 1, cons.rightInverse(null, l));
-        l = cons.leftInverse(null, l);
+        Assert.assertEquals((Integer) 2, cons.rightInverse(l));
+        l = cons.leftInverse(l);
+        Assert.assertEquals((Integer) 1, cons.rightInverse(l));
+        l = cons.leftInverse(l);
 
         Assert.assertNotNull(l);
         Assert.assertTrue(l.isEmpty());
 
-        Assert.assertNull(cons.leftInverse(null, l));
-        Assert.assertNull(cons.rightInverse(null, l));
+        Assert.assertNull(cons.leftInverse(l));
+        Assert.assertNull(cons.rightInverse(l));
     }
 
     @Test
@@ -33,12 +33,12 @@ public class UtilsTest {
 
         List<Integer> l = Arrays.asList(1, 2);
 
-        Assert.assertEquals((Integer) 2, cons.rightInverse(null, l));
-        l = cons.leftInverse(null, l);
+        Assert.assertEquals((Integer) 2, cons.rightInverse(l));
+        l = cons.leftInverse(l);
 
         Assert.assertEquals(1, l.size());
 
-        Assert.assertNull(cons.leftInverse(null, l));
-        Assert.assertNull(cons.rightInverse(null, l));
+        Assert.assertNull(cons.leftInverse(l));
+        Assert.assertNull(cons.rightInverse(l));
     }
 }

@@ -15,32 +15,44 @@ public interface Recognizer extends Recognizable {
     }
 
     /**
-     * Creates a recognizer that will detect EOf (which is -1 returned from
-     * the stream.
+     * Creates a recognizer that will detect EOF (which is -1 returned from
+     * the stream).
      */
     static Recognizer eof(Tokenizer tokenizer) {
         return new TokenRecognizer(tokenizer.token(CharSet.chars(-1)), false);
     }
 
     @NotNull
-    ConcreteSyntaxTree print(PrinterCallBack env);
+    ConcreteSyntaxTree print();
 
     default Recognizer then(Recognizer recognizer) {
-        return new RecognizerThenRecognizer<>(this, recognizer);
+        return then(recognizer, false);
+    }
+
+    default Recognizer then(Recognizer recognizer, boolean allowParserBacktrack) {
+        return new RecognizerThenRecognizer(this, recognizer, allowParserBacktrack);
     }
 
     default <T> Parser<T> then(Parser<T> parser) {
+        return then(parser, false);
+    }
+
+    default <T> Parser<T> then(Parser<T> parser, boolean allowParserBacktrack) {
         // corresponds to prefix.
-        return new RecognizerThenParser<>(this, parser);
+        return new RecognizerThenParser<>(this, parser, allowParserBacktrack);
     }
 
     default <T, U> Reducer<T, U> then(Reducer<T, U> parser) {
-        // corresponds to prefix.
-        return new RecognizerThenReducer<>(this, parser);
+        return then(parser, false);
+    }
+
+    // corresponds to prefix.
+    default <T, U> Reducer<T, U> then(Reducer<T, U> parser, boolean allowParserBacktrack) {
+        return new RecognizerThenReducer<>(this, parser, allowParserBacktrack);
     }
 
     default Recognizer or(Recognizer recognizer) {
-        return new RecognizerOrRecognizer<>(this, recognizer);
+        return new RecognizerOrRecognizer(this, recognizer);
     }
 
     default Recognizer rep() { //Caution in printer!

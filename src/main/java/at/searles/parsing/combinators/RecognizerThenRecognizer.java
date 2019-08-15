@@ -1,7 +1,5 @@
 package at.searles.parsing.combinators;
 
-import at.searles.parsing.ParserCallBack;
-import at.searles.parsing.PrinterCallBack;
 import at.searles.parsing.Recognizable;
 import at.searles.parsing.Recognizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
@@ -10,14 +8,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  *
  */
-public class RecognizerThenRecognizer<C extends ParserCallBack> implements Recognizer, Recognizable.Then {
+public class RecognizerThenRecognizer implements Recognizer, Recognizable.Then {
 
     private final Recognizer left;
     private final Recognizer right;
+    private final boolean allowParserBacktrack;
 
-    public RecognizerThenRecognizer(Recognizer left, Recognizer right) {
+    public RecognizerThenRecognizer(Recognizer left, Recognizer right, boolean allowParserBacktrack) {
         this.left = left;
         this.right = right;
+        this.allowParserBacktrack = allowParserBacktrack;
     }
 
     @Override
@@ -30,10 +30,15 @@ public class RecognizerThenRecognizer<C extends ParserCallBack> implements Recog
         return right;
     }
 
+    @Override
+    public boolean allowParserBacktrack() {
+        return allowParserBacktrack;
+    }
+
     @NotNull
     @Override
-    public ConcreteSyntaxTree print(PrinterCallBack env) {
-        return left.print(env).consRight(right.print(env));
+    public ConcreteSyntaxTree print() {
+        return left.print().consRight(right.print());
     }
 
     @Override
