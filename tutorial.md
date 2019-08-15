@@ -19,7 +19,7 @@ or keywords.
 ~~~ kotlin
     val plus: Recognizer = /* ... */ // consumes a +.
     
-    if(plus.apply(env, stream)) {
+    if(plus.apply(stream)) {
         // plus was consumed from stream
     }
 ~~~
@@ -31,7 +31,7 @@ interface. Parsers return null if they are not successful.
 ~~~ kotlin
     val num: Parser<Int> = /* ...*/ // parses a number
     
-    val value = num.apply(env, stream)
+    val value = num.apply(stream)
     
     if(value != null) {
         // successfully parsed number
@@ -46,11 +46,8 @@ return `null` if they are unsuccessful.
 All parser types extend the `Recognizable`-interface. It can be used for a quick
 syntax check.
 
-Each parser at least two parameters:
-
-* `Environment`: A context object that is used to propagate notifications of 
-parsing errors.
-* `ParserStream`: A stream from which characters/tokens are fetched. It also 
+Each parser requires one parameter, the `ParserStream`, a 
+stream from which characters/tokens are fetched. It also 
 provides information on the current position in the stream.
 
 ## Summary of parser combinators
@@ -68,11 +65,15 @@ provides information on the current position in the stream.
 
 There are further parser combinators but these should be the most important ones.
 
-HINT: `Reducer.rep` does not support backtracking. Everything that can be consumed
+HINTS: 
+
+* `Reducer.rep` does not support backtracking. Everything that can be consumed
 by `rep` will be consumed, for both, `parse` and `print`. For this reason, printing
 the result of `a.then(Reducer.rep(a))` where `a` is a `Reducer` will always fail.
 The JoinReducer-class (created by `join`) or PlusReducer-class (`plus`) can be helpful 
 to overcome this problem. 
+* The properties of thr 'then' and 'or'-combinator 
+can be further modified using flags.
 
 ## Parser Functions
 
@@ -117,10 +118,12 @@ To parse numbers we need
 ~~~
 
 * a mapping that converts a `CharSequence` to a number.
+(the blank argument is the parser stream that can be
+used eg to log the position in the stream)
 
 ~~~ kotlin
     val numMapping = Mapping<CharSequence, Int> { 
-        _, left, _ -> Integer.parseInt(left.toString()) 
+        _, left -> Integer.parseInt(left.toString()) 
     }
 ~~~
 
@@ -169,7 +172,7 @@ to convert it to a reducer using the fold-method: `num.fold(add)`.
 the left hand and the current parser. 
 
 ~~~ kotlin
-    val add = Fold<Int, Int, Int> { _, _, left, right ->
+    val add = Fold<Int, Int, Int> { _, left, right ->
         left + right
     }
 ~~~
@@ -204,7 +207,7 @@ another reducer:
 ~~~ kotlin
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val sub = Fold<Int, Int, Int> { _, _, left, right ->
+    val sub = Fold<Int, Int, Int> { _, left, right ->
         left - right
     }
 ~~~
@@ -291,26 +294,6 @@ Using `Ref.set`, the referenced parser is set.
 parsers use a reference to achieve a simpler output of the parser's 
 `toString`-method which is very useful for debugging.
 
-## Error handling
-
-Each recognizer, parser and reducer requires an instance of `Environment`. 
-In case of a mismatch in a sequence of parsers (thus an instance of 
-`Recognizable.Then`), its `notifyNoMatch` is called. 
-
-If the grammar is supposed to be LL-1, it is
-best to throw an exception, otherwise backtracking is used to recover from
-this mismatch. Our grammar is supposed to be LL-1, thus we throw an exception.
-
-~~~ kotlin
-    val env = Environment { stream, failedParser ->
-        throw ParserException(
-            "Error at ${stream.offset()}, expected ${failedParser.right()}"
-        )
-    }
-
-class ParserException(msg: String) : RuntimeException(msg)
-~~~
-
 ## Creating the stream
 
 Now, there are all ingredients to finally evaluate mathematical expressions
@@ -319,7 +302,7 @@ using this simple grammar. All that is left is to create a `ParserStream`.
 ~~~
     val stream = ParserStream.fromString(readLine())
 
-    println("Result = ${sum.parse(env, stream)}")
+    println("Result = ${sum.parse(stream)}")
 ~~~
 
 Entering an expression in a single line will now print the result:
@@ -390,10 +373,10 @@ an image of the mapping, and otherwise undo the `parse`-method.
 
 ~~~ kotlin
     val numMapping = object: Mapping<CharSequence, AstNode> {
-        override fun parse(env: Environment, stream: ParserStream, left: CharSequence): AstNode =
+        override fun parse(stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
 
-        override fun left(env: Environment, result: AstNode): CharSequence? = 
+        override fun left(result: AstNode): CharSequence? = 
                 if (result is NumNode) result.value.toString() else null 
     }
 ~~~
@@ -408,13 +391,13 @@ argument.
 
 ~~~ kotlin
     val add = object: Fold<AstNode, AstNode, AstNode> {
-        override fun apply(env: Environment, stream: ParserStream, left: AstNode, right: AstNode): AstNode =
+        override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
             OpNode(stream.createSourceInfo(), Op.Add, left, right)
 
-        override fun leftInverse(env: Environment, result: AstNode): AstNode? =
+        override fun leftInverse(result: AstNode): AstNode? =
             if(result is OpNode && result.op == Op.Add) result.args[0] else null
 
-        override fun rightInverse(env: Environment, result: AstNode): AstNode? =
+        override fun rightInverse(result: AstNode): AstNode? =
             if(result is OpNode && result.op == Op.Add) result.args[1] else null
     }
 ~~~
@@ -428,8 +411,8 @@ We can test the pretty printer by parsing the input into an AST and then
 printing it. 
 
 ~~~ kotlin
-    val ast = sum.parse(env, stream)
-    println("Pretty-Print: ${sum.print(env, ast)}")
+    val ast = sum.parse(stream)
+    println("Pretty-Print: ${sum.print(ast)}")
 ~~~
 
 This will remove all unnecessary parentheses from the expression but keep the 
@@ -497,7 +480,7 @@ After printing the concrete syntax tree, the final string
 can be obtained from the `StringOutStream` using `toString()`.
 
 ~~~ kotlin
-    val outTree = sum.print(env, ast)!!
+    val outTree = sum.print(ast)!!
     outTree.print(printer)
     println("Pretty-Print: $sourceStream")
 ~~~
