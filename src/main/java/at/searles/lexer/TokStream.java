@@ -23,17 +23,22 @@ public class TokStream {
      * underlying buffer
      */
     private final FrameStream stream;
+
     /**
      * Values to determine current match
      */
     private Tokenizer tokenizer;
     private IntSet acceptedTokens;
+    private boolean isConsumed;
 
     public TokStream(FrameStream stream) {
+        // TODO: Wrap FrameStream so that calls to markConsumed will be reported.
         this.stream = stream;
 
         this.tokenizer = null;
         this.acceptedTokens = null;
+
+        this.isConsumed = true;
     }
 
     public static TokStream fromString(String s) {
@@ -69,13 +74,14 @@ public class TokStream {
      * in the underlying frameStream.
      */
     public boolean fetchToken(Tokenizer tokenizer) {
-        if (this.tokenizer == tokenizer) {
+        if (!isConsumed && this.tokenizer == tokenizer) {
             // nothing to do.
             return acceptedTokens != null;
         }
 
-        if (this.tokenizer == null) {
-            // the last token was flushed
+        if (isConsumed) {
+            // the last token was consumed, so flush it.
+            // FIXME: hidden tokens, what about them?
             stream.flushFrame();
         } else {
             // last token was not consumed or we are at the beginning.
@@ -84,6 +90,7 @@ public class TokStream {
 
         this.tokenizer = tokenizer;
         this.acceptedTokens = this.tokenizer.nextToken(stream);
+        this.isConsumed = false;
 
         return acceptedTokens != null;
     }
@@ -92,8 +99,8 @@ public class TokStream {
      * must be called before advancing to the next token.
      * frame will remain valid until increment is called.
      */
-    public void flushToken() {
-        this.tokenizer = null;
+    public void markConsumed() {
+        this.isConsumed = true;
     }
 
     public long frameStart() {

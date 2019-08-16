@@ -16,7 +16,10 @@ public class AnnotationParser<C, T> implements Parser<T> {
 
     @Override
     public T parse(ParserStream stream) {
-        return parser.parse(stream);
+        stream.notifyAnnotationBegin(annotation);
+        T value = parser.parse(stream);
+        stream.notifyAnnotationEnd(annotation, value != null);
+        return value;
     }
 
     @Override

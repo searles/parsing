@@ -58,9 +58,9 @@ public class ParserGenerator {
 
     private void initHidden() {
         // hidden tokens
-        lexer.hiddenToken(CharSet.chars(' ', '\n', '\r', '\t').plus());
-        lexer.hiddenToken(Regex.text("//").then(CharSet.all().rep()).then(CharSet.chars('\n', '\r')).nonGreedy());
-        lexer.hiddenToken(Regex.text("/*").then(CharSet.all().rep()).then(Regex.text("*/")).nonGreedy());
+        lexer.addHiddenToken(CharSet.chars(' ', '\n', '\r', '\t').plus());
+        lexer.addHiddenToken(Regex.text("//").then(CharSet.all().rep()).then(CharSet.chars('\n', '\r')).nonGreedy());
+        lexer.addHiddenToken(Regex.text("/*").then(CharSet.all().rep()).then(Regex.text("*/")).nonGreedy());
     }
 
     private void init() {

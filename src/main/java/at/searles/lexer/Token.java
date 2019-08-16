@@ -49,7 +49,7 @@ public class Token {
         }
 
         // mark token as consumed
-        tokStream.flushToken();
+        tokStream.markConsumed();
 
         return tokStream.frame();
     }

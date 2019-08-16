@@ -23,7 +23,7 @@ fun main() {
     val lexer = LexerWithHidden()
 
     // ignore white spaces
-    lexer.hiddenToken(RegexParser.parse("[\n\r\t ]+"))
+    lexer.addHiddenToken(RegexParser.parse("[\n\r\t ]+"))
 
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))

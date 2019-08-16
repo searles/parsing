@@ -60,7 +60,7 @@ class EofTest {
     fun testEofWithHidden() {
         // Set up phase
         val lexer = LexerWithHidden()
-        lexer.hiddenToken(CharSet.chars(' '.toInt()))
+        lexer.addHiddenToken(CharSet.chars(' '.toInt()))
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(lexer)
 
@@ -75,7 +75,7 @@ class EofTest {
     fun testEofWithHiddenAndSeparateLexer() {
         // Set up phase
         val lexer = LexerWithHidden()
-        lexer.hiddenToken(CharSet.chars(' '.toInt()))
+        lexer.addHiddenToken(CharSet.chars(' '.toInt()))
         this.parser = Recognizer.fromString("a", lexer, false).rep()
         eof = Recognizer.eof(Lexer())
 

@@ -82,6 +82,20 @@ public class ParserStream {
         return stream.toString() + ": [" + parsedStart + ", " + parsedEnd + "]";
     }
 
+    /**
+     * Override this method if necessary
+     */
+    public <C> void notifyAnnotationBegin(C annotation) {
+        // FIXME
+    }
+
+    /**
+     * Override this method if necessary
+     */
+    public <C> void notifyAnnotationEnd(C annotation, boolean success) {
+        // FIXME
+    }
+
     private static class RangeSourceInfo implements SourceInfo {
 
         private final long end;

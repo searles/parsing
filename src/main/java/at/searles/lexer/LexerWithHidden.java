@@ -18,8 +18,14 @@ public class LexerWithHidden implements Tokenizer {
         this(new Lexer());
     }
 
-    public void hiddenToken(Regex regex) {
-        hiddenTokenIds.add(add(regex));
+    public void addTokenIdToHidden(int tokId) {
+        hiddenTokenIds.add(tokId);
+    }
+
+    public int addHiddenToken(Regex regex) {
+        int tokId = add(regex);
+        addTokenIdToHidden(tokId);
+        return tokId;
     }
 
     @Override
@@ -29,7 +35,7 @@ public class LexerWithHidden implements Tokenizer {
 
     @Override
     public IntSet nextToken(FrameStream stream) {
-        for (; ; ) {
+        for (;;) {
             IntSet tokIds = lexer.nextToken(stream);
 
             if (tokIds == null) {
@@ -41,6 +47,7 @@ public class LexerWithHidden implements Tokenizer {
             }
 
             // hidden token. flush it.
+            // FIXME how to notify?
             stream.flushFrame();
         }
     }

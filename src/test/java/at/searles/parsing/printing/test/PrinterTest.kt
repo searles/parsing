@@ -111,7 +111,7 @@ class PrinterTest {
     private fun initParser() {
         val lexer = LexerWithHidden()
 
-        lexer.hiddenToken(RegexParser.parse("[ \n\r\t]+"))
+        lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"))
 
         val openPar = Recognizer.fromString("(", lexer, false)
         val closePar = Recognizer.fromString(")", lexer, false)

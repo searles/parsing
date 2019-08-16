@@ -10,23 +10,26 @@ import org.jetbrains.annotations.NotNull;
  */
 public class AnnotationRecognizer<A> implements Recognizer {
 
-    private final A annotate;
+    private final A annotation;
     private final Recognizer recognizer;
 
-    public AnnotationRecognizer(A annotate, Recognizer recognizer) {
-        this.annotate = annotate;
+    public AnnotationRecognizer(A annotation, Recognizer recognizer) {
+        this.annotation = annotation;
         this.recognizer = recognizer;
     }
 
     @Override
     public boolean recognize(ParserStream stream) {
-        return recognizer.recognize(stream);
+        stream.notifyAnnotationBegin(annotation);
+        boolean success = recognizer.recognize(stream);
+        stream.notifyAnnotationEnd(annotation, success);
+        return success;
     }
 
     @NotNull
     @Override
     public ConcreteSyntaxTree print() {
-        return recognizer.print().annotate(annotate);
+        return recognizer.print().annotate(annotation);
     }
 
     @Override
