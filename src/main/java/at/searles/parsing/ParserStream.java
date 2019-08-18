@@ -16,10 +16,15 @@ public class ParserStream {
      * Marks the end of the current parsed element.
      */
     private long parsedEnd;
+    private Listener listener;
 
     public ParserStream(TokStream stream) {
         this.stream = stream;
         this.parsedStart = this.parsedEnd = stream.offset();
+    }
+    
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     public static ParserStream fromString(String string) {
@@ -82,18 +87,19 @@ public class ParserStream {
         return stream.toString() + ": [" + parsedStart + ", " + parsedEnd + "]";
     }
 
-    /**
-     * Override this method if necessary
-     */
     public <C> void notifyAnnotationBegin(C annotation) {
-        // FIXME
+        if(listener != null) {
+            listener.annotationBegin(annotation);
+        }
     }
 
     /**
      * Override this method if necessary
      */
     public <C> void notifyAnnotationEnd(C annotation, boolean success) {
-        // FIXME
+        if(listener != null) {
+            listener.annotationEnd(annotation, success);
+        }
     }
 
     private static class RangeSourceInfo implements SourceInfo {
@@ -121,4 +127,16 @@ public class ParserStream {
         }
     }
 
+    public interface Listener {
+        /**
+         * If an annotation starts, the parser after it not necessarily succeeds
+         * even in an LL1-Grammar. Yet, all calls to this method are
+         * followed by a call to annotationEnd. Hence, all changes done
+         * in this method must be undone if the arguments to annotationEnd
+         * indicate that the annotation parser did not succeed.
+         */
+        <C> void annotationBegin(C annotation);
+
+        <C> void annotationEnd(C annotation, boolean success);
+    }
 }

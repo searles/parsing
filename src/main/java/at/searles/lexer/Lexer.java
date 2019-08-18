@@ -1,6 +1,5 @@
 package at.searles.lexer;
 
-import at.searles.buf.FrameStream;
 import at.searles.lexer.fsa.FSA;
 import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
@@ -143,9 +142,10 @@ public class Lexer implements Tokenizer {
      * Fetches the next token from the token stream.
      *
      * @return A set that should not be modified.
+     * @param stream
      */
-    public IntSet nextToken(FrameStream stream) {
-        FSA.Node node = fsa.accept(stream);
+    public IntSet nextToken(TokStream stream) {
+        FSA.Node node = fsa.accept(stream.frameStream());
 
         if (node == null) {
             return null;

@@ -125,6 +125,23 @@ public class IntSet {
         return false;
     }
 
+    public int indexOfFirstMatch(IntSet other) {
+        int i0 = 0;
+        int i1 = 0;
+
+        while (i0 < this.size() && i1 < other.size()) {
+            if (getAt(i0) < other.getAt(i1)) {
+                i0++;
+            } else if (getAt(i0) > other.getAt(i1)) {
+                i1++;
+            } else {
+                return i0;
+            }
+        }
+
+        return -1;
+    }
+
     public int last() {
         return elements[size - 1];
     }

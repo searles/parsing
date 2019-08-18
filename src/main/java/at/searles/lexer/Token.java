@@ -6,10 +6,10 @@ package at.searles.lexer;
 public class Token {
 
     public final Tokenizer lexer;
-    public final int tokIndex;
+    public final int tokId;
 
-    public Token(Tokenizer lexer, int tokIndex) {
-        this.tokIndex = tokIndex;
+    public Token(Tokenizer lexer, int tokId) {
+        this.tokId = tokId;
         this.lexer = lexer;
     }
 
@@ -40,21 +40,21 @@ public class Token {
             return null;
         }
 
-        if (exclusive && tokStream.acceptedTokens().size() != 1) {
+        if (exclusive && tokStream.isExclusivelyAccepted()) {
             return null;
         }
 
-        if (!tokStream.acceptedTokens().contains(tokIndex)) {
+        if (!tokStream.isAcceptedToken(tokId)) {
             return null;
         }
 
         // mark token as consumed
-        tokStream.markConsumed();
+        tokStream.markConsumed(tokId);
 
         return tokStream.frame();
     }
 
     public String toString() {
-        return String.format("<%d>", tokIndex);
+        return String.format("<%d>", tokId);
     }
 }

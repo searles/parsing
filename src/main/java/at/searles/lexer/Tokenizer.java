@@ -1,11 +1,10 @@
 package at.searles.lexer;
 
-import at.searles.buf.FrameStream;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
 
 public interface Tokenizer {
-    IntSet nextToken(FrameStream stream);
+    IntSet nextToken(TokStream stream);
 
     /**
      * Simplified for creating a token from a simple string.

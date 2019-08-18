@@ -28,9 +28,7 @@ public class LexerTest {
 
         Assert.assertEquals(expected != null, status);
 
-        IntSet acceptedTokens = stream.acceptedTokens();
-
-        Assert.assertEquals(status, acceptedTokens != null && acceptedTokens.contains(token));
+        Assert.assertEquals(status, stream.isAcceptedToken(token));
 
         Assert.assertEquals(expected, status ? stream.frame().toString() : null);
     }

@@ -30,15 +30,19 @@ public class TokStream {
     private Tokenizer tokenizer;
     private IntSet acceptedTokens;
     private boolean isConsumed;
+    private Listener listener;
 
     public TokStream(FrameStream stream) {
-        // TODO: Wrap FrameStream so that calls to markConsumed will be reported.
         this.stream = stream;
 
         this.tokenizer = null;
         this.acceptedTokens = null;
 
         this.isConsumed = true;
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     public static TokStream fromString(String s) {
@@ -81,7 +85,6 @@ public class TokStream {
 
         if (isConsumed) {
             // the last token was consumed, so flush it.
-            // FIXME: hidden tokens, what about them?
             stream.flushFrame();
         } else {
             // last token was not consumed or we are at the beginning.
@@ -89,18 +92,35 @@ public class TokStream {
         }
 
         this.tokenizer = tokenizer;
-        this.acceptedTokens = this.tokenizer.nextToken(stream);
+        this.acceptedTokens = this.tokenizer.nextToken(this);
         this.isConsumed = false;
 
         return acceptedTokens != null;
+
     }
 
     /**
      * must be called before advancing to the next token.
      * frame will remain valid until increment is called.
+     * @param tokId The id of the actuallu consumed token
      */
-    public void markConsumed() {
+    public void markConsumed(int tokId) {
         this.isConsumed = true;
+
+        // inform listeners
+        notifyTokenConsumed(tokenizer, tokId, frame());
+    }
+
+    public void notifyTokenConsumed(Tokenizer tokenizer, int tokId, CharSequence frame) {
+        if(listener != null) {
+            listener.tokenConsumed(tokenizer, tokId, frame);
+        }
+    }
+
+    // This is kinda a read-only-frameStream.
+
+    public FrameStream frameStream() {
+        return stream;
     }
 
     public long frameStart() {
@@ -111,23 +131,28 @@ public class TokStream {
         return stream.frameEnd();
     }
 
-    /**
-     * Do not modify the set; otherwise the lexer will return
-     * wrong results in subsequent calls.
-     *
-     * @return The intset of accepted tokens from the last
-     * fetchToken-Call.
-     */
-    public IntSet acceptedTokens() {
-        return acceptedTokens;
-    }
-
     public CharSequence frame() {
         return stream.frame();
+    }
+
+    public boolean isExclusivelyAccepted() {
+        return acceptedTokens != null && acceptedTokens.size() == 1;
+    }
+
+    /**
+     * Before calling this method, fetchToken(Tokenizer) must have
+     * been called to ensure that the correct tokenizer is set.
+     */
+    public boolean isAcceptedToken(int tokId) {
+        return acceptedTokens != null && acceptedTokens.contains(tokId);
     }
 
     @Override
     public String toString() {
         return stream.toString();
+    }
+
+    public interface Listener {
+        void tokenConsumed(Tokenizer tokenizer, int tokId, CharSequence frame);
     }
 }

@@ -1,6 +1,5 @@
 package at.searles.lexer;
 
-import at.searles.buf.FrameStream;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
 
@@ -34,7 +33,7 @@ public class LexerWithHidden implements Tokenizer {
     }
 
     @Override
-    public IntSet nextToken(FrameStream stream) {
+    public IntSet nextToken(TokStream stream) {
         for (;;) {
             IntSet tokIds = lexer.nextToken(stream);
 
@@ -42,13 +41,16 @@ public class LexerWithHidden implements Tokenizer {
                 return null;
             }
 
-            if (!tokIds.containsAny(hiddenTokenIds)) {
+            int hiddenIndex = tokIds.indexOfFirstMatch(hiddenTokenIds);
+
+            if (hiddenIndex == -1) {
                 return tokIds;
             }
 
-            // hidden token. flush it.
-            // FIXME how to notify?
-            stream.flushFrame();
+            // hidden token. Report first match.
+            // TODO too deep knowledge needed. Improve design.
+            stream.notifyTokenConsumed(this, tokIds.getAt(hiddenIndex), stream.frame());
+            stream.frameStream().flushFrame();
         }
     }
 }
