@@ -27,15 +27,16 @@ public class TokStream {
     /**
      * Values to determine current match
      */
-    private Tokenizer tokenizer;
+    private Lexer lexer;
     private IntSet acceptedTokens;
+
     private boolean isConsumed;
     private Listener listener;
 
     public TokStream(FrameStream stream) {
         this.stream = stream;
 
-        this.tokenizer = null;
+        this.lexer = null;
         this.acceptedTokens = null;
 
         this.isConsumed = true;
@@ -53,21 +54,22 @@ public class TokStream {
         return new TokStream(new FrameStreamImpl(new BufferedStream.Impl(stream, 1024)));
     }
 
-    public void setPtr(long ptr) {
-        this.acceptedTokens = null;
+    public void setPositionTo(long ptr) {
         this.stream.resetFrame();
-        this.tokenizer = null;
 
-        stream.setPtr(ptr);
+        this.acceptedTokens = null;
+        this.lexer = null;
+
+        stream.setPositionTo(ptr);
     }
 
     /**
-     * @return Returns the start ptr of the next token that will be parsed.
+     * @return Returns the start position of the next token that will be parsed.
      */
     public long offset() {
-        // if lexer == null, use frameEnd because framestream still captures last match.
-        // if lexer is set, use frameStart.
-        return tokenizer == null ? stream.frameEnd() : stream.frameStart();
+        // if lexer == null, use endPosition because framestream still captures last match.
+        // if lexer is set, use startPosition.
+        return isConsumed ? stream.frame().endPosition() : stream.frame().startPosition();
     }
 
     /**
@@ -77,26 +79,22 @@ public class TokStream {
      * currently accepted tokens-field and sets the correct frame
      * in the underlying frameStream.
      */
-    public boolean fetchToken(Tokenizer tokenizer) {
-        if (!isConsumed && this.tokenizer == tokenizer) {
-            // nothing to do.
-            return acceptedTokens != null;
+    public IntSet fetchTokenIds(Lexer lexer) {
+        // can we reuse the old result?
+        if (isConsumed || this.lexer != lexer) {
+            if (isConsumed) {
+                stream.advanceFrame();
+                isConsumed = false;
+            } else /* if(this.lexer != lexer) */ {
+                stream.resetFrame();
+            }
+
+            this.acceptedTokens = lexer.nextToken(stream);
+            this.lexer = lexer;
+            this.isConsumed = false;
         }
 
-        if (isConsumed) {
-            // the last token was consumed, so flush it.
-            stream.flushFrame();
-        } else {
-            // last token was not consumed or we are at the beginning.
-            stream.resetFrame();
-        }
-
-        this.tokenizer = tokenizer;
-        this.acceptedTokens = this.tokenizer.nextToken(this);
-        this.isConsumed = false;
-
-        return acceptedTokens != null;
-
+        return this.acceptedTokens;
     }
 
     /**
@@ -108,51 +106,27 @@ public class TokStream {
         this.isConsumed = true;
 
         // inform listeners
-        notifyTokenConsumed(tokenizer, tokId, frame());
+        notifyTokenConsumed(tokId, stream.frame());
     }
 
-    public void notifyTokenConsumed(Tokenizer tokenizer, int tokId, CharSequence frame) {
+    public void notifyTokenConsumed(int tokId, FrameStream.Frame frame) {
         if(listener != null) {
-            listener.tokenConsumed(tokenizer, tokId, frame);
+            listener.tokenConsumed(tokId, frame);
         }
     }
 
     // This is kinda a read-only-frameStream.
-
-    public FrameStream frameStream() {
-        return stream;
-    }
-
-    public long frameStart() {
-        return stream.frameStart();
-    }
-
-    public long frameEnd() {
-        return stream.frameEnd();
-    }
-
-    public CharSequence frame() {
-        return stream.frame();
-    }
-
-    public boolean isExclusivelyAccepted() {
-        return acceptedTokens != null && acceptedTokens.size() == 1;
-    }
-
-    /**
-     * Before calling this method, fetchToken(Tokenizer) must have
-     * been called to ensure that the correct tokenizer is set.
-     */
-    public boolean isAcceptedToken(int tokId) {
-        return acceptedTokens != null && acceptedTokens.contains(tokId);
-    }
 
     @Override
     public String toString() {
         return stream.toString();
     }
 
+    public FrameStream.Frame frame() {
+        return stream.frame();
+    }
+
     public interface Listener {
-        void tokenConsumed(Tokenizer tokenizer, int tokId, CharSequence frame);
+        void tokenConsumed(int tokId, FrameStream.Frame frame);
     }
 }

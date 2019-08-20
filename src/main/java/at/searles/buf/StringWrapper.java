@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class StringWrapper implements FrameStream {
 
     private final String str;
-    private final CharSequence frame; // singleton
+    private final Frame frame; // singleton
     private int ptr;
     private int frameStart;
     private int frameEnd;
@@ -29,12 +29,12 @@ public class StringWrapper implements FrameStream {
     }
 
     @Override
-    public long ptr() {
+    public long position() {
         return ptr;
     }
 
     @Override
-    public void setPtr(long ptr) {
+    public void setPositionTo(long ptr) {
         this.frameStart = this.frameEnd = this.ptr = (int) ptr;
     }
 
@@ -45,7 +45,7 @@ public class StringWrapper implements FrameStream {
     }
 
     @Override
-    public void flushFrame() {
+    public void advanceFrame() {
         this.ptr = this.frameStart = this.frameEnd;
     }
 
@@ -55,18 +55,8 @@ public class StringWrapper implements FrameStream {
     }
 
     @Override
-    public CharSequence frame() {
+    public Frame frame() {
         return frame;
-    }
-
-    @Override
-    public long frameStart() {
-        return frameStart;
-    }
-
-    @Override
-    public long frameEnd() {
-        return frameEnd;
     }
 
     @Override
@@ -78,7 +68,17 @@ public class StringWrapper implements FrameStream {
                 + str.substring(frameEnd, Math.min(str.length(), frameEnd + 16));
     }
 
-    private class CharSeq implements CharSequence {
+    private class CharSeq implements Frame {
+        @Override
+        public long startPosition() {
+            return frameStart;
+        }
+
+        @Override
+        public long endPosition() {
+            return frameEnd;
+        }
+
         @Override
         public int length() {
             return frameEnd - frameStart;

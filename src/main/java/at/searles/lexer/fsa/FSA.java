@@ -72,7 +72,7 @@ public class FSA {
 
                 // XXX If ever the longest-match-policy should be
                 // modified, the stream should be rather added
-                // to a map with the current ptr.
+                // to a map with the current position.
 
                 stream.markFrameEnd();
                 acceptedNode = n;

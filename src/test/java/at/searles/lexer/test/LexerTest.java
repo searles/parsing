@@ -24,13 +24,13 @@ public class LexerTest {
     private void testIfIsAccepted(String string, String expected) {
         TokStream stream = TokStream.fromString(string);
 
-        boolean status = stream.fetchToken(lexer);
+        IntSet tokIds = stream.fetchTokenIds(lexer);
 
-        Assert.assertEquals(expected != null, status);
+        Assert.assertEquals(expected != null, tokIds != null);
 
-        Assert.assertEquals(status, stream.isAcceptedToken(token));
+        Assert.assertEquals(expected != null, tokIds != null && tokIds.contains(token));
 
-        Assert.assertEquals(expected, status ? stream.frame().toString() : null);
+        Assert.assertEquals(expected, tokIds != null ? stream.frame().toString() : null);
     }
 
     @Test

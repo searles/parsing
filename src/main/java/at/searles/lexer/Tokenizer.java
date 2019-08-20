@@ -4,7 +4,7 @@ import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
 
 public interface Tokenizer {
-    IntSet nextToken(TokStream stream);
+    // only in Lexer. IntSet nextToken(TokStream stream);
 
     /**
      * Simplified for creating a token from a simple string.
@@ -26,10 +26,20 @@ public interface Tokenizer {
     }
 
     /**
-     * Optional. Add a regular expression
+     * Add a regular expression
      *
      * @param regex The regular expression
      * @return the token id.
      */
     int add(Regex regex);
+
+    /**
+     * Tries to parse the token with the given id and on success returns the
+     * matching frame. In the simplest case it is a call to stream.fetchTokenIds,
+     * but if the Tokenizer should ignore some tokens this is the place.
+     * If only this method is used, stream.markConsumed() must be called.
+     * Therefore, it is recommended to rather use the methods in the Token class.
+     * @return null if unsuccessful
+     */
+    IntSet parseToken(TokStream stream);
 }

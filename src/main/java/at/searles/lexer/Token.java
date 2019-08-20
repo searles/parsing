@@ -1,16 +1,19 @@
 package at.searles.lexer;
 
+import at.searles.buf.FrameStream;
+import at.searles.lexer.utils.IntSet;
+
 /**
  * A token is
  */
 public class Token {
 
-    public final Tokenizer lexer;
+    public final Tokenizer tokenizer;
     public final int tokId;
 
-    public Token(Tokenizer lexer, int tokId) {
+    public Token(Tokenizer tokenizer, int tokId) {
         this.tokId = tokId;
-        this.lexer = lexer;
+        this.tokenizer = tokenizer;
     }
 
     public boolean recognizeToken(TokStream tokStream) {
@@ -29,29 +32,31 @@ public class Token {
      * this token.
      *
      * Single entry point for parsing token.
-     * @param tokStream The TokStream from which the token is fetched
+     * @param stream The TokStream from which the token is fetched
      * @param exclusive if true, then no other token is allowed to match. Use eg for identifiers
      *                  that should not be confused with keywords.
      * @return null, if the next item is not a Token.
      */
-    public CharSequence parseToken(TokStream tokStream, boolean exclusive) {
+    public FrameStream.Frame parseToken(TokStream stream, boolean exclusive) {
         // Fetch next (current) token.
-        if (!tokStream.fetchToken(lexer)) {
+        IntSet acceptedTokIds = tokenizer.parseToken(stream);
+
+        if(acceptedTokIds == null) {
             return null;
         }
 
-        if (exclusive && tokStream.isExclusivelyAccepted()) {
+        if(exclusive && acceptedTokIds.size() != 1) {
             return null;
         }
 
-        if (!tokStream.isAcceptedToken(tokId)) {
+        if(!acceptedTokIds.contains(tokId)) {
             return null;
         }
 
-        // mark token as consumed
-        tokStream.markConsumed(tokId);
+        // alright, we got a match.
+        stream.markConsumed(tokId);
 
-        return tokStream.frame();
+        return stream.frame();
     }
 
     public String toString() {

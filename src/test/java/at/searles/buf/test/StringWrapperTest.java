@@ -11,7 +11,7 @@ public class StringWrapperTest {
     public void initialConditionTest() {
         withString("basic");
 
-        Assert.assertEquals(0, str.ptr());
+        Assert.assertEquals(0, str.position());
         Assert.assertEquals(0, str.frame().length());
     }
 
@@ -25,7 +25,7 @@ public class StringWrapperTest {
 
         Assert.assertEquals('o', str.next());
 
-        str.flushFrame();
+        str.advanceFrame();
 
         Assert.assertEquals('o', str.next());
     }
@@ -39,7 +39,7 @@ public class StringWrapperTest {
 
         str.markFrameEnd();
 
-        str.flushFrame();
+        str.advanceFrame();
 
         str.next();
         str.next();
@@ -60,7 +60,7 @@ public class StringWrapperTest {
 
         str.markFrameEnd();
 
-        str.flushFrame();
+        str.advanceFrame();
 
         str.next();
         str.next();
@@ -69,7 +69,7 @@ public class StringWrapperTest {
 
         str.next();
 
-        str.setPtr(0);
+        str.setPositionTo(0);
 
         str.next();
         str.next();

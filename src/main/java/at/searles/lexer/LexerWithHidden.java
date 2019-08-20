@@ -14,7 +14,11 @@ public class LexerWithHidden implements Tokenizer {
     }
 
     public LexerWithHidden() {
-        this(new Lexer());
+        this(0);
+    }
+
+    public LexerWithHidden(int tokIdOffset) {
+        this(new Lexer(tokIdOffset));
     }
 
     public void addTokenIdToHidden(int tokId) {
@@ -33,24 +37,22 @@ public class LexerWithHidden implements Tokenizer {
     }
 
     @Override
-    public IntSet nextToken(TokStream stream) {
+    public IntSet parseToken(TokStream stream) {
         for (;;) {
-            IntSet tokIds = lexer.nextToken(stream);
+            IntSet acceptedTokIds = stream.fetchTokenIds(lexer);
 
-            if (tokIds == null) {
+            if (acceptedTokIds == null) {
                 return null;
             }
 
-            int hiddenIndex = tokIds.indexOfFirstMatch(hiddenTokenIds);
+            int hiddenIndex = acceptedTokIds.indexOfFirstMatch(hiddenTokenIds);
 
             if (hiddenIndex == -1) {
-                return tokIds;
+                return acceptedTokIds;
             }
 
             // hidden token. Report first match.
-            // TODO too deep knowledge needed. Improve design.
-            stream.notifyTokenConsumed(this, tokIds.getAt(hiddenIndex), stream.frame());
-            stream.frameStream().flushFrame();
+            stream.markConsumed(acceptedTokIds.getAt(hiddenIndex));
         }
     }
 }

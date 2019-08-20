@@ -1,5 +1,6 @@
 package at.searles.parsing;
 
+import at.searles.buf.FrameStream;
 import at.searles.lexer.TokStream;
 import at.searles.lexer.Token;
 import at.searles.parsing.utils.ast.SourceInfo;
@@ -52,16 +53,16 @@ public class ParserStream {
     }
 
     public CharSequence parseToken(Token token, boolean exclusive) {
-        CharSequence seq = token.parseToken(stream, exclusive);
+        FrameStream.Frame frame = token.parseToken(stream, exclusive);
 
-        if (seq == null) {
+        if (frame == null) {
             return null;
         }
 
-        setStart(stream.frameStart());
-        setEnd(stream.frameEnd());
+        setStart(frame.startPosition());
+        setEnd(frame.endPosition());
 
-        return seq;
+        return frame;
     }
 
     /**
@@ -73,11 +74,11 @@ public class ParserStream {
      * @param offset The new offset.
      */
     public void setOffset(long offset) {
-        stream.setPtr(offset);
+        stream.setPositionTo(offset);
     }
 
     /**
-     * Returns the ptr from which the next token will be consumed
+     * Returns the position from which the next token will be consumed
      */
     public long offset() {
         return stream.offset();

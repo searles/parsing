@@ -1,5 +1,6 @@
 package at.searles.lexer;
 
+import at.searles.buf.FrameStream;
 import at.searles.lexer.fsa.FSA;
 import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
@@ -30,10 +31,20 @@ public class Lexer implements Tokenizer {
     /**
      * Counter used to get unique IDs.
      */
-    private int tokenCounter = 0;
+    private int tokIdOffset;
+
+    public Lexer(int tokIdOffset) {
+        if(tokIdOffset <= RESERVATION) {
+            throw new IllegalArgumentException("Bad token id offset");
+        }
+
+        this.tokIdOffset = tokIdOffset;
+
+        this.fsa = new FSA(this.fsaNodeCounter, false); // accept nothing.
+    }
 
     public Lexer() {
-        this.fsa = new FSA(this.fsaNodeCounter, false); // accept nothing.
+        this(0);
     }
 
     private FSA regexToFsa(Regex regex) {
@@ -99,13 +110,13 @@ public class Lexer implements Tokenizer {
 
         if (inside.size() == 1) {
             // we need a new token.
-            int tok = tokenCounter++;
+            int tokId = tokIdOffset++;
             for (FSA.Node n : reservedNodes) {
-                n.acceptors.add(tok);
+                n.acceptors.add(tokId);
                 n.acceptors.remove(RESERVATION);
             }
 
-            return tok;
+            return tokId;
         } else {
             // we found a token already that is equivalent to this one.
             for (FSA.Node n : reservedNodes) {
@@ -131,6 +142,11 @@ public class Lexer implements Tokenizer {
         return add(regexToFsa(regex));
     }
 
+    @Override
+    public IntSet parseToken(TokStream stream) {
+        return stream.fetchTokenIds(this);
+    }
+
     /**
      * Creates a new token from a text
      */
@@ -142,10 +158,9 @@ public class Lexer implements Tokenizer {
      * Fetches the next token from the token stream.
      *
      * @return A set that should not be modified.
-     * @param stream
      */
-    public IntSet nextToken(TokStream stream) {
-        FSA.Node node = fsa.accept(stream.frameStream());
+    public IntSet nextToken(FrameStream stream) {
+        FSA.Node node = fsa.accept(stream);
 
         if (node == null) {
             return null;

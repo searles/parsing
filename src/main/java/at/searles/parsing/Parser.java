@@ -24,7 +24,9 @@ import org.jetbrains.annotations.Nullable;
 public interface Parser<T> extends Recognizable {
 
     /**
-     * Token: lexer::regex^? ~ mapping
+     * Token: lexer::regex^? ~ mapping. In fact, the value is always
+     * an instance of FrameStream.Frame (this knowledge can be used
+     * to obtain the position of the token).
      */
     static <T> Parser<T> fromToken(Token token, Mapping<CharSequence, T> mapping, boolean exclusive) {
         return new TokenParser<>(token, mapping, exclusive);
@@ -80,13 +82,6 @@ public interface Parser<T> extends Recognizable {
     default Parser<T> or(Parser<T> alternative, boolean swapOnInvert) {
         return new ParserOrParser<>(this, alternative, swapOnInvert);
     }
-
-    /*
-     * A.+(fold); short for
-     */
-//    default Parser<T> plus(Fold<T, T, T> fold) {
-//        return this.then(Reducer.rep(this.fold(fold)));
-//    }
 
     /**
      * A > fold

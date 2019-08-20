@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class FrameStreamImpl implements FrameStream {
 
-    private final Impl stream;
+    private final BufferedStream.Impl stream;
     private final CharSeq frame;
     private long frameStart;
     private long frameEnd;
@@ -18,7 +18,7 @@ public class FrameStreamImpl implements FrameStream {
 
     @Override
     public int next() {
-        // if frame becomes too big, increase buffer size
+        // is the frame too big?
         if (frameEnd - frameStart >= stream.bufSize()) {
             throw new IllegalArgumentException("buffer size is too small");
         }
@@ -27,14 +27,14 @@ public class FrameStreamImpl implements FrameStream {
     }
 
     @Override
-    public long ptr() {
-        return stream.ptr();
+    public long position() {
+        return stream.position();
     }
 
     @Override
-    public void setPtr(long ptr) {
+    public void setPositionTo(long ptr) {
         invalid = true;
-        stream.setPtr(ptr);
+        stream.setPositionTo(ptr);
         this.frameStart = ptr;
         this.frameEnd = ptr;
     }
@@ -42,39 +42,29 @@ public class FrameStreamImpl implements FrameStream {
     @Override
     public void markFrameEnd() {
         invalid = true;
-        this.frameEnd = stream.ptr();
+        this.frameEnd = stream.position();
     }
 
     @Override
-    public void flushFrame() {
+    public void advanceFrame() {
         invalid = true;
         this.frameStart = this.frameEnd;
-        stream.setPtr(this.frameEnd);
+        stream.setPositionTo(this.frameEnd);
     }
 
     @Override
     public void resetFrame() {
         invalid = true;
         this.frameEnd = this.frameStart;
-        stream.setPtr(this.frameStart);
+        stream.setPositionTo(this.frameStart);
     }
 
     @Override
-    public long frameStart() {
-        return frameStart;
-    }
-
-    @Override
-    public long frameEnd() {
-        return frameEnd;
-    }
-
-    @Override
-    public CharSequence frame() {
+    public Frame frame() {
         return frame;
     }
 
-    public class CharSeq implements CharSequence {
+    private class CharSeq implements Frame {
         private String str;
 
         private void update() {
@@ -88,6 +78,16 @@ public class FrameStreamImpl implements FrameStream {
                 str = sb.toString();
                 invalid = false;
             }
+        }
+
+        @Override
+        public long startPosition() {
+            return frameStart;
+        }
+
+        @Override
+        public long endPosition() {
+            return frameEnd;
         }
 
         @Override

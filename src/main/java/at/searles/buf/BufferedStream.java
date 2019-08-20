@@ -7,17 +7,17 @@ public interface BufferedStream extends CharStream {
      * the index of the underlying code unit like index
      * of charAt() in a string.
      */
-    long ptr();
+    long position();
 
     /**
      * Sets the pointer position to the argument. The underlying
      * implementation must specify the maximum difference between
-     * ptr() and the argument here.
+     * position() and the argument here.
      *
      * @param ptr The pointer is reverted
      *            to the corresponding position.
      */
-    void setPtr(long ptr);
+    void setPositionTo(long ptr);
 
     class Impl implements BufferedStream {
 
@@ -64,7 +64,7 @@ public interface BufferedStream extends CharStream {
         }
 
         @Override
-        public long ptr() {
+        public long position() {
             return ptr;
         }
 
@@ -79,7 +79,7 @@ public interface BufferedStream extends CharStream {
         }
 
         @Override
-        public void setPtr(long ptr) {
+        public void setPositionTo(long ptr) {
             checkIfPtrInCache(ptr);
             this.ptr = ptr;
         }
