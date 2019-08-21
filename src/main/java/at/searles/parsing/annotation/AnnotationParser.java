@@ -24,7 +24,10 @@ public class AnnotationParser<C, T> implements Parser<T> {
 
     @Override
     public boolean recognize(ParserStream stream) {
-        return parser.recognize(stream);
+        stream.notifyAnnotationBegin(annotation);
+        boolean success = parser.recognize(stream);
+        stream.notifyAnnotationEnd(annotation, success);
+        return success;
     }
 
     @Override

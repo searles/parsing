@@ -23,7 +23,11 @@ public class ParserStream {
         this.stream = stream;
         this.parsedStart = this.parsedEnd = stream.offset();
     }
-    
+
+    public TokStream tokStream() {
+        return stream;
+    }
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }

@@ -1,20 +1,20 @@
 package at.searles.parsing.printing;
 
 public class AnnotatedConcreteSyntaxTree<C> implements ConcreteSyntaxTree {
-    private final ConcreteSyntaxTree parent;
+    private final ConcreteSyntaxTree child;
     private final C annotation;
 
-    public AnnotatedConcreteSyntaxTree(ConcreteSyntaxTree parent, C annotation) {
-        this.parent = parent;
+    public AnnotatedConcreteSyntaxTree(C annotation, ConcreteSyntaxTree child) {
+        this.child = child;
         this.annotation = annotation;
     }
 
     public String toString() {
-        return parent.toString();
+        return child.toString();
     }
 
     @Override
     public void printTo(CstPrinter printer) {
-        printer.print(parent, annotation);
+        printer.print(child, annotation);
     }
 }

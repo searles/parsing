@@ -2,6 +2,7 @@ package at.searles.lexer.test;
 
 import at.searles.lexer.LexerWithHidden;
 import at.searles.lexer.TokStream;
+import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
 import org.junit.Assert;
@@ -26,9 +27,12 @@ public class TokStreamListenerTest {
 
         TokStream stream = TokStream.fromString("abaababb");
 
+        Counter counter = new Counter();
+
         stream.setListener((tokId, frame) -> {
             Assert.assertEquals(lastEnd, frame.startPosition());
             lastEnd = frame.endPosition();
+            counter.incr();
         });
 
         for(int i = 0; i < 4; ++i) {
@@ -40,5 +44,6 @@ public class TokStreamListenerTest {
         }
 
         Assert.assertNull(lexer.parseToken(stream));
+        Assert.assertEquals(8, counter.get());
     }
 }

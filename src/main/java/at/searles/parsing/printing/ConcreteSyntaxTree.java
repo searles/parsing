@@ -42,6 +42,6 @@ public interface ConcreteSyntaxTree {
     }
 
     default <C> ConcreteSyntaxTree annotate(C annotate) {
-        return new AnnotatedConcreteSyntaxTree<>(this, annotate);
+        return new AnnotatedConcreteSyntaxTree<>(annotate, this);
     }
 }

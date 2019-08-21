@@ -1,16 +1,17 @@
 package at.searles.parsing.printing.test
 
+import at.searles.buf.FrameStream
 import at.searles.lexer.LexerWithHidden
+import at.searles.lexer.TokStream
 import at.searles.parsing.*
-import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.CstPrinter
-import at.searles.parsing.printing.StringOutStream
+import at.searles.parsing.printing.*
 import at.searles.parsing.utils.ast.AstNode
 import at.searles.parsing.utils.ast.SourceInfo
 import at.searles.regex.RegexParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.util.*
 
 class PrinterTest {
 
@@ -31,11 +32,29 @@ class PrinterTest {
     }
 
     @Test
+    fun constantFormatTest() {
+        initParser()
+        withInput("a")
+        actFormat()
+
+        Assert.assertEquals("a", output)
+    }
+
+    @Test
     fun appTest() {
         initParser()
         withInput("a b")
         actParse()
         actPrint()
+
+        Assert.assertEquals("a b", output)
+    }
+
+    @Test
+    fun appFormatTest() {
+        initParser()
+        withInput("  a   b  ")
+        actFormat()
 
         Assert.assertEquals("a b", output)
     }
@@ -56,6 +75,15 @@ class PrinterTest {
         withInput("a ( b c )")
         actParse()
         actPrint()
+
+        Assert.assertEquals("a (\n b c\n)", output)
+    }
+
+    @Test
+    fun appInAppFormatTest() {
+        initParser()
+        withInput("a ( b c )")
+        actFormat()
 
         Assert.assertEquals("a (\n b c\n)", output)
     }
@@ -86,8 +114,82 @@ class PrinterTest {
                 ")", output)
     }
 
+    @Test
+    fun manyEmbeddedAppsFormatTest() {
+        initParser()
+        withInput("a ( b ( c d (e (f g h(i j) k (l m n) ) ) o p (q r (s t))))")
+        actFormat()
+
+        Assert.assertEquals("a (\n" +
+                " b (\n" +
+                "  c d (\n" +
+                "   e (\n" +
+                "    f g h (\n" +
+                "     i j\n" +
+                "    ) k (\n" +
+                "     l m n\n" +
+                "    )\n" +
+                "   )\n" +
+                "  ) o p (\n" +
+                "   q r (\n" +
+                "    s t\n" +
+                "   )\n" +
+                "  )\n" +
+                " )\n" +
+                ")", output)
+    }
+
     private fun withInput(input: String) {
         this.stream = ParserStream.fromString(input)
+    }
+
+    private fun actFormat() {
+        val stack: Stack<ArrayList<ConcreteSyntaxTree>> = Stack()
+
+        stack.push(ArrayList())
+
+        this.stream.setListener(object: ParserStream.Listener {
+            override fun <C : Any?> annotationBegin(annotation: C) {
+                stack.push(ArrayList())
+            }
+
+            override fun <C : Any?> annotationEnd(annotation: C, success: Boolean) {
+                if(!success) {
+                    // we created the list for nothing...
+                    stack.pop()
+                    return
+                }
+
+                // otherwise, add it.
+                val list = stack.pop()
+                val cstNode = ListConcreteSyntaxTree(list)
+                stack.peek().add(AnnotatedConcreteSyntaxTree(annotation, cstNode))
+            }
+        })
+
+        this.stream.tokStream().setListener(object: TokStream.Listener {
+            override fun tokenConsumed(tokId: Int, frame: FrameStream.Frame) {
+                // skip all white spaces
+                if(tokId == whiteSpaceTokId) {
+                    return
+                }
+
+                // add all other tokens to current top in stack.
+                stack.peek().add(LeafConcreteSyntaxTree(frame.toString()))
+            }
+        })
+
+        if(!parser.recognize(stream)) {
+            output = null
+            return
+        }
+
+        val cst = ListConcreteSyntaxTree(stack.pop())
+
+        assert(stack.isEmpty())
+
+        cst.printTo(cstPrinter)
+        output = outStream.toString()
     }
 
     private fun actParse() {
@@ -100,6 +202,7 @@ class PrinterTest {
         output = outStream.toString()
     }
 
+    private var whiteSpaceTokId: Int = Integer.MIN_VALUE // invalid default value.
     private lateinit var outStream: StringOutStream
     private lateinit var stream: ParserStream
     private lateinit var parser: Parser<AstNode>
@@ -111,7 +214,7 @@ class PrinterTest {
     private fun initParser() {
         val lexer = LexerWithHidden()
 
-        lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"))
+        whiteSpaceTokId = lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"))
 
         val openPar = Recognizer.fromString("(", lexer, false)
         val closePar = Recognizer.fromString(")", lexer, false)

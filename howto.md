@@ -3,6 +3,91 @@
 This document will contain some tasks and show their solutions. They
 can be sometimes a bit tricky. It will be extended on demand.
 
+## Source Formatting
+
+Creating an AST and printing it just for the sake of
+source code formatting is some overkill. Yet,
+ConcreteSyntaxTree (Cst) provides a convenient method
+to format source code via parser annotations.
+
+Using `TokStream.Listener` and `ParserStream.Listener`,
+callbacks can be used to construct such a Concrete Syntax 
+Tree just using the `recognize`-method in `Parser`, thus
+avoiding the need to waste resources for constructing
+an Ast. An additional benefit is that `TokStream.Listener`
+also captures "hidden tokens" in case of `LexerWithHidden`.
+This way, comments can also be formatted that would
+otherwise be ultimately lost. Futhermore, using 
+`FrameStream.Frame` the original position in the Cst
+can be obtained.
+
+Some unit tests in `PrinterTest` use this method. The
+`actFormat`-method shows a possible implementation:
+
+~~~ kotlin
+val stack: Stack<ArrayList<ConcreteSyntaxTree>> = Stack()
+
+stack.push(ArrayList())
+
+this.stream.setListener(object: ParserStream.Listener {
+    override fun <C : Any?> annotationBegin(annotation: C) {
+        // each annotation will create a new branch
+        stack.push(ArrayList())
+    }
+
+    override fun <C : Any?> annotationEnd(annotation: C, success: Boolean) {
+        if(!success) {
+            // we created the list for nothing. Remove it.
+            stack.pop()
+            return
+        }
+
+        // otherwise, add it.
+        val list = stack.pop()
+        val cstNode = ListConcreteSyntaxTree(list)
+        stack.peek().add(AnnotatedConcreteSyntaxTree(annotation, cstNode))
+    }
+})
+
+this.stream.tokStream().setListener(object: TokStream.Listener {
+    override fun tokenConsumed(tokId: Int, frame: FrameStream.Frame) {
+        // skip all white spaces
+        if(tokId == whiteSpaceTokId) {
+            return
+        }
+
+        // add all other tokens to current top in stack.
+        stack.peek().add(
+                LeafConcreteSyntaxTree(frame.toString())
+        )
+    }
+})
+
+// call recognize. There will be one single item
+// left on the stack.
+if(!parser.recognize(stream)) {
+    output = null
+    return
+}
+
+val cst = ListConcreteSyntaxTree(stack.pop())
+~~~ 
+
+## Syntax highlighting
+
+Syntax highlighting happens usually on a per-token-base.
+Yet, here tokens are detected in combination
+with the parser since multiple lexers can be used
+or a substring can match multiple token patterns (eg
+the string "if" could be an identifier AND a keyword).
+
+Thus, for syntax highlighting, it is recommended to
+use the `recognize`-method of the parser in 
+combination with a `TokStream.Listener`. Using
+the `frame`-parameter and the `tokId`, it can be
+checked which token pattern is matched (including 
+hidden tokens if `LexerWithHidden` is used).
+
 ## How to detect EOF
 
 In the underlying CharStream, EOF is represented by -1.
