@@ -20,7 +20,6 @@ public class StringAppend implements Fold<String, Integer, String> {
         }
 
         if (Character.isHighSurrogate(result.charAt(result.length() - 1))) {
-            // TODO check
             return result.substring(0, result.length() - 2);
         } else {
             return result.substring(0, result.length() - 1);

@@ -28,15 +28,15 @@ public class Utils {
      * @param <T>       The base type.
      * @param separator The separator, eg a comma
      * @param parser    The parser for all elements
-     * @return An inversible parser for a list of items.
+     * @return An invertible parser for a list of items.
      */
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
-        // FIXME there is joinPlus now!
+        // XXX there is also joinPlus!
         return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
     }
 
     public static <T> Parser<List<T>> list1(Parser<T> parser) {
-        // FIXME there is joinPlus now.
+        // XXX there is also joinPlus.
         return singleton(parser).then(Reducer.rep(append(parser, 1)));
     }
 
@@ -87,7 +87,7 @@ public class Utils {
      * order, otherwise, the return value is undetermined but most likely an exception.
      */
     public static <T> Mapping<List<T>, List<T>> permutate(int...order) {
-        return new PermutateList(order);
+        return new PermutateList<>(order);
     }
 
     public static <T> Parser<Optional<T>> opt(Parser<T> parser) {

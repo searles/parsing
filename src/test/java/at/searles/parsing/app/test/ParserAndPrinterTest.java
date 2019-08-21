@@ -132,7 +132,7 @@ public class ParserAndPrinterTest {
 
         // test
         Assert.assertNotNull(result);
-        // fixme Assert.assertTrue(input.isEmpty());
+
         Assert.assertEquals("abcdef", output.toString());
     }
 
@@ -167,7 +167,6 @@ public class ParserAndPrinterTest {
 
         // test
         Assert.assertNotNull(result);
-        // fixme Assert.assertTrue(input.isEmpty());
         Assert.assertEquals("a(b(c(de)))", output.toString());
     }
 
