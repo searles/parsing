@@ -32,7 +32,10 @@ public class Utils {
      */
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
         // XXX there is also joinPlus!
-        return singleton(parser).then(Reducer.rep(separator.then(append(parser, 1))));
+        return singleton(parser).then(
+
+
+                Reducer.rep(separator.then(append(parser, 1))));
     }
 
     public static <T> Parser<List<T>> list1(Parser<T> parser) {
@@ -41,21 +44,11 @@ public class Utils {
     }
 
     public static <T> Parser<List<T>> list(Parser<T> parser, Recognizer separator) {
-        return Utils.<T>empty().then(
-                Reducer.opt(
-                        append(parser, 0)
-                                .then(Reducer.rep(separator.then(append(parser, 1))))
-                )
-        );
+        return Utils.<T>empty().then(separator.join(append(parser, 0)));
     }
 
     public static <T> Parser<List<T>> list(Parser<T> parser) {
-        return Utils.<T>empty()
-                .then(Reducer.opt(
-                        append(parser, 0)
-                                .then(Reducer.rep(append(parser, 1)))
-                        )
-                );
+        return Utils.<T>empty().then(Reducer.rep(append(parser, 0)));
     }
 
     public static <T> Initializer<List<T>> empty() {
