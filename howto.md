@@ -17,7 +17,8 @@ avoiding the need to waste resources for constructing
 an Ast. An additional benefit is that `TokStream.Listener`
 also captures "hidden tokens" in case of `LexerWithHidden`.
 This way, comments can also be formatted that would
-otherwise be ultimately lost. Futhermore, using 
+otherwise be ultimately lost. Also redundant brackets are preserved.
+Futhermore, using 
 `FrameStream.Frame` the original position in the Cst
 can be obtained.
 
