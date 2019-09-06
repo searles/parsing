@@ -1,5 +1,6 @@
 package at.searles.parsing;
 
+import at.searles.parsing.annotation.AnnotationReducer;
 import at.searles.parsing.combinators.*;
 import at.searles.parsing.printing.PartialConcreteSyntaxTree;
 import org.jetbrains.annotations.NotNull;
@@ -69,5 +70,9 @@ public interface Reducer<T, U> extends Recognizable {
 
     default Reducer<T, U> or(Reducer<T, U> alternative, boolean swapOnInvert) {
         return new ReducerOrReducer<>(this, alternative, swapOnInvert);
+    }
+
+    default <C> Reducer<T, U> annotate(C annotation) {
+        return new AnnotationReducer<>(annotation, this);
     }
 }

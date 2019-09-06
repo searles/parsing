@@ -33,8 +33,6 @@ public class Utils {
     public static <T> Parser<List<T>> list1(Parser<T> parser, Recognizer separator) {
         // XXX there is also joinPlus!
         return singleton(parser).then(
-
-
                 Reducer.rep(separator.then(append(parser, 1))));
     }
 
