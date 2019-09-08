@@ -15,6 +15,7 @@ public class FormattingTest {
 
     @Test
     public void test() {
+        // XXX this test currently only checks whether everything works without problems
         LexerWithHidden lexer = new LexerWithHidden();
 
         int ws = lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"));
@@ -36,11 +37,8 @@ public class FormattingTest {
 
         ParserStream stream = ParserStream.fromString("a(aa((aaa)a)a)");
 
-        stream.tokStream().setListener(new TokStream.Listener() {
-            @Override
-            public void tokenConsumed(int tokId, FrameStream.Frame frame) {
+        stream.tokStream().setListener((src, tokId, frame) -> {
 
-            }
         });
     }
 }

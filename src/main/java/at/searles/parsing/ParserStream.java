@@ -94,7 +94,7 @@ public class ParserStream {
 
     public <C> void notifyAnnotationBegin(C annotation) {
         if(listener != null) {
-            listener.annotationBegin(annotation);
+            listener.annotationBegin(this, annotation);
         }
     }
 
@@ -103,7 +103,7 @@ public class ParserStream {
      */
     public <C> void notifyAnnotationEnd(C annotation, boolean success) {
         if(listener != null) {
-            listener.annotationEnd(annotation, success);
+            listener.annotationEnd(this, annotation, success);
         }
     }
 
@@ -140,8 +140,20 @@ public class ParserStream {
          * in this method must be undone if the arguments to annotationEnd
          * indicate that the annotation parser did not succeed.
          */
-        <C> void annotationBegin(C annotation);
+        <C> void annotationBegin(ParserStream parserStream, C annotation);
 
-        <C> void annotationEnd(C annotation, boolean success);
+        <C> void annotationEnd(ParserStream parserStream, C annotation, boolean success);
+    }
+
+    public interface SimpleListener extends Listener {
+        @Override
+        default <C> void annotationBegin(ParserStream parserStream, C annotation) {}
+
+        @Override
+        default <C> void annotationEnd(ParserStream parserStream, C annotation, boolean success) {
+            annotate(parserStream, annotation);
+        }
+
+        <C> void annotate(ParserStream parserStream, C annotation);
     }
 }

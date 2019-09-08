@@ -111,7 +111,7 @@ public class TokStream {
 
     public void notifyTokenConsumed(int tokId, FrameStream.Frame frame) {
         if(listener != null) {
-            listener.tokenConsumed(tokId, frame);
+            listener.tokenConsumed(this, tokId, frame);
         }
     }
 
@@ -127,6 +127,6 @@ public class TokStream {
     }
 
     public interface Listener {
-        void tokenConsumed(int tokId, FrameStream.Frame frame);
+        void tokenConsumed(TokStream src, int tokId, FrameStream.Frame frame);
     }
 }

@@ -149,11 +149,11 @@ class PrinterTest {
         stack.push(ArrayList())
 
         this.stream.setListener(object: ParserStream.Listener {
-            override fun <C : Any?> annotationBegin(annotation: C) {
+            override fun <C : Any?> annotationBegin(src: ParserStream, annotation: C) {
                 stack.push(ArrayList())
             }
 
-            override fun <C : Any?> annotationEnd(annotation: C, success: Boolean) {
+            override fun <C : Any?> annotationEnd(src: ParserStream, annotation: C, success: Boolean) {
                 if(!success) {
                     // we created the list for nothing...
                     stack.pop()
@@ -168,7 +168,7 @@ class PrinterTest {
         })
 
         this.stream.tokStream().setListener(object: TokStream.Listener {
-            override fun tokenConsumed(tokId: Int, frame: FrameStream.Frame) {
+            override fun tokenConsumed(src: TokStream, tokId: Int, frame: FrameStream.Frame) {
                 // skip all white spaces
                 if(tokId == whiteSpaceTokId) {
                     return

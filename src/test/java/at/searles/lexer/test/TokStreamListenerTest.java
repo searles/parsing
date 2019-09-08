@@ -29,7 +29,7 @@ public class TokStreamListenerTest {
 
         Counter counter = new Counter();
 
-        stream.setListener((tokId, frame) -> {
+        stream.setListener((src, tokId, frame) -> {
             Assert.assertEquals(lastEnd, frame.startPosition());
             lastEnd = frame.endPosition();
             counter.incr();
