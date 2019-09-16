@@ -151,7 +151,9 @@ public class ParserStream {
 
         @Override
         default <C> void annotationEnd(ParserStream parserStream, C annotation, boolean success) {
-            annotate(parserStream, annotation);
+            if(success) {
+                annotate(parserStream, annotation);
+            }
         }
 
         <C> void annotate(ParserStream parserStream, C annotation);
