@@ -111,6 +111,13 @@ To parse numbers we need
     val lexer = Lexer()
 ~~~
 
+Alternatively, if you want to ignore spaces and tabs:
+
+~~~ kotlin
+    val lexer = LexerWithHidden()
+    lexer.addHiddenToken(RegexParser.parse("[\t ]+"))
+~~~
+
 * a token pattern that accepts an integer number.
 
 ~~~ kotlin
