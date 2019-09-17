@@ -24,8 +24,12 @@ fun main() {
     // num: [0-9]* ;
     val numToken = lexer.token(RegexParser.parse("[0-9]+"))
     val numMapping = Mapping<CharSequence, Int> { _, left -> Integer.parseInt(left.toString()) }
-    val num = Parser.fromToken(numToken, numMapping, false).ref("num")
-
+    
+    // ref here provides a label that is used by the parser's toString-method.
+    // This improves debugging because in case of an error it is easier to spot 
+    // the concrete parser.
+    val num = Parser.fromToken(numToken, numMapping, false).ref("num") 
+    
     // term: num | '(' sum ')'
     val sum = Ref<Int>("sum")
 
