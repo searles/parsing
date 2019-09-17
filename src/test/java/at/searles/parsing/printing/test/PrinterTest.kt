@@ -175,6 +175,9 @@ class PrinterTest {
                 }
 
                 // add all other tokens to current top in stack.
+                // this also includes other hidden tokens like comments
+                // that we normally want to keep when formatting the source 
+                // code.
                 stack.peek().add(LeafConcreteSyntaxTree(frame.toString()))
             }
         })
