@@ -1,6 +1,7 @@
 package at.searles.parsing.utils.test;
 
 import at.searles.lexer.Lexer;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;
@@ -12,12 +13,12 @@ import org.junit.Test;
 
 public class BuilderTest {
 
-    private final Lexer lexer = new Lexer();
-    private final Parser<String> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new ToString(), false);
+    private final Lexer tokenizer = new Lexer();
+    private final Parser<String> id = Parser.fromRegex(RegexParser.parse("[a-z]+"), tokenizer, false, new ToString());
     final Parser<Object> parser = Utils.builder(Builder.class).then(
-            Recognizer.fromString(",", lexer, false).join(
-                    Utils.<Builder, String>setter("a", Recognizer.fromString("+", lexer, false).then(id))
-                            .or(Utils.setter("b", Recognizer.fromString("-", lexer, false).then(id)), true)
+            Recognizer.fromString(",", tokenizer, false).join(
+                    Utils.<Builder, String>setter("a", Recognizer.fromString("+", tokenizer, false).then(id))
+                            .or(Utils.setter("b", Recognizer.fromString("-", tokenizer, false).then(id)), true)
             )
                     .then(Utils.build(Builder.class))
     );

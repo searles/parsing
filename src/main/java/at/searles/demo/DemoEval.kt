@@ -1,6 +1,7 @@
 package at.searles.demo
 
-import at.searles.lexer.LexerWithHidden
+import at.searles.lexer.Lexer
+import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.regex.RegexParser
 
@@ -16,19 +17,20 @@ import at.searles.regex.RegexParser
  */
 fun main() {
     // Create a lexer
-    val lexer = LexerWithHidden()
+    val lexer = SkipTokenizer(Lexer())
 
     // ignore white spaces
-    lexer.addHiddenToken(RegexParser.parse("[\n\r\t ]+"))
+    val wsTokenId = lexer.add(RegexParser.parse("[\n\r\t ]+"))
+    lexer.addSkipped(wsTokenId)
 
     // num: [0-9]* ;
-    val numToken = lexer.token(RegexParser.parse("[0-9]+"))
+    val numTokenId = lexer.add(RegexParser.parse("[0-9]+"))
     val numMapping = Mapping<CharSequence, Int> { _, left -> Integer.parseInt(left.toString()) }
     
     // ref here provides a label that is used by the parser's toString-method.
     // This improves debugging because in case of an error it is easier to spot 
     // the concrete parser.
-    val num = Parser.fromToken(numToken, numMapping, false).ref("num") 
+    val num = Parser.fromToken(numTokenId, lexer, true, numMapping).ref("num")
     
     // term: num | '(' sum ')'
     val sum = Ref<Int>("sum")

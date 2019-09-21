@@ -5,6 +5,10 @@ package at.searles.regex;
  */
 public interface Regex {
 
+    static Regex eof() {
+        return CharSet.chars(-1);
+    }
+
     // 'abc'
     static Regex text(String s) {
         return new Text(s);

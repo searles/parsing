@@ -1,6 +1,7 @@
 package at.searles.parsing.printing.test
 
-import at.searles.lexer.LexerWithHidden
+import at.searles.lexer.Lexer
+import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.Mapping
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
@@ -147,9 +148,10 @@ class PrinterUtilTest {
     private lateinit var cstPrinter: CstPrinter
 
     private fun initParserUtilList(mayBeEmpty: Boolean, hasSeparator: Boolean) {
-        val lexer = LexerWithHidden()
+        val tokenizer = SkipTokenizer(Lexer())
 
-        whiteSpaceTokId = lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"))
+        whiteSpaceTokId = tokenizer.add(RegexParser.parse("[ \n\r\t]+"))
+        tokenizer.addSkipped(whiteSpaceTokId)
 
         val idMapping = object : Mapping<CharSequence, AstNode> {
             override fun parse(stream: ParserStream, left: CharSequence): AstNode =
@@ -169,13 +171,13 @@ class PrinterUtilTest {
             }
         }
 
-        val id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), idMapping, false).ref("id")
+        val id = Parser.fromRegex(RegexParser.parse("[a-z]+"), tokenizer, false, idMapping).ref("id")
 
         parser = if (hasSeparator)
             if (mayBeEmpty)
-                Utils.list(id, Recognizer.fromString(",", lexer, false)).then(vecMapping)
+                Utils.list(id, Recognizer.fromString(",", tokenizer, false)).then(vecMapping)
             else
-                Utils.list1(id, Recognizer.fromString(",", lexer, false)).then(vecMapping)
+                Utils.list1(id, Recognizer.fromString(",", tokenizer, false)).then(vecMapping)
         else
             if (mayBeEmpty)
                 Utils.list(id).then(vecMapping)

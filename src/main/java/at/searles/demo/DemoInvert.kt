@@ -1,6 +1,7 @@
 package at.searles.demo
 
-import at.searles.lexer.LexerWithHidden
+import at.searles.lexer.Lexer
+import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
@@ -20,13 +21,14 @@ import at.searles.regex.RegexParser
  */
 fun main() {
     // Create a lexer
-    val lexer = LexerWithHidden()
-
+    val lexer = SkipTokenizer(Lexer())
+            
     // ignore white spaces
-    lexer.addHiddenToken(RegexParser.parse("[\n\r\t ]+"))
+    val wsTokenId = lexer.add(RegexParser.parse("[\n\r\t ]+"))
+    lexer.addSkipped(wsTokenId)
 
     // num: [0-9]* ;
-    val numToken = lexer.token(RegexParser.parse("[0-9]+"))
+    val numTokenId = lexer.add(RegexParser.parse("[0-9]+"))
     val numMapping = object : Mapping<CharSequence, AstNode> {
         override fun parse(stream: ParserStream, left: CharSequence): AstNode =
                 NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
@@ -35,7 +37,7 @@ fun main() {
                 if (result is NumNode) result.value.toString() else null
     }
 
-    val num = Parser.fromToken(numToken, numMapping, false).ref("num")
+    val num = Parser.fromToken(numTokenId, lexer, true, numMapping).ref("num")
 
     // term: num | '(' sum ')'
     val sum = Ref<AstNode>("sum")

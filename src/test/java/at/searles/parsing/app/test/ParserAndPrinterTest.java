@@ -2,7 +2,8 @@ package at.searles.parsing.app.test;
 
 import at.searles.buf.CharStream;
 import at.searles.lexer.Lexer;
-import at.searles.lexer.TokStream;
+import at.searles.lexer.TokenStream;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.regex.CharSet;
@@ -174,7 +175,7 @@ public class ParserAndPrinterTest {
     public void testLotsOfData() {
         // about 3.5 seconds for 1000000
         // about 35 seconds for 10000000
-        this.input = new ParserStream(TokStream.fromCharStream(stream(1000000)));
+        this.input = new ParserStream(TokenStream.fromCharStream(stream(1000000)));
         withParser(Parsers.ITERATIVE);
         parse();
 
@@ -357,9 +358,9 @@ public class ParserAndPrinterTest {
         ;
 
         Parser<Expr> term(Ref<Expr> exprParser) {
-            Lexer lexer = new Lexer();
+            Lexer tokenizer = new Lexer();
             Parser<Expr> idParser =
-                    Parser.fromToken(lexer.token(CharSet.interval('a', 'z')),
+                    Parser.fromRegex(CharSet.interval('a', 'z'), tokenizer, false,
                             new Mapping<CharSequence, Expr>() {
                                 @NotNull
                                 @Override
@@ -371,11 +372,11 @@ public class ParserAndPrinterTest {
                                 public CharSequence left(@NotNull Expr result) {
                                     return result.id();
                                 }
-                            }, false);
+                            });
 
             Parser<Expr> wrappedExprParser =
-                    Recognizer.fromString("(", lexer, false).
-                            then(exprParser).then(Recognizer.fromString(")", lexer, false));
+                    Recognizer.fromString("(", tokenizer, false).
+                            then(exprParser).then(Recognizer.fromString(")", tokenizer, false));
 
             return idParser.or(wrappedExprParser);
         }

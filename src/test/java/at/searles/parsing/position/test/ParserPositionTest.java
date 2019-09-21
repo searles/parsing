@@ -1,18 +1,20 @@
 package at.searles.parsing.position.test;
 
 import at.searles.lexer.Lexer;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.utils.ast.SourceInfo;
 import at.searles.parsing.utils.common.ToString;
+import at.searles.regex.Regex;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ParserPositionTest {
-    final Lexer lexer = new Lexer();
-    final Parser<String> a = Parser.fromToken(lexer.token("A"), ToString.getInstance(), false);
-    final Parser<String> b = Parser.fromToken(lexer.token("B"), ToString.getInstance(), false);
+    final Lexer tokenizer = new Lexer();
+    final Parser<String> a = Parser.fromRegex(Regex.text("A"), tokenizer, false, ToString.getInstance());
+    final Parser<String> b = Parser.fromRegex(Regex.text("B"), tokenizer, false, ToString.getInstance());
 
-    final Recognizer z = Recognizer.fromString("Z", lexer, false);
+    final Recognizer z = Recognizer.fromString("Z", tokenizer, false);
 
     final Mapping<String, String> fail = (stream, left) -> null;
 

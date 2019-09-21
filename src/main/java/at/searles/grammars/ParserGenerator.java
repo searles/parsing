@@ -1,7 +1,7 @@
 package at.searles.grammars;
 
 import at.searles.lexer.Lexer;
-import at.searles.lexer.LexerWithHidden;
+import at.searles.lexer.SkipTokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.utils.Utils;
 import at.searles.parsing.utils.ast.AstNode;
@@ -27,7 +27,7 @@ public class ParserGenerator {
     private final Ref<AstNode> ref = new Ref<>(Type.Reference.toString());
     private final Ref<String> identifier = new Ref<>(Type.Identifier.toString());
     private final Ref<String> javaCode = new Ref<>(Type.JavaCode.toString());
-    private final LexerWithHidden lexer = new LexerWithHidden();
+    private final SkipTokenizer lexer = new SkipTokenizer();
     private final Lexer rawLexer = new Lexer();
     private final AstNodeBuilder<Type> builder = new SyntaxTreeBuilder();
 

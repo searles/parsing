@@ -28,13 +28,16 @@ public class Lexer implements Tokenizer {
      * add must be called at least once.
      */
     private final FSA fsa;
-    /**
-     * Counter used to get unique IDs.
-     */
-    private int tokIdOffset;
 
-    public Lexer(int tokIdOffset) {
-        if(tokIdOffset <= RESERVATION) {
+    /**
+     * Counter used to get unique IDs. If multiple lexers
+     * are used, they should share a counter to avoid
+     * collisions of IDs.
+     */
+    private Counter tokIdOffset;
+
+    public Lexer(Counter tokIdOffset) {
+        if(tokIdOffset.get() <= RESERVATION) {
             throw new IllegalArgumentException("Bad token id offset");
         }
 
@@ -44,7 +47,16 @@ public class Lexer implements Tokenizer {
     }
 
     public Lexer() {
-        this(0);
+        this(new Counter());
+    }
+
+    @Override
+    public IntSet currentTokenIds(TokenStream stream) {
+        return stream.current(this);
+    }
+
+    public Counter getTokenIdOffset() {
+        return tokIdOffset;
     }
 
     private FSA regexToFsa(Regex regex) {
@@ -110,7 +122,7 @@ public class Lexer implements Tokenizer {
 
         if (inside.size() == 1) {
             // we need a new token.
-            int tokId = tokIdOffset++;
+            int tokId = tokIdOffset.incr();
             for (FSA.Node n : reservedNodes) {
                 n.acceptors.add(tokId);
                 n.acceptors.remove(RESERVATION);
@@ -142,11 +154,6 @@ public class Lexer implements Tokenizer {
         return add(regexToFsa(regex));
     }
 
-    @Override
-    public IntSet parseToken(TokStream stream) {
-        return stream.fetchTokenIds(this);
-    }
-
     /**
      * Creates a new token from a text
      */
@@ -156,10 +163,12 @@ public class Lexer implements Tokenizer {
 
     /**
      * Fetches the next token from the token stream.
-     *
+     * @param stream A frame stream in reset position, ie,
+     *               either reset or advance should have
+     *               been called prior to this call.
      * @return A set that should not be modified.
      */
-    public IntSet nextToken(FrameStream stream) {
+    public IntSet readNextToken(FrameStream stream) {
         FSA.Node node = fsa.accept(stream);
 
         if (node == null) {

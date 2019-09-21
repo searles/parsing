@@ -17,7 +17,7 @@ import at.searles.lexer.utils.IntSet;
  * If there is a match but it is not used, the reset-method
  * will revert all changes.
  */
-public class TokStream {
+public class TokenStream {
 
     /**
      * underlying buffer
@@ -33,7 +33,7 @@ public class TokStream {
     private boolean isConsumed;
     private Listener listener;
 
-    public TokStream(FrameStream stream) {
+    public TokenStream(FrameStream stream) {
         this.stream = stream;
 
         this.lexer = null;
@@ -46,16 +46,16 @@ public class TokStream {
         this.listener = listener;
     }
 
-    public static TokStream fromString(String s) {
-        return new TokStream(new StringWrapper(s));
+    public static TokenStream fromString(String s) {
+        return new TokenStream(new StringWrapper(s));
     }
 
-    public static TokStream fromCharStream(CharStream stream) {
-        return new TokStream(new FrameStreamImpl(new BufferedStream.Impl(stream, 1024)));
+    public static TokenStream fromCharStream(CharStream stream) {
+        return new TokenStream(new FrameStreamImpl(new BufferedStream.Impl(stream, 1024)));
     }
 
     public void setPositionTo(long ptr) {
-        this.stream.resetFrame();
+        this.stream.reset();
 
         this.acceptedTokens = null;
         this.lexer = null;
@@ -78,55 +78,70 @@ public class TokStream {
      * whether a valid token has been fetched. Otherwise, it sets the
      * currently accepted tokens-field and sets the correct frame
      * in the underlying frameStream.
+     *
+     * @return null if there is no accepted token. This
+     * is not equivalent to EOF, because EOF is just
+     * defined as '-1' and thus can be recognized by
+     * a lexer.
      */
-    public IntSet fetchTokenIds(Lexer lexer) {
+    public IntSet current(Lexer lexer) {
         // can we reuse the old result?
-        if (isConsumed || this.lexer != lexer) {
-            if (isConsumed) {
-                stream.advanceFrame();
-                isConsumed = false;
-            } else /* if(this.lexer != lexer) */ {
-                stream.resetFrame();
-            }
-
-            this.acceptedTokens = lexer.nextToken(stream);
-            this.lexer = lexer;
-            this.isConsumed = false;
+        if(!isConsumed && this.lexer == lexer) {
+            return this.acceptedTokens;
         }
+
+        // no
+
+        if (isConsumed) {
+            stream.advance();
+        } else /* if(this.lexer != lexer) */ {
+            stream.reset();
+        }
+
+        this.isConsumed = false;
+        this.lexer = lexer;
+        this.acceptedTokens = lexer.readNextToken(stream);
 
         return this.acceptedTokens;
     }
 
     /**
-     * must be called before advancing to the next token.
-     * frame will remain valid until increment is called.
-     * @param tokId The id of the actuallu consumed token
+     * A lazy advance method like in C iterators. Only the
+     * next call to 'current' will actually advance. This
+     * is because the frame must remain valid for now.
+     *
+     * @param consumedTokenId The id of the actually consumed token
      */
-    public void markConsumed(int tokId) {
+    public void advance(int consumedTokenId) {
+        if(this.isConsumed) {
+            // last was not consumed.
+            // well, I guess a 'skip 3 tokens'
+            // can be useful...
+            current(lexer);
+        }
+
         this.isConsumed = true;
 
         // inform listeners
-        notifyTokenConsumed(tokId, stream.frame());
+        notifyTokenConsumed(consumedTokenId, stream.frame());
     }
 
-    public void notifyTokenConsumed(int tokId, FrameStream.Frame frame) {
+    private void notifyTokenConsumed(int tokId, Frame frame) {
         if(listener != null) {
             listener.tokenConsumed(this, tokId, frame);
         }
     }
-
-    // This is kinda a read-only-frameStream.
 
     @Override
     public String toString() {
         return stream.toString();
     }
 
-    public FrameStream.Frame frame() {
+    public Frame frame() {
         return stream.frame();
     }
 
     public interface Listener {
-        void tokenConsumed(TokStream src, int tokId, FrameStream.Frame frame);
+        void tokenConsumed(TokenStream src, int tokId, Frame frame);
     }
 }

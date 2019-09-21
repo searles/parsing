@@ -21,11 +21,11 @@ public class StringWrapperTest {
         Assert.assertEquals(0x1f428, str.next()); // UTF-16
         Assert.assertEquals('k', str.next());
 
-        str.markFrameEnd();
+        str.mark();
 
         Assert.assertEquals('o', str.next());
 
-        str.advanceFrame();
+        str.advance();
 
         Assert.assertEquals('o', str.next());
     }
@@ -37,14 +37,14 @@ public class StringWrapperTest {
         str.next();
         str.next();
 
-        str.markFrameEnd();
+        str.mark();
 
-        str.advanceFrame();
+        str.advance();
 
         str.next();
         str.next();
 
-        str.markFrameEnd();
+        str.mark();
 
         str.next();
 
@@ -58,14 +58,14 @@ public class StringWrapperTest {
         str.next();
         str.next();
 
-        str.markFrameEnd();
+        str.mark();
 
-        str.advanceFrame();
+        str.advance();
 
         str.next();
         str.next();
 
-        str.markFrameEnd();
+        str.mark();
 
         str.next();
 
@@ -74,7 +74,7 @@ public class StringWrapperTest {
         str.next();
         str.next();
 
-        str.markFrameEnd();
+        str.mark();
 
         str.next();
 

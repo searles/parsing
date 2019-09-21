@@ -74,7 +74,7 @@ public class FSA {
                 // modified, the stream should be rather added
                 // to a map with the current position.
 
-                stream.markFrameEnd();
+                stream.mark();
                 acceptedNode = n;
             }
 

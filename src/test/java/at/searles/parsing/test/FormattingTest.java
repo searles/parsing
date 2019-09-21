@@ -1,8 +1,7 @@
 package at.searles.parsing.test;
 
-import at.searles.buf.FrameStream;
-import at.searles.lexer.LexerWithHidden;
-import at.searles.lexer.TokStream;
+import at.searles.lexer.Lexer;
+import at.searles.lexer.SkipTokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.Regex;
@@ -11,18 +10,20 @@ import org.junit.Test;
 
 public class FormattingTest {
 
-    enum Annotation { BLOCK, ARGUMENT };
+    enum Annotation { BLOCK, ARGUMENT }
 
     @Test
     public void test() {
         // XXX this test currently only checks whether everything works without problems
-        LexerWithHidden lexer = new LexerWithHidden();
+        Lexer lexer = new Lexer();
+        SkipTokenizer tokenizer = new SkipTokenizer(lexer);
 
-        int ws = lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"));
+        int ws = lexer.add(RegexParser.parse("[ \n\r\t]+"));
+        tokenizer.addSkipped(ws);
 
-        Parser<String> a = Parser.fromToken(lexer.token(Regex.text("a")), ToString.getInstance(), false);
-        Recognizer open = Recognizer.fromString("(", lexer, false);
-        Recognizer close = Recognizer.fromString(")", lexer, false);
+        Parser<String> a = Parser.fromRegex(Regex.text("a"), tokenizer, false, ToString.getInstance());
+        Recognizer open = Recognizer.fromString("(", tokenizer, false);
+        Recognizer close = Recognizer.fromString(")", tokenizer, false);
 
         Ref<String> expr = new Ref<>("expr");
 

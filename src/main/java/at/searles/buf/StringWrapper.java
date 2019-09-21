@@ -39,18 +39,18 @@ public class StringWrapper implements FrameStream {
     }
 
     @Override
-    public void markFrameEnd() {
+    public void mark() {
         assert this.ptr >= this.frameStart;
         this.frameEnd = this.ptr;
     }
 
     @Override
-    public void advanceFrame() {
+    public void advance() {
         this.ptr = this.frameStart = this.frameEnd;
     }
 
     @Override
-    public void resetFrame() {
+    public void reset() {
         this.ptr = this.frameEnd = this.frameStart;
     }
 

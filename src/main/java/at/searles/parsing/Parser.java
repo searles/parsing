@@ -1,6 +1,6 @@
 package at.searles.parsing;
 
-import at.searles.lexer.Token;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.annotation.AnnotationParser;
 import at.searles.parsing.combinators.ParserOrParser;
 import at.searles.parsing.combinators.ParserThenRecognizer;
@@ -8,6 +8,7 @@ import at.searles.parsing.combinators.ParserThenReducer;
 import at.searles.parsing.combinators.ParserToReducer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenParser;
+import at.searles.regex.Regex;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,8 +29,18 @@ public interface Parser<T> extends Recognizable {
      * an instance of FrameStream.Frame (this knowledge can be used
      * to obtain the position of the token).
      */
-    static <T> Parser<T> fromToken(Token token, Mapping<CharSequence, T> mapping, boolean exclusive) {
-        return new TokenParser<>(token, mapping, exclusive);
+    static <T> Parser<T> fromToken(int tokenId, Tokenizer tokenizer, boolean exclusive, Mapping<CharSequence, T> mapping) {
+        return new TokenParser<>(tokenId, tokenizer, exclusive, mapping);
+    }
+
+    /**
+     * Token: lexer::regex^? ~ mapping. In fact, the value is always
+     * an instance of FrameStream.Frame (this knowledge can be used
+     * to obtain the position of the token).
+     */
+    static <T> Parser<T> fromRegex(Regex regex, Tokenizer tokenizer, boolean exclusive, Mapping<CharSequence, T> mapping) {
+        int tokenId = tokenizer.add(regex);
+        return fromToken(tokenId, tokenizer, exclusive, mapping);
     }
 
     /**

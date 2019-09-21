@@ -1,45 +1,33 @@
 package at.searles.lexer;
 
+import at.searles.buf.Frame;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regex.Regex;
 
 public interface Tokenizer {
-    // only in Lexer. IntSet nextToken(TokStream stream);
 
-    /**
-     * Simplified for creating a token from a simple string.
-     *
-     */
-    default Token token(String str) {
-        return token(Regex.text(str));
+    IntSet currentTokenIds(TokenStream stream);
+
+    default boolean isExclusiveToken(IntSet tokenIds) {
+        return tokenIds.size() == 1;
     }
 
     /**
-     * Creates a token from a regex
-     *
-     * @param rex the regex
-     * @return the token
+     * Returns whether this tokenizer accepts the current element
+     * in the token stream. If so, the token stream continues
+     * to the next element.
+     * @return null if the tokenizer does not recognize this element.
      */
-    default Token token(Regex rex) {
-        int tokId = add(rex);
-        return new Token(this, tokId);
+    default Frame matchToken(TokenStream stream, int tokId, boolean exclusive) {
+        IntSet currentTokenIds = currentTokenIds(stream);
+
+        if(currentTokenIds != null && currentTokenIds.contains(tokId) && (!exclusive || isExclusiveToken(currentTokenIds))) {
+            stream.advance(tokId);
+            return stream.frame();
+        }
+
+        return null;
     }
 
-    /**
-     * Add a regular expression
-     *
-     * @param regex The regular expression
-     * @return the token id.
-     */
     int add(Regex regex);
-
-    /**
-     * Tries to parse the token with the given id and on success returns the
-     * matching frame. In the simplest case it is a call to stream.fetchTokenIds,
-     * but if the Tokenizer should ignore some tokens this is the place.
-     * If only this method is used, stream.markConsumed() must be called.
-     * Therefore, it is recommended to rather use the methods in the Token class.
-     * @return null if unsuccessful
-     */
-    IntSet parseToken(TokStream stream);
 }

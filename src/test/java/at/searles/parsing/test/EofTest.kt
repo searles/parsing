@@ -1,7 +1,7 @@
 package at.searles.parsing.test
 
 import at.searles.lexer.Lexer
-import at.searles.lexer.LexerWithHidden
+import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable
 import at.searles.parsing.Recognizer
@@ -18,9 +18,9 @@ class EofTest {
     @Test
     fun testEof() {
         // Set up phase
-        val lexer = Lexer()
-        this.parser = Recognizer.fromString("a", lexer, false).rep()
-        eof = Recognizer.eof(lexer)
+        val tokenizer = Lexer()
+        this.parser = Recognizer.fromString("a", tokenizer, false).rep()
+        eof = Recognizer.eof(tokenizer)
 
         withInput("aaa")
         actRecognize()
@@ -59,10 +59,12 @@ class EofTest {
     @Test
     fun testEofWithHidden() {
         // Set up phase
-        val lexer = LexerWithHidden()
-        lexer.addHiddenToken(CharSet.chars(' '.toInt()))
-        this.parser = Recognizer.fromString("a", lexer, false).rep()
-        eof = Recognizer.eof(lexer)
+        val lexer = Lexer()
+        val tokenizer = SkipTokenizer(lexer)
+        tokenizer.addSkipped(lexer.add(CharSet.chars(' '.toInt())))
+
+        this.parser = Recognizer.fromString("a", tokenizer, false).rep()
+        eof = Recognizer.eof(tokenizer)
 
         withInput("a a a   ")
         actRecognize()
@@ -74,9 +76,11 @@ class EofTest {
     @Test
     fun testEofWithHiddenAndSeparateLexer() {
         // Set up phase
-        val lexer = LexerWithHidden()
-        lexer.addHiddenToken(CharSet.chars(' '.toInt()))
-        this.parser = Recognizer.fromString("a", lexer, false).rep()
+        val lexer = Lexer()
+        val tokenizer = SkipTokenizer(lexer)
+        val spaceId = lexer.add(CharSet.chars(' '.toInt()))
+        tokenizer.addSkipped(spaceId)
+        this.parser = Recognizer.fromString("a", tokenizer, false).rep()
         eof = Recognizer.eof(Lexer())
 
         withInput("a a a   ")

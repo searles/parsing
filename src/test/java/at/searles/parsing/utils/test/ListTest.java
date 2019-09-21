@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class ListTest {
 
-    private final Lexer lexer = new Lexer();
-    private final Parser<Object> id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), new Mapping<CharSequence, Object>() {
+    private final Lexer tokenizer = new Lexer();
+    private final Parser<Object> id = Parser.fromRegex(RegexParser.parse("[a-z]+"), tokenizer, false, new Mapping<CharSequence, Object>() {
         @Override
         public Object parse(ParserStream stream, @NotNull CharSequence left) {
             return left.toString();
@@ -31,8 +31,9 @@ public class ListTest {
         public CharSequence left(@NotNull Object result) {
             return result instanceof String ? result.toString() : null;
         }
-    }, false);
-    private final Parser<Object> num = Parser.fromToken(lexer.token(RegexParser.parse("[0-9]+")), new Mapping<CharSequence, Object>() {
+    });
+
+    private final Parser<Object> num = Parser.fromRegex(RegexParser.parse("[0-9]+"), tokenizer, false, new Mapping<CharSequence, Object>() {
         @Override
         public Object parse(ParserStream stream, @NotNull CharSequence left) {
             return Integer.parseInt(left.toString());
@@ -43,7 +44,8 @@ public class ListTest {
         public CharSequence left(@NotNull Object result) {
             return result instanceof Integer ? result.toString() : null;
         }
-    }, false);
+    });
+
     private final Fold<List<Object>, Object, List<Object>> add = new Fold<List<Object>, Object, List<Object>>() {
         @Override
         public List<Object> apply(ParserStream stream, @NotNull List<Object> left, @NotNull Object right) {
@@ -68,10 +70,10 @@ public class ListTest {
             return result.get(result.size() - 1);
         }
     };
-    private final Recognizer comma = Recognizer.fromString(",", lexer, false);
-    private final Recognizer colon = Recognizer.fromString(":", lexer, false);
-    private final Recognizer stringsPrefix = Recognizer.fromString("S", lexer, false);
-    private final Recognizer intsPrefix = Recognizer.fromString("I", lexer, false);
+    private final Recognizer comma = Recognizer.fromString(",", tokenizer, false);
+    private final Recognizer colon = Recognizer.fromString(":", tokenizer, false);
+    private final Recognizer stringsPrefix = Recognizer.fromString("S", tokenizer, false);
+    private final Recognizer intsPrefix = Recognizer.fromString("I", tokenizer, false);
     private final Reducer<List<Object>, List<Object>> strings = stringsPrefix.then(comma.joinPlus(id.fold(add)));
     private final Reducer<List<Object>, List<Object>> ints = intsPrefix.then(comma.joinPlus(num.fold(add)));
     private final Parser<List<Object>> parser =

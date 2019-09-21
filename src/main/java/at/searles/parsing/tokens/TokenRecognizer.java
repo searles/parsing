@@ -1,6 +1,5 @@
 package at.searles.parsing.tokens;
 
-import at.searles.lexer.Token;
 import at.searles.lexer.Tokenizer;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.Recognizer;
@@ -9,37 +8,30 @@ import org.jetbrains.annotations.NotNull;
 
 public class TokenRecognizer implements Recognizer {
 
-    private final String str;
-    private final Token token;
     private final boolean exclusive;
+    private final String printed;
+    private final int tokId;
+    private final Tokenizer tokenizer;
 
-    /**
-     * @param str This string is also needed for inversion
-     */
-    public TokenRecognizer(String str, Tokenizer lexer, boolean exclusive) {
-        this.str = str;
-        this.token = lexer.token(str);
+    public TokenRecognizer(int tokId, Tokenizer tokenizer, boolean exclusive, String printed) {
+        this.tokId = tokId;
+        this.tokenizer = tokenizer;
         this.exclusive = exclusive;
-    }
-
-    public TokenRecognizer(Token token, boolean exclusive) {
-        this.str = token.toString();
-        this.token = token;
-        this.exclusive = exclusive;
+        this.printed = printed;
     }
 
     @Override
     public boolean recognize(ParserStream stream) {
-        return stream.parseToken(token, exclusive) != null;
+        return stream.parseToken(tokenizer, tokId, exclusive) != null;
     }
 
     @NotNull
     @Override
     public ConcreteSyntaxTree print() {
-        return ConcreteSyntaxTree.fromCharSequence(str);
+        return ConcreteSyntaxTree.fromCharSequence(printed);
     }
 
     public String toString() {
-        return str;
+        return printed;
     }
 }

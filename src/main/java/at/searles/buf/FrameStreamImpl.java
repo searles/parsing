@@ -40,20 +40,20 @@ public class FrameStreamImpl implements FrameStream {
     }
 
     @Override
-    public void markFrameEnd() {
+    public void mark() {
         invalid = true;
         this.frameEnd = stream.position();
     }
 
     @Override
-    public void advanceFrame() {
+    public void advance() {
         invalid = true;
         this.frameStart = this.frameEnd;
         stream.setPositionTo(this.frameEnd);
     }
 
     @Override
-    public void resetFrame() {
+    public void reset() {
         invalid = true;
         this.frameEnd = this.frameStart;
         stream.setPositionTo(this.frameStart);

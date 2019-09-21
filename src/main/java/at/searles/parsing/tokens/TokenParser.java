@@ -1,29 +1,31 @@
 package at.searles.parsing.tokens;
 
-import at.searles.lexer.Token;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class TokenParser<A> implements Parser<A> {
 
-    private final Token token;
+    private final int tokenId;
+    private final Tokenizer tokenizer;
     private final Mapping<CharSequence, A> mapping;
     private final boolean exclusive;
 
-    public TokenParser(Token token, Mapping<CharSequence, A> mapping, boolean exclusive) {
-        this.token = token;
+    public TokenParser(int tokenId, Tokenizer tokenizer, boolean exclusive, Mapping<CharSequence, A> mapping) {
+        this.tokenId = tokenId;
+        this.tokenizer = tokenizer;
         this.mapping = mapping;
         this.exclusive = exclusive;
     }
 
     @Override
     public boolean recognize(ParserStream stream) {
-        return stream.parseToken(token, exclusive) != null;
+        return stream.parseToken(tokenizer, tokenId, exclusive) != null;
     }
 
     @Override
     public A parse(ParserStream stream) {
-        CharSequence seq = stream.parseToken(token, exclusive);
+        CharSequence seq = stream.parseToken(tokenizer, tokenId, exclusive);
 
         if (seq == null) {
             return null;
@@ -44,6 +46,6 @@ public class TokenParser<A> implements Parser<A> {
     }
 
     public String toString() {
-        return token.toString();
+        return String.format("<%d>", tokenId);
     }
 }

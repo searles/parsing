@@ -3,7 +3,7 @@ package at.searles.grammars;
 import at.searles.buf.BufferedStream;
 import at.searles.buf.FrameStreamImpl;
 import at.searles.buf.ReaderCharStream;
-import at.searles.lexer.TokStream;
+import at.searles.lexer.TokenStream;
 import at.searles.parsing.ParserStream;
 import at.searles.parsing.utils.ast.AstNode;
 import org.junit.Assert;
@@ -136,7 +136,7 @@ public class ParserGeneratorTest {
     private void withFile(String filename) throws FileNotFoundException {
         FileReader fileReader = new FileReader(filename);
 
-        this.stream = new ParserStream(new TokStream(new FrameStreamImpl(new BufferedStream.Impl(new ReaderCharStream(fileReader), 1024 * 1024))));
+        this.stream = new ParserStream(new TokenStream(new FrameStreamImpl(new BufferedStream.Impl(new ReaderCharStream(fileReader), 1024 * 1024))));
     }
 
     private void withString(String input) {

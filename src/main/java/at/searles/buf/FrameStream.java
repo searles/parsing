@@ -8,21 +8,22 @@ package at.searles.buf;
 public interface FrameStream extends BufferedStream {
 
     /**
-     * sets the end to the current position position.
+     * sets the end mark to the current position position.
      */
-    void markFrameEnd();
+    void mark();
 
     /**
      * sets the start of the frame to the end of it
-     * (and also the underlying position)
+     * (and also the underlying position). The stream
+     * is then in a reset position
      */
-    void advanceFrame();
+    void advance();
 
     /**
      * Sets the frame end and the position back to the start of the
      * current frame.
      */
-    void resetFrame();
+    void reset();
 
     /**
      * @return The char sequence that represents the current frame.
@@ -30,15 +31,4 @@ public interface FrameStream extends BufferedStream {
      */
     Frame frame();
 
-    interface Frame extends CharSequence {
-        /**
-         * The pointer to the current frame start.
-         */
-        long startPosition();
-
-        /**
-         * The pointer to the current frame start.
-         */
-        long endPosition();
-    }
 }

@@ -1,12 +1,12 @@
 package at.searles.parsing;
 
-import at.searles.buf.FrameStream;
-import at.searles.lexer.TokStream;
-import at.searles.lexer.Token;
+import at.searles.buf.Frame;
+import at.searles.lexer.TokenStream;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.utils.ast.SourceInfo;
 
 public class ParserStream {
-    private final TokStream stream;
+    private final TokenStream stream;
 
     /**
      * Marks the start of the current parsed element.
@@ -19,12 +19,12 @@ public class ParserStream {
     private long parsedEnd;
     private Listener listener;
 
-    public ParserStream(TokStream stream) {
+    public ParserStream(TokenStream stream) {
         this.stream = stream;
         this.parsedStart = this.parsedEnd = stream.offset();
     }
 
-    public TokStream tokStream() {
+    public TokenStream tokStream() {
         return stream;
     }
 
@@ -33,7 +33,7 @@ public class ParserStream {
     }
 
     public static ParserStream fromString(String string) {
-        return new ParserStream(TokStream.fromString(string));
+        return new ParserStream(TokenStream.fromString(string));
     }
 
     public long start() {
@@ -56,15 +56,13 @@ public class ParserStream {
         this.parsedEnd = end;
     }
 
-    public CharSequence parseToken(Token token, boolean exclusive) {
-        FrameStream.Frame frame = token.parseToken(stream, exclusive);
+    public CharSequence parseToken(Tokenizer tokenizer, int tokId, boolean exclusive) {
+        Frame frame = tokenizer.matchToken(stream, tokId, exclusive);
 
-        if (frame == null) {
-            return null;
+        if(frame != null) {
+            setStart(frame.startPosition());
+            setEnd(frame.endPosition());
         }
-
-        setStart(frame.startPosition());
-        setEnd(frame.endPosition());
 
         return frame;
     }

@@ -1,6 +1,7 @@
 package at.searles.parsing;
 
 import at.searles.lexer.Lexer;
+import at.searles.lexer.Tokenizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree;
 import at.searles.parsing.printing.PrinterBacktrackException;
@@ -13,9 +14,9 @@ import org.junit.Test;
 
 public class CombinatorTest {
 
-    private final Lexer lexer = new Lexer();
-    private final Parser<String> chr = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]")), new ToString(), false);
-    private final Recognizer comma = Recognizer.fromString(",", lexer, false);
+    private final Lexer tokenizer = new Lexer();
+    private final Parser<String> chr = Parser.fromRegex(RegexParser.parse("[a-z]"), tokenizer, false, new ToString());
+    private final Recognizer comma = Recognizer.fromString(",", tokenizer, false);
     private final Initializer<String> emptyString = new Initializer<String>() {
         @Override
         public String parse(ParserStream stream) {

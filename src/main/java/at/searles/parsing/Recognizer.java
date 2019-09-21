@@ -6,12 +6,18 @@ import at.searles.parsing.combinators.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.tokens.TokenRecognizer;
 import at.searles.regex.CharSet;
+import at.searles.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 
 public interface Recognizer extends Recognizable {
 
     static Recognizer fromString(String string, Tokenizer tokenizer, boolean exclusive) {
-        return new TokenRecognizer(string, tokenizer, exclusive);
+        int tokenId = tokenizer.add(Regex.text(string));
+        return fromToken(tokenId, tokenizer, exclusive, string);
+    }
+
+    static Recognizer fromToken(int tokenId, Tokenizer tokenizer, boolean exclusive, String string) {
+        return new TokenRecognizer(tokenId, tokenizer, exclusive, string);
     }
 
     /**
@@ -19,7 +25,8 @@ public interface Recognizer extends Recognizable {
      * the stream).
      */
     static Recognizer eof(Tokenizer tokenizer) {
-        return new TokenRecognizer(tokenizer.token(CharSet.chars(-1)), false);
+        int eofId = tokenizer.add(CharSet.chars(-1));
+        return fromToken(eofId, tokenizer, false, "");
     }
 
     @NotNull

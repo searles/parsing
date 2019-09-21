@@ -1,8 +1,9 @@
 package at.searles.parsing.printing.test
 
-import at.searles.buf.FrameStream
-import at.searles.lexer.LexerWithHidden
-import at.searles.lexer.TokStream
+import at.searles.buf.Frame
+import at.searles.lexer.Lexer
+import at.searles.lexer.SkipTokenizer
+import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.printing.*
 import at.searles.parsing.utils.ast.AstNode
@@ -167,8 +168,8 @@ class PrinterTest {
             }
         })
 
-        this.stream.tokStream().setListener(object: TokStream.Listener {
-            override fun tokenConsumed(src: TokStream, tokId: Int, frame: FrameStream.Frame) {
+        this.stream.tokStream().setListener(object: TokenStream.Listener {
+            override fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame) {
                 // skip all white spaces
                 if(tokId == whiteSpaceTokId) {
                     return
@@ -215,12 +216,14 @@ class PrinterTest {
     private lateinit var cstPrinter: CstPrinter
 
     private fun initParser() {
-        val lexer = LexerWithHidden()
+        val lexer = Lexer()
+        val tokenizer = SkipTokenizer(lexer)
 
-        whiteSpaceTokId = lexer.addHiddenToken(RegexParser.parse("[ \n\r\t]+"))
+        whiteSpaceTokId = lexer.add(RegexParser.parse("[ \n\r\t]+"))
+        tokenizer.addSkipped(whiteSpaceTokId)
 
-        val openPar = Recognizer.fromString("(", lexer, false)
-        val closePar = Recognizer.fromString(")", lexer, false)
+        val openPar = Recognizer.fromString("(", tokenizer, false)
+        val closePar = Recognizer.fromString(")", tokenizer, false)
 
         val idMapping = object : Mapping<CharSequence, AstNode> {
             override fun parse(stream: ParserStream, left: CharSequence): AstNode =
@@ -238,8 +241,8 @@ class PrinterTest {
                     if (result is NumNode) result.value.toString() else null
         }
 
-        val id = Parser.fromToken(lexer.token(RegexParser.parse("[a-z]+")), idMapping, false).ref("id")
-        val num = Parser.fromToken(lexer.token(RegexParser.parse("[0-9]+")), numMapping, false).ref("num")
+        val id = Parser.fromToken(lexer.add(RegexParser.parse("[a-z]+")), tokenizer, false, idMapping).ref("id")
+        val num = Parser.fromToken(lexer.add(RegexParser.parse("[0-9]+")), tokenizer, false, numMapping).ref("num")
 
         val expr = Ref<AstNode>("expr")
 
