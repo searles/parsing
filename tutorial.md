@@ -111,22 +111,23 @@ To parse numbers we need
     val lexer = Lexer()
 ~~~
 
-Alternatively, if you want to ignore spaces and tabs:
+If you want to ignore spaces and tabs you can create a `SkipTokenizer`
+that wraps another tokenizer and ignores all tokens in its internal list.
 
 ~~~ kotlin
-    val lexer = LexerWithHidden()
-    lexer.addHiddenToken(RegexParser.parse("[\t ]+"))
+    val lexer = SkipTokenizer(Lexer())
+    val wsTokenId = lexer.add(RegexParser.parse("[\t ]+"))
+    lexer.addSkipped(wsTokenId)
 ~~~
 
-* a token pattern that accepts an integer number.
+* The id of an integer match. In the lexer, all added regexes correspond
+to a unique integer id. This id is used to check whether there is a match.
 
 ~~~ kotlin
-    val numToken = lexer.token(RegexParser.parse("[0-9]+"))
+    val numTokenId = lexer.add(RegexParser.parse("[0-9]+"))
 ~~~
 
 * a mapping that converts a `CharSequence` to a number.
-(the blank argument is the parser stream that can be
-used eg to log the position in the stream)
 
 ~~~ kotlin
     val numMapping = Mapping<CharSequence, Int> { 
@@ -134,20 +135,23 @@ used eg to log the position in the stream)
     }
 ~~~
 
+The blank argument is the parser stream that can be
+used eg to log the position in the stream.
+
 * finally a parser that converts the matched characters to a number.
 
 ~~~ kotlin
-    val num = Parser.fromToken(numToken, numMapping, false)
+    val num = Parser.fromToken(numToken, lexer, false, numMapping)
 ~~~
 
-If the last argument is true, then a token is only accepted if no other
-token in the lexer matches (mixing lexers is allowed). This is useful 
-to avoid that keywords are confused with identifiers. Consider the following
-example:
+The boolean arguments is used to trigger that a match must not match
+any other token in the lexer. This is useful 
+to avoid that keywords are confused with identifiers. 
+Consider the following example:
 
 ~~~ kotlin
     // Example on how to use the exclusive-flag
-    val idToken = lexer.token(RegexParser.parse("[a-z]+"))
+    val idToken = lexer.add(RegexParser.parse("[a-z]+"))
     val ifKeyword = Recognizer.fromString("if", lexer, false)
 ~~~
 
@@ -158,11 +162,22 @@ the parser only parses identifiers that are not matched by
 another token.
 
 ~~~ kotlin
-    val id = Parser.fromToken(idToken, idMapping, true)
+    val id = Parser.fromToken(idToken, lexer, true, idMapping)
 ~~~
 
 In most cases apart from that, the flag can be simply set to
-`false`.
+`false`. 
+
+If you want to implement "soft keywords" like in kotlin where
+variable names like "public" are allowed you can take a look
+at the `ShadowedTokenizer`-class.
+
+If you do not need the token id, you can also create
+a parser directly from a regular expression:
+
+~~~ kotlin
+    val num = Parser.fromRegex(RegexParser.parse("[0-9]+"), lexer, false, numMapping)
+~~~
 
 ## Recognizers, Concatenation and Reducers
 

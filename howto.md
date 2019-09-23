@@ -239,80 +239,16 @@ profession: id ;
 ~~~  
 
 Creating a person can be done using the methods
-`Utils.setter` and `Utils.builder`.
+`Utils.put` and `Utils.create`.
 
-For this purpose, we need a class that contains all required members
-as public members (here it is shown in Java).
-Right after creation all of these member variables
-must be `null`, indicating that they have not been set.
+// TODO
 
-~~~ java
-public class PersonBuilder /* ... */ {
-    public String name = null;
-    public Integer age = null;
-    public String profession = null;
-    
-    // ...
-}
-~~~
+# Soft kewords
 
-In order to use `Utils.builder`, this class must contain
-the default constructor. For inversion, 
-it also must contain a method `boolean isEmpty()` (the inverse
-of the default constructor) that returns true if the object 
-looks like it has been created (ie all members are null).
+// TODO
 
-In order to use `Utils.setter`, the object must furthermore
-contain a method `PersonBuilder copy()` that clones
-the object. This method is needed because 
-every time the object is passed, it must be kept because
-of backtracking.
+# Experimental: Collect all possible parses
 
-The abstract class `GenericStruct<A>` already provides both these methods,
-so in general, simply extend this class. If you need
-deep cloning or a different implementation of `isEmpty`, simply
-implement these two methods. 
- 
-Since an instance of `PersonBuilder` is not a person, we
-also can use the `Utils.build`-method. This method
-calls a method `build` to create the actual person.
-Its inverse is a static method `toBuilder(Person)`:
+This is about ParserAndParser.
 
-~~~ java
-public class PersonBuilder extends GenericStruct<PersonBuilder> {
-    public String name = null;
-    public Integer age = null;
-    public String profession = null;
-
-    public Person build() {
-        return new Person(name, age, profession);
-    }
-    
-    public static PersonBuilder toBuilder(Person person) {
-        PersonBuilder builder = new Builder();
-        builder.name = person.getName();
-        builder.age = person.getAge();
-        builder.profession = person.getProfession();
-        return builder;
-    }
-}
-~~~
-
-This is the final builder-object. The parser itself looks
-as follows:
-
-~~~ kotlin
-val person = Utils.builder(PersonBuilder.class)
-             .then(Utils.setter("name", id)).then(comma)
-             .then(Utils.setter("age", num)).then(comma)
-             .then(Utils.setter("profession", id))
-             .then(Utils.build(PersonBuilder.class));
-~~~ 
-
-The advantage of this method is that the builder-objects
-are really simple to implement, different types
-can be mixed, inversion works out of the box and
-all properties have meaningful names. The
-disadvantage is the heavy use of reflection, thus
-in some cases using a list or a map might be preferable.
-
+// TODO

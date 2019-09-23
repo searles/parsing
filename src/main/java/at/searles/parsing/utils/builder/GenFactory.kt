@@ -1,14 +1,15 @@
+package at.searles.parsing.utils.builder
+
 import at.searles.parsing.ParserStream
 import at.searles.parsing.utils.ast.SourceInfo
+import at.searles.parsing.utils.builder.Properties
 import java.lang.IllegalArgumentException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
-internal class GenericBuilder<T>(private val clazz: Class<T>, private val parameters: Array<String>) {
-    private lateinit var map: Map<String, Any>
-
+public class GenFactory<T>(private val clazz: Class<T>, private val parameters: Array<String>) {
     private val getters: Array<Member>
 
     private var ctor: Constructor<T>? = null
@@ -26,10 +27,12 @@ internal class GenericBuilder<T>(private val clazz: Class<T>, private val parame
             ctor = clazz.getConstructor(SourceInfo::class.java, *types)
         } catch (e: NoSuchMethodException) {
             // now without
-            ctorWithoutInfo = clazz.getConstructor(*types)
-        } catch (e: NoSuchMethodException) {
-            defaultCtor = clazz.getConstructor()
-            setters = Array(parameters.size) { i -> clazz.getMethod(methodAccess("set", parameters[i]), types[i]) }
+            try {
+                ctorWithoutInfo = clazz.getConstructor(*types)
+            } catch (e: NoSuchMethodException) {
+                defaultCtor = clazz.getConstructor()
+                setters = Array(parameters.size) { i -> clazz.getMethod(methodAccess("set", parameters[i]), types[i]) }
+            }
         }
     }
 
@@ -63,70 +66,27 @@ internal class GenericBuilder<T>(private val clazz: Class<T>, private val parame
         }
     }
 
-    /**
-     * Initialize an empty generic builder for the given class.
-     *
-     * emptyMap().then(
-     *  setter<T>("name", name())
-     * ).then(
-     *  GenericBuilder<>(Animal.class, "condition", "thenPart", "elsePart")
-     * )
-     */
-    fun init(): GenericBuilder<T> {
-        map = HashMap()
-        return this
-    }
-
-    fun isEmpty(): Boolean = map.isEmpty()
-
-
-    fun init(obj: T): GenericBuilder<T> { // this could also simply return a map...
-        map = HashMap<String, Any>().also { m ->
+    fun toProperties(obj: T): Properties { // this could also simply return a map...
+        val map = HashMap<String, Any>().also { m ->
             parameters.forEachIndexed { i, parameter ->
                 fetch(obj!!, getters[i])?.let { m.put(parameter, it) }
             }
         }
 
-        return this
+        return Properties(map)
     }
 
-
-    operator fun set(id: String, value: Any?): GenericBuilder<T> {
-        if (value == null) {
-            return this
-        }
-
-        val copy = GenericBuilder(clazz, parameters)
-        copy.map = HashMap(map).also { it[id] = value }
-        return copy
-    }
-
-    fun unset(id: String): GenericBuilder<T>? {
-        if (!map.containsKey(id)) {
-            return null;
-        }
-
-        val copy = GenericBuilder(clazz, parameters)
-        copy.map = HashMap(map).also { it.remove(id) }
-
-        return copy
-    }
-
-    operator fun get(id: String): Any? {
-        return map[id]
-    }
-
-    fun build(stream: ParserStream): T {
+    fun fromProperties(stream: ParserStream, properties: Properties): T {
         if (defaultCtor != null) {
             val pojo = defaultCtor!!.newInstance()
             setters!!.forEachIndexed { index, setter ->
-                map[parameters[index]]?.let { setter.invoke(pojo, map[parameters[index]]) }
+                properties.get<T>(parameters[index])?.let { setter.invoke(pojo, properties[parameters[index]]) }
             }
 
             return pojo
         }
 
-        val arguments: Array<Any?> = Array(parameters.size) { i -> map[parameters[i]] }
+        val arguments: Array<Any?> = Array(parameters.size) { i -> properties.get<T>(parameters[i]) }
 
         return if (ctor != null) {
             ctor!!.newInstance(stream.createSourceInfo(), *arguments)

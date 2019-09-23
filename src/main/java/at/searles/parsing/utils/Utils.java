@@ -114,35 +114,25 @@ public class Utils {
         return itemParser.fold(new PutFold<>(key));
     }
 
-    // === reflection ===
+    // === generic classes ===
 
     /**
      * Creates an empty builder
      */
-    public static <T> Initializer<T> builder(Class<T> cls) {
-        return new BuilderInitializer<>(cls);
+    public static Initializer<Properties> properties() {
+        return new PropertiesInitializer();
     }
 
-    /**
-     * Creates a builder and adds the left item to it.
-     */
-    public static <T, V> Mapping<V, T> builder(Class<T> builder, String property) {
-        return new BuilderSetterUnsafe<>(builder, property);
+    public static <T> Mapping<T, Properties> properties(String id) {
+        return new PropertiesSingleton<>(id);
     }
 
-    public static <T, V> Reducer<T, T> setter(String property, Parser<V> parser, Class<T> builderType, Class<V> parameterType) {
-        return parser.fold(new Setter<>(builderType, property, parameterType));
+    public static <T> Reducer<Properties, Properties> put(String property, Parser<T> parser) {
+        return parser.fold(new PropertyPut<>(property));
     }
 
-    public static <T, V> Reducer<T, T> setter(String property, Parser<V> parser) {
-        return parser.fold(new SetterUnsafe<>(property));
+    public static <T> Mapping<Properties, T> create(Class<T> clazz, String...properties) {
+        return new Creator<>(clazz, properties);
     }
 
-    public static <T, U> Mapping<T, U> build(Class<T> builderType, Class<U> itemType) {
-        return new Build<>(builderType, itemType);
-    }
-
-    public static <T, U> Mapping<T, U> build(Class<T> builderType) {
-        return new BuildUnsafe<>(builderType);
-    }
 }

@@ -1,19 +1,16 @@
 package at.searles.parsing.utils.test;
 
 import at.searles.lexer.Lexer;
-import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;
 import at.searles.regex.RegexParser;
-import at.searles.utils.GenericStruct;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BuilderSetterTest {
-
+public class CreatorPutTest {
     private final Lexer tokenizer = new Lexer();
     private final Parser<Object> id = Parser.fromRegex(RegexParser.parse("[a-z]+"),
             tokenizer, false,
@@ -29,44 +26,18 @@ public class BuilderSetterTest {
                     return result instanceof String ? result.toString() : null;
                 }
             });
-    final Parser<Object> parser =
-            id.then(
-                    Reducer.opt(
-                            Recognizer.fromString("+", tokenizer, false)
-                                    .then(Utils.builder(Builder.class, "a"))
-                                    .then(Utils.build(Builder.class))
-                    ));
+    final Parser<Item> parser =
+            id
+            .then(Utils.properties("a"))
+            .then(Utils.create(Item.class, "a")
+            );
+
     private ParserStream input;
-    private Object item; // using object to test inheritance
+    private Item item; // using object to test inheritance
     private String output;
 
     @Test
-    public void testNoOpt() {
-        withInput("k");
-        actParse();
-
-        Assert.assertTrue(item instanceof String);
-    }
-
-    @Test
-    public void testOpt() {
-        withInput("k+");
-        actParse();
-
-        Assert.assertTrue(item instanceof Item);
-    }
-
-    @Test
-    public void testOptPrint() {
-        withInput("k+");
-        actParse();
-        actPrint();
-
-        Assert.assertEquals("k+", output);
-    }
-
-    @Test
-    public void testNoOptPrint() {
+    public void testPrint() {
         withInput("k");
         actParse();
         actPrint();
@@ -89,26 +60,10 @@ public class BuilderSetterTest {
     }
 
     public static class Item {
-        public final String a;
+        private final String a;
 
         public Item(String a) {
             this.a = a;
-        }
-    }
-
-    public static class Builder extends GenericStruct<Builder> {
-        public String a;
-
-        public static Builder toBuilder(Item item) {
-            Builder builder = new Builder();
-
-            builder.a = item.a;
-
-            return builder;
-        }
-
-        public Item build(ParserStream stream) {
-            return new Item(a);
         }
     }
 }
