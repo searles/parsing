@@ -9,7 +9,7 @@ public class Creator<T> implements Mapping<Properties, T> {
 
     private final GenFactory<T> factory;
 
-    public Creator(Class<T> clazz, String...properties) {
+    public Creator(Class<? extends T> clazz, String...properties) {
         this.factory = new GenFactory<>(clazz, properties);
     }
 

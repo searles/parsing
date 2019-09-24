@@ -1,7 +1,6 @@
 package at.searles.parsing.utils.test;
 
 import at.searles.lexer.Lexer;
-import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.utils.Utils;

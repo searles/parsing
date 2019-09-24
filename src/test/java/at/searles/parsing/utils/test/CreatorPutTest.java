@@ -26,18 +26,44 @@ public class CreatorPutTest {
                     return result instanceof String ? result.toString() : null;
                 }
             });
-    final Parser<Item> parser =
-            id
-            .then(Utils.properties("a"))
-            .then(Utils.create(Item.class, "a")
-            );
-
+    final Parser<Object> parser =
+            id.then(
+                    Reducer.opt(
+                            Recognizer.fromString("+", tokenizer, false)
+                                    .then(Utils.properties("a"))
+                                    .then(Utils.create(Item.class, "a"))
+                    ));
     private ParserStream input;
-    private Item item; // using object to test inheritance
+    private Object item; // using object to test inheritance
     private String output;
 
     @Test
-    public void testPrint() {
+    public void testNoOpt() {
+        withInput("k");
+        actParse();
+
+        Assert.assertTrue(item instanceof String);
+    }
+
+    @Test
+    public void testOpt() {
+        withInput("k+");
+        actParse();
+
+        Assert.assertTrue(item instanceof Item);
+    }
+
+    @Test
+    public void testOptPrint() {
+        withInput("k+");
+        actParse();
+        actPrint();
+
+        Assert.assertEquals("k+", output);
+    }
+
+    @Test
+    public void testNoOptPrint() {
         withInput("k");
         actParse();
         actPrint();

@@ -2,19 +2,18 @@ package at.searles.parsing.utils.builder
 
 import at.searles.parsing.ParserStream
 import at.searles.parsing.utils.ast.SourceInfo
-import at.searles.parsing.utils.builder.Properties
 import java.lang.IllegalArgumentException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Member
 import java.lang.reflect.Method
 
-public class GenFactory<T>(private val clazz: Class<T>, private val parameters: Array<String>) {
+class GenFactory<T>(private val clazz: Class<*>, private val parameters: Array<String>) {
     private val getters: Array<Member>
 
-    private var ctor: Constructor<T>? = null
-    private var ctorWithoutInfo: Constructor<T>? = null
-    private var defaultCtor: Constructor<T>? = null
+    private var ctor: Constructor<*>? = null
+    private var ctorWithoutInfo: Constructor<*>? = null
+    private var defaultCtor: Constructor<*>? = null
     private var setters: Array<Method>? = null
 
     init {
@@ -66,7 +65,11 @@ public class GenFactory<T>(private val clazz: Class<T>, private val parameters: 
         }
     }
 
-    fun toProperties(obj: T): Properties { // this could also simply return a map...
+    fun toProperties(obj: T): Properties? { // this could also simply return a map...
+        if(!clazz.isInstance(obj)) {
+            return null
+        }
+
         val map = HashMap<String, Any>().also { m ->
             parameters.forEachIndexed { i, parameter ->
                 fetch(obj!!, getters[i])?.let { m.put(parameter, it) }
@@ -83,15 +86,18 @@ public class GenFactory<T>(private val clazz: Class<T>, private val parameters: 
                 properties.get<T>(parameters[index])?.let { setter.invoke(pojo, properties[parameters[index]]) }
             }
 
-            return pojo
+            @Suppress("UNCHECKED_CAST")
+            return pojo as T
         }
 
         val arguments: Array<Any?> = Array(parameters.size) { i -> properties.get<T>(parameters[i]) }
 
         return if (ctor != null) {
-            ctor!!.newInstance(stream.createSourceInfo(), *arguments)
+            @Suppress("UNCHECKED_CAST")
+            ctor!!.newInstance(stream.createSourceInfo(), *arguments) as T
         } else {
-            ctorWithoutInfo!!.newInstance(*arguments)
+            @Suppress("UNCHECKED_CAST")
+            ctorWithoutInfo!!.newInstance(*arguments) as T
         }
     }
 }

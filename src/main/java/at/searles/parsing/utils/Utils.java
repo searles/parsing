@@ -131,7 +131,7 @@ public class Utils {
         return parser.fold(new PropertyPut<>(property));
     }
 
-    public static <T> Mapping<Properties, T> create(Class<T> clazz, String...properties) {
+    public static <T> Mapping<Properties, T> create(Class<? extends T> clazz, String...properties) {
         return new Creator<>(clazz, properties);
     }
 
