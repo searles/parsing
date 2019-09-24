@@ -72,7 +72,7 @@ by `rep` will be consumed, for both, `parse` and `print`. For this reason, print
 the result of `a.then(Reducer.rep(a))` where `a` is a `Reducer` will always fail.
 The JoinReducer-class (created by `join`) or PlusReducer-class (`plus`) can be helpful 
 to overcome this problem. 
-* The properties of thr 'then' and 'or'-combinator 
+* The properties of the 'then' and 'or'-combinator 
 can be further modified using flags.
 
 ## Parser Functions
@@ -120,7 +120,7 @@ that wraps another tokenizer and ignores all tokens in its internal list.
     lexer.addSkipped(wsTokenId)
 ~~~
 
-* The id of an integer match. In the lexer, all added regexes correspond
+* The token id of an integer match. In the lexer, all added regexes correspond
 to a unique integer id. This id is used to check whether there is a match.
 
 ~~~ kotlin
@@ -146,39 +146,8 @@ used eg to log the position in the stream.
 
 The boolean arguments is used to trigger that a match must not match
 any other token in the lexer. This is useful 
-to avoid that keywords are confused with identifiers. 
-Consider the following example:
-
-~~~ kotlin
-    // Example on how to use the exclusive-flag
-    val idToken = lexer.add(RegexParser.parse("[a-z]+"))
-    val ifKeyword = Recognizer.fromString("if", lexer, false)
-~~~
-
-The string `if` matches both patterns, `"if"` and `[a-z]+`. Thus,
-a parser that parses `if` might consider it being an identifier.
-Yet, by setting the exclusive-flag to true, it is ensured, that
-the parser only parses identifiers that are not matched by
-another token.
-
-~~~ kotlin
-    val id = Parser.fromToken(idToken, lexer, true, idMapping)
-~~~
-
-In most cases apart from that, the flag can be simply set to
-`false`. 
-
-If you want to implement "soft keywords" like in kotlin where
-variable names like "public" are allowed you can take a look
-at the `ShadowedTokenizer`-class.
-
-If you do not need the token id, you can also create
-a parser directly from a regular expression:
-
-~~~ kotlin
-    val num = Parser.fromRegex(RegexParser.parse("[0-9]+"), lexer, false, numMapping)
-~~~
-
+to avoid that keywords are confused with identifiers.
+ 
 ## Recognizers, Concatenation and Reducers
 
 Next, let's parse expressions like `1 + 2` using the following rule: 

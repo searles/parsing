@@ -3,6 +3,109 @@
 This document will contain some tasks and show their solutions. They
 can be sometimes a bit tricky. It will be extended on demand.
 
+## Using multiple lexers
+
+Lexers/Tokenizers can be mixed.
+
+// TODO
+
+## The exclusive-flag
+
+Token parsers and token recognizers take a boolean flag called `exclusive`.
+This flag triggers whether tokens are allowed to overlap (ie a keyword
+in most cases also matches the identifier-regex) or not. There
+is no "first-defined-first-match" policy.
+
+Consider the following example:
+
+~~~ kotlin
+    // Example on how to use the exclusive-flag
+    val idToken = lexer.add(RegexParser.parse("[a-z]+"))
+    val ifKeyword = Recognizer.fromString("if", lexer, false)
+~~~
+
+The string `if` matches both patterns, `"if"` and `[a-z]+`. Thus,
+a parser that parses `if` might consider it being an identifier.
+Yet, by setting the exclusive-flag to true, it is ensured, that
+the parser only parses identifiers that are not matched by
+another token.
+
+~~~ kotlin
+    val id = Parser.fromToken(idToken, lexer, true, idMapping)
+~~~
+
+In most cases apart from that, the flag can be simply set to
+`false`. 
+
+If you do not need the token id, you can also create
+a parser directly from a regular expression:
+
+~~~ kotlin
+    val num = Parser.fromRegex(RegexParser.parse("[0-9]+"), lexer, false, numMapping)
+~~~
+
+If you want to implement "soft keywords" like in kotlin where
+variable names like "public" are allowed you can take a look
+at the `ShadowedTokenizer`-class.
+
+### Soft keywords
+
+I have only recently learned that kotlin and scala allow keywords
+like `public` as variable names while other "hard keywords"
+like `if` are not. This project uses a binary approach - matches
+can be exclusive or not. If `public` is defined 
+for a lexer and an identifier "id" is also defined as an exclusive
+token, then `public` would not match such an `idParser`.
+
+~~~ kotlin
+    // Example on how to use the exclusive-flag
+    val publicId = lexer.add("public")
+    val publicRecognizer = Recognizer.fromToken(publicId, lexer, false)
+
+    val ifId = lexer.add("if")
+    val ifRecognizer = Recognizer.fromToken(ifId, lexer, false)
+    
+    val idToken = lexer.add(RegexParser.parse("[a-z]+"))
+    val idParser = Parser.fromToken(idToken, lexer, true, someMapping)
+    
+    // "public" would not match idParser.
+~~~
+
+There would be two obvious solutions:
+
+* making `idToken` non-exclusive
+    * Drawback: The `if`-keyword then would also match
+* using two or more lexers
+    * Drawback: If different soft keywords are allowed in different contexts, 
+    things get messy soon.
+
+None of them is satisfying. Therefore, there is the `ShadowedTokenizer`
+with which token matches can be deactivated. In the example above
+we can create a tokenizer based on the same lexer in which we hide
+the public keyword.
+
+~~~ kotlin
+    // Example on how to use the exclusive-flag
+    val publicId = lexer.add("public")
+    
+    // ...
+    val noPublicTokenizer = ShadowedTokenizer(lexer).also { it.addShadowed(publicId) }
+
+    val idParser = Parser.fromToken(idToken, lexer, true, someMapping)
+    val idPublicAllowedParser = Parser.fromToken(idToken, noPublicTokenizer, true, someMapping)
+~~~
+
+Now, `public` still does not match `idParser`, but it matches `idPublicAllowedParser`
+so that where ever we use the latter parser, also `public` is a legal identifier. 
+This check is only used if the exclusive-flag is `true`, thus
+a recognizer that uses `noPublicTokenizer` to match the `public`-keyword
+is perfectly fine.
+
+~~~ kotlin
+    // this will match the public keyword because the exclusive flag is false.
+    val publicRecognizer = Recognizer.fromToken(publicId, noPublicTokenizer, false)
+~~~
+
 ## Source Formatting
 
 Creating an AST and printing it just for the sake of
@@ -240,10 +343,6 @@ profession: id ;
 
 Creating a person can be done using the methods
 `Utils.put` and `Utils.create`.
-
-// TODO
-
-# Soft kewords
 
 // TODO
 
