@@ -18,11 +18,6 @@ public class ReducerOpt<T> implements Reducer<T, T>, Recognizable.Opt {
     }
 
     @Override
-    public boolean recognize(ParserStream stream) {
-        return true;
-    }
-
-    @Override
     public T parse(ParserStream stream, @NotNull T left) {
         long preStart = stream.start();
 

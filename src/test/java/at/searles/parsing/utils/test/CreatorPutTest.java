@@ -27,8 +27,7 @@ public class CreatorPutTest {
                 }
             });
     final Parser<Object> parser =
-            id.then(
-                    Reducer.opt(
+            id.then(Reducer.opt(
                             Recognizer.fromString("+", tokenizer, false)
                                     .then(Utils.properties("a"))
                                     .then(Utils.create(Item.class, "a"))
