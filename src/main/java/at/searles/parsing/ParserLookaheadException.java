@@ -7,8 +7,8 @@ public class ParserLookaheadException extends RuntimeException {
 
     private final long beforeStart;
     private final long beforeEnd;
-    private long nextTokenStart;
-    private long nextTokenEnd;
+    private final long failedTokenStart;
+    private final long failedTokenEnd;
 
     public ParserLookaheadException(Recognizable.Then failedParser, ParserStream stream) {
         this.source = stream;
@@ -16,17 +16,8 @@ public class ParserLookaheadException extends RuntimeException {
         this.beforeStart = stream.start();
         this.beforeEnd = stream.end();
 
-        this.nextTokenStart = stream.tokStream().offset();
-        this.nextTokenEnd = stream.tokStream().frame().endPosition();
-
-        if(nextTokenStart < beforeEnd) {
-            // this would surprise me...
-            nextTokenStart = beforeEnd;
-        }
-
-        if(nextTokenEnd <= nextTokenStart) {
-            nextTokenEnd = nextTokenStart + 1;
-        }
+        this.failedTokenStart = stream.tokStream().frame().startPosition();
+        this.failedTokenEnd = stream.tokStream().frame().endPosition();
 
         this.failedParser = failedParser;
     }
@@ -47,15 +38,15 @@ public class ParserLookaheadException extends RuntimeException {
         return beforeEnd;
     }
 
-    public long getNextTokenStart() {
-        return nextTokenStart;
+    public long getFailedTokenStart() {
+        return failedTokenStart;
     }
 
-    public long getNextTokenEnd() {
-        return nextTokenEnd;
+    public long getFailedTokenEnd() {
+        return failedTokenEnd;
     }
 
     public String toString() {
-        return String.format("%s expected after %s at %d-%d", failedParser.right(), failedParser.left(), getNextTokenStart(), getNextTokenEnd());
+        return String.format("%s expected after %s at %d-%d", failedParser.right(), failedParser.left(), getFailedTokenStart(), getFailedTokenEnd());
     }
 }
