@@ -30,7 +30,7 @@ public interface Parser<T> extends Recognizable {
      * to obtain the position of the token).
      */
     static <T> Parser<T> fromToken(int tokenId, Tokenizer tokenizer, boolean exclusive, Mapping<CharSequence, T> mapping) {
-        return new TokenParser<>(tokenId, tokenizer, exclusive, mapping);
+        return new TokenParser(tokenId, tokenizer, exclusive).then(mapping);
     }
 
     /**
