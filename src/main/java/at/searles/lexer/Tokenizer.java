@@ -30,4 +30,6 @@ public interface Tokenizer {
     }
 
     int add(Regex regex);
+
+    Lexer lexer();
 }

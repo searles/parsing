@@ -34,14 +34,14 @@ public class Lexer implements Tokenizer {
      * are used, they should share a counter to avoid
      * collisions of IDs.
      */
-    private Counter tokIdOffset;
+    private Counter tokenIdProvider;
 
-    public Lexer(Counter tokIdOffset) {
-        if(tokIdOffset.get() <= RESERVATION) {
+    public Lexer(Counter tokenIdProvider) {
+        if(tokenIdProvider.get() <= RESERVATION) {
             throw new IllegalArgumentException("Bad token id offset");
         }
 
-        this.tokIdOffset = tokIdOffset;
+        this.tokenIdProvider = tokenIdProvider;
 
         this.fsa = new FSA(this.fsaNodeCounter, false); // accept nothing.
     }
@@ -51,12 +51,21 @@ public class Lexer implements Tokenizer {
     }
 
     @Override
+    public Lexer lexer() {
+        return this;
+    }
+
+    public Counter getTokenIdProvider() {
+        return tokenIdProvider;
+    }
+
+    @Override
     public IntSet currentTokenIds(TokenStream stream) {
         return stream.current(this);
     }
 
     public Counter getTokenIdOffset() {
-        return tokIdOffset;
+        return tokenIdProvider;
     }
 
     private FSA regexToFsa(Regex regex) {
@@ -122,7 +131,7 @@ public class Lexer implements Tokenizer {
 
         if (inside.size() == 1) {
             // we need a new token.
-            int tokId = tokIdOffset.incr();
+            int tokId = tokenIdProvider.incr();
             for (FSA.Node n : reservedNodes) {
                 n.acceptors.add(tokId);
                 n.acceptors.remove(RESERVATION);

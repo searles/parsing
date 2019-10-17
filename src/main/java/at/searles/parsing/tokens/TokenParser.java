@@ -6,9 +6,9 @@ import at.searles.parsing.printing.ConcreteSyntaxTree;
 
 public class TokenParser implements Parser<CharSequence> {
 
-    private final int tokenId;
-    private final Tokenizer tokenizer;
-    private final boolean exclusive;
+    public final int tokenId;
+    public final Tokenizer tokenizer;
+    public final boolean exclusive;
 
     public TokenParser(int tokenId, Tokenizer tokenizer, boolean exclusive) {
         this.tokenId = tokenId;

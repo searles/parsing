@@ -8,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class TokenRecognizer implements Recognizer {
 
-    private final boolean exclusive;
-    private final String printed;
-    private final int tokId;
+    public final boolean exclusive;
+    public final String printed;
+    public final int tokId;
     private final Tokenizer tokenizer;
 
     public TokenRecognizer(int tokId, Tokenizer tokenizer, boolean exclusive, String printed) {

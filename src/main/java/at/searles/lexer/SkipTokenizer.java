@@ -13,6 +13,10 @@ public class SkipTokenizer implements Tokenizer {
         this.skippedTokenIds = new IntSet();
     }
 
+    public Lexer lexer() {
+        return parent.lexer();
+    }
+
     public void addSkipped(int tokId) {
         skippedTokenIds.add(tokId);
     }

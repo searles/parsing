@@ -53,4 +53,9 @@ public class ShadowedTokenizer implements Tokenizer {
     public int add(Regex regex) {
         return parent.add(regex);
     }
+
+    @Override
+    public Lexer lexer() {
+        return parent.lexer();
+    }
 }
