@@ -1,11 +1,11 @@
 package at.searles.regex;
 
-class Alt implements Regex {
+class Union implements Regex {
 
     private final Regex l;
     private final Regex r;
 
-    Alt(Regex l, Regex r) {
+    Union(Regex l, Regex r) {
         this.l = l;
         this.r = r;
     }

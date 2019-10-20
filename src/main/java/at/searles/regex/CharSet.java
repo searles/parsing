@@ -49,20 +49,6 @@ public class CharSet implements Regex, Iterable<Interval> {
         return new CharSet(set);
     }
 
-    /**
-     * deprecated because it is not used.
-     */
-    @Deprecated
-    public static CharSet fromIntervals(Iterable<Interval> intervals) {
-        CharSet set = empty();
-
-        for (Interval i : intervals) {
-            set.set.add(i.start, i.end, null, (a, b) -> null);
-        }
-
-        return set;
-    }
-
     public static CharSet empty() {
         return new CharSet();
     }
@@ -136,6 +122,10 @@ public class CharSet implements Regex, Iterable<Interval> {
         return String.format("CharSet(%s)", set.toString());
     }
 
+    public boolean contains(int ch) {
+        return set.contains(ch);
+    }
+
     @NotNull
     @Override
     public Iterator<Interval> iterator() {
@@ -155,5 +145,4 @@ public class CharSet implements Regex, Iterable<Interval> {
             }
         };
     }
-
 }

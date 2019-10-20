@@ -1,5 +1,6 @@
 package at.searles.regex;
 
+@Deprecated
 public class RegexParser {
 
     public static final int NOT_FULLY_PARSED = 1;

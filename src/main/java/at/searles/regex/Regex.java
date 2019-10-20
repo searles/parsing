@@ -23,7 +23,7 @@ public interface Regex {
 
     // A | B
     default Regex or(Regex that) {
-        return new Alt(this, that);
+        return new Union(this, that);
     }
 
     // A?
