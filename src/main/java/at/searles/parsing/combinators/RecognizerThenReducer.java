@@ -18,9 +18,9 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
 
     @Override
     public U parse(ParserStream stream, @NotNull T left) {
-        long offset = stream.offset();
-        long preStart = stream.start();
-        long preEnd = stream.end();
+        long offset = stream.getOffset();
+        long preStart = stream.getStart();
+        long preEnd = stream.getEnd();
 
         if (!parent.recognize(stream)) {
             return null;
@@ -31,20 +31,23 @@ public class RecognizerThenReducer<T, U> implements Reducer<T, U>, Recognizable.
         U u = reducer.parse(stream, left);
 
         if (u == null) {
-            throwIfNoBacktrack(stream);
-            stream.setOffset(offset);
+            if(stream.getOffset() != offset) {
+                throwIfNoBacktrack(stream);
+                stream.backtrackToOffset(offset);
+            }
+
             stream.setEnd(preEnd);
             return null;
         }
 
-        assert preStart == stream.start();
+        assert preStart == stream.getStart();
 
         return u;
     }
 
     @Override
     public boolean recognize(ParserStream stream) {
-        long preStart = stream.start();
+        long preStart = stream.getStart();
 
         boolean status = Recognizable.Then.super.recognize(stream);
 

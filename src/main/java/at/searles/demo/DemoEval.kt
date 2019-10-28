@@ -93,5 +93,5 @@ fun main() {
     // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 
     println("Result = ${sum.parse(stream)}")
-    println("Position in stream: ${stream.end()}")
+    println("Position in stream: ${stream.getEnd()}")
 }

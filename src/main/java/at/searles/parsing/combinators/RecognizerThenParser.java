@@ -16,22 +16,25 @@ public class RecognizerThenParser<T> implements Parser<T>, Recognizable.Then {
 
     @Override
     public T parse(ParserStream stream) {
-        long offset = stream.offset();
+        long offset = stream.getOffset();
 
-        long preStart = stream.start();
-        long preEnd = stream.end();
+        long preStart = stream.getStart();
+        long preEnd = stream.getEnd();
 
         if (!parent.recognize(stream)) {
             return null;
         }
 
-        long start = stream.start();
+        long start = stream.getStart();
 
         T t = parser.parse(stream);
 
         if (t == null) {
-            throwIfNoBacktrack(stream);
-            stream.setOffset(offset);
+            if(stream.getOffset() != offset) {
+                throwIfNoBacktrack(stream);
+                stream.backtrackToOffset(offset);
+            }
+
             stream.setStart(preStart);
             stream.setEnd(preEnd);
             return null;

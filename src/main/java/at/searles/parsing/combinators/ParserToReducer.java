@@ -20,7 +20,7 @@ public class ParserToReducer<T, U, V> implements Reducer<T, V> {
 
     public V parse(ParserStream stream, @NotNull T left) {
         // must preserve start position.
-        long leftStart = stream.start();
+        long leftStart = stream.getStart();
 
         U right = parent.parse(stream);
 

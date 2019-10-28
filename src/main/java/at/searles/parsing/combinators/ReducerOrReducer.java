@@ -18,8 +18,8 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
 
     @Override
     public U parse(ParserStream stream, @NotNull T left) {
-        long start = stream.start();
-        long end = stream.end();
+        long start = stream.getStart();
+        long end = stream.getEnd();
 
         U ret = r1.parse(stream, left);
 
@@ -27,7 +27,7 @@ public class ReducerOrReducer<T, U> implements Reducer<T, U>, Recognizable.Or {
             return ret;
         }
 
-        assert (stream.start() == start && stream.end() == end);
+        assert (stream.getStart() == start && stream.getEnd() == end);
 
         return r2.parse(stream, left);
     }

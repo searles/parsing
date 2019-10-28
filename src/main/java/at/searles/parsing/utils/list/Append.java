@@ -2,7 +2,6 @@ package at.searles.parsing.utils.list;
 
 import at.searles.parsing.Fold;
 import at.searles.parsing.ParserStream;
-import at.searles.parsing.utils.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by searles on 31.03.19.
+ * Mapping to create a map with only one element + its inverse
  */
 public class SingleMap<K, V> implements Mapping<V, Map<K, V>> {
 

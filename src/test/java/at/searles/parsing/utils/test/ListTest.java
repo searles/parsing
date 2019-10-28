@@ -3,7 +3,7 @@ package at.searles.parsing.utils.test;
 import at.searles.lexer.Lexer;
 import at.searles.parsing.*;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
-import at.searles.parsing.utils.ImmutableList;
+import at.searles.parsing.utils.list.ImmutableList;
 import at.searles.parsing.utils.Utils;
 import at.searles.regex.RegexParser;
 import org.jetbrains.annotations.NotNull;

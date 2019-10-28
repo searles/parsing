@@ -24,16 +24,16 @@ public class ParserAndParser<T> implements Parser<T> {
 
     @Override
     public T parse(ParserStream stream) {
-        long preStart = stream.start();
-        long preEnd = stream.end();
+        long preStart = stream.getStart();
+        long preEnd = stream.getEnd();
 
         T ret1 = p1.parse(stream);
 
-        long ret1Start = stream.start();
-        long ret1End = stream.end();
+        long ret1Start = stream.getStart();
+        long ret1End = stream.getEnd();
 
         if(ret1 != null) {
-            stream.setOffset(preEnd);
+            stream.backtrackToOffset(preEnd);
 
             stream.setStart(preStart);
             stream.setEnd(preEnd);
@@ -42,7 +42,7 @@ public class ParserAndParser<T> implements Parser<T> {
         T ret2 = p2.parse(stream);
 
         if(ret1 != null && ret2 != null) {
-            if(ret1End != stream.end()) {
+            if(ret1End != stream.getEnd()) {
                 throw new IllegalStateException("Both parsers were successful but ended at different positions");
             }
 
@@ -51,7 +51,7 @@ public class ParserAndParser<T> implements Parser<T> {
 
         if(ret1 != null) {
             // restore state of ret1
-            stream.setOffset(ret1End);
+            stream.backtrackToOffset(ret1End);
 
             stream.setStart(ret1Start);
             stream.setEnd(ret1End);

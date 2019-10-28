@@ -30,7 +30,7 @@ class Properties : Iterable<String> {
 
     fun diff(id: String): Properties? {
         if (!map.containsKey(id)) {
-            return null;
+            return null
         }
 
         return Properties().also {

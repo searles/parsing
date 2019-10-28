@@ -8,9 +8,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class PropertiesInitializer implements Initializer<Properties> {
+
+    private static class Holder {
+        static Properties instance = new Properties();
+    }
+
     @Override
     public Properties parse(ParserStream stream) {
-        return new Properties();
+        return Holder.instance;
     }
 
     @Override

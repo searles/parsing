@@ -20,13 +20,13 @@ public class ReducerRep<T> implements Reducer<T, T>, Recognizable.Rep {
 
     @Override
     public T parse(ParserStream stream, @NotNull T left) {
-        long preStart = stream.start();
+        long preStart = stream.getStart();
 
         while (true) {
             T t = parent.parse(stream, left);
 
             // Contract of Reducer
-            assert stream.start() == preStart;
+            assert stream.getStart() == preStart;
 
             if (t == null) break;
 

@@ -31,11 +31,11 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
 
     @Override
     public T parse(ParserStream stream) {
-        long offset = stream.offset();
+        long offset = stream.getOffset();
 
         // to restore if backtracking
-        long preStart = stream.start();
-        long preEnd = stream.end();
+        long preStart = stream.getStart();
+        long preEnd = stream.getEnd();
 
         T result = left.parse(stream);
 
@@ -44,11 +44,15 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
         }
 
         // The start position of left.
-        long start = stream.start();
+        long start = stream.getStart();
 
         if (!right.recognize(stream)) {
-            throwIfNoBacktrack(stream);
-            stream.setOffset(offset);
+            if(stream.getOffset() != offset) {
+                // FIXME test
+                throwIfNoBacktrack(stream);
+                stream.backtrackToOffset(offset);
+            }
+
             stream.setStart(preStart);
             stream.setEnd(preEnd);
             return null;

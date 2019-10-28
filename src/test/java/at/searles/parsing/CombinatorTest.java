@@ -69,7 +69,7 @@ public class CombinatorTest {
         withInput("");
         actParse();
 
-        Assert.assertTrue(error);
+        Assert.assertFalse(error);
         Assert.assertNull(parseResult);
     }
 

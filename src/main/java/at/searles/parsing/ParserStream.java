@@ -36,11 +36,11 @@ public class ParserStream {
         return new ParserStream(TokenStream.fromString(string));
     }
 
-    public long start() {
+    public long getStart() {
         return this.parsedStart;
     }
 
-    public long end() {
+    public long getEnd() {
         return this.parsedEnd;
     }
 
@@ -75,14 +75,14 @@ public class ParserStream {
      *
      * @param offset The new offset.
      */
-    public void setOffset(long offset) {
+    public void backtrackToOffset(long offset) {
         stream.setPositionTo(offset);
     }
 
     /**
      * Returns the position from which the next token will be consumed
      */
-    public long offset() {
+    public long getOffset() {
         return stream.offset();
     }
 

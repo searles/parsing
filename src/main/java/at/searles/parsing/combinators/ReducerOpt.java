@@ -19,11 +19,11 @@ public class ReducerOpt<T> implements Reducer<T, T>, Recognizable.Opt {
 
     @Override
     public T parse(ParserStream stream, @NotNull T left) {
-        long preStart = stream.start();
+        long preStart = stream.getStart();
 
         T nonOptResult = parent.parse(stream, left);
 
-        assert stream.start() == preStart;
+        assert stream.getStart() == preStart;
 
         return nonOptResult != null ? nonOptResult : left;
     }

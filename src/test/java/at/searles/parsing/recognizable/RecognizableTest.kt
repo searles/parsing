@@ -63,7 +63,7 @@ class RecognizableTest {
 
         Assert.assertEquals(success, success1)
         Assert.assertEquals(success, success2)
-        Assert.assertEquals(stream1.end(), stream2.end())
+        Assert.assertEquals(stream1.getEnd(), stream2.getEnd())
     }
 
     private fun withInput(inputString: String) {

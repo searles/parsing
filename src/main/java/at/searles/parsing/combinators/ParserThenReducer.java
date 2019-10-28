@@ -25,11 +25,11 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
 
     @Override
     public U parse(ParserStream stream) {
-        long offset = stream.offset();
+        long offset = stream.getOffset();
 
         // to restore if backtracking
-        long preStart = stream.start();
-        long preEnd = stream.end();
+        long preStart = stream.getStart();
+        long preEnd = stream.getEnd();
 
         T t = parent.parse(stream);
 
@@ -41,8 +41,13 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
         U u = reducer.parse(stream, t);
 
         if (u == null) {
-            throwIfNoBacktrack(stream);
-            stream.setOffset(offset);
+            if(offset != stream.getOffset()) {
+                // FIXME allow reducer if it is a mapping
+                // FIXME check this via
+                throwIfNoBacktrack(stream);
+                stream.backtrackToOffset(offset);
+            }
+
             stream.setStart(preStart);
             stream.setEnd(preEnd);
 

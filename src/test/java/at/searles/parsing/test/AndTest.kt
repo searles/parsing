@@ -34,7 +34,7 @@ class AndTest {
         val result = combination.parse(stream)
 
         Assert.assertEquals(37, result)
-        Assert.assertEquals(0, stream.start())
-        Assert.assertEquals(3, stream.end())
+        Assert.assertEquals(0, stream.getStart())
+        Assert.assertEquals(3, stream.getEnd())
     }
 }

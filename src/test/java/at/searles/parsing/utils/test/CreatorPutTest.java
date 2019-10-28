@@ -90,5 +90,9 @@ public class CreatorPutTest {
         public Item(String a) {
             this.a = a;
         }
+
+        public String getA() {
+            return a;
+        }
     }
 }

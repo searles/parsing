@@ -14,21 +14,24 @@ public interface Recognizable {
 
         @Override
         default boolean recognize(ParserStream stream) {
-            long offset = stream.offset();
+            long offset = stream.getOffset();
 
-            long preStart = stream.start();
-            long preEnd = stream.end();
+            long preStart = stream.getStart();
+            long preEnd = stream.getEnd();
 
             if (!left().recognize(stream)) {
                 return false;
             }
 
-            long start = stream.start();
+            long start = stream.getStart();
 
             if (!right().recognize(stream)) {
-                throwIfNoBacktrack(stream);
+                if(stream.getOffset() != offset) {
+                    // FIXME test
+                    throwIfNoBacktrack(stream);
+                    stream.backtrackToOffset(offset);
+                }
 
-                stream.setOffset(offset);
                 stream.setStart(preStart);
                 stream.setEnd(preEnd);
                 return false;
@@ -89,7 +92,7 @@ public interface Recognizable {
 
         @Override
         default boolean recognize(ParserStream stream) {
-            stream.setStart(stream.end());
+            stream.setStart(stream.getEnd());
             parent().recognize(stream);
 
             return true;
@@ -111,7 +114,7 @@ public interface Recognizable {
 
         @Override
         default boolean recognize(ParserStream stream) {
-            long start = stream.start();
+            long start = stream.getStart();
 
             while (parent().recognize(stream)) {
                 // do nothing. Everything is done in 'recognize'

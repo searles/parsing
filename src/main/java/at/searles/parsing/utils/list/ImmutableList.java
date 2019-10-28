@@ -1,4 +1,4 @@
-package at.searles.parsing.utils;
+package at.searles.parsing.utils.list;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -70,4 +70,5 @@ public class ImmutableList<E> extends AbstractList<E> {
     public int size() {
         return size;
     }
+
 }

@@ -13,8 +13,8 @@ public class ParserLookaheadException extends RuntimeException {
     public ParserLookaheadException(Recognizable.Then failedParser, ParserStream stream) {
         this.source = stream;
 
-        this.beforeStart = stream.start();
-        this.beforeEnd = stream.end();
+        this.beforeStart = stream.getStart();
+        this.beforeEnd = stream.getEnd();
 
         this.failedTokenStart = stream.tokStream().frame().startPosition();
         this.failedTokenEnd = stream.tokStream().frame().endPosition();
