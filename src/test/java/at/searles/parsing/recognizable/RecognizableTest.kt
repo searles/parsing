@@ -2,11 +2,7 @@ package at.searles.parsing.recognizable
 
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
-import at.searles.parsing.Fold
-import at.searles.parsing.Parser
-import at.searles.parsing.ParserStream
-import at.searles.parsing.Reducer
-import at.searles.parsing.utils.common.ToString
+import at.searles.parsing.*
 import at.searles.regex.RegexParser
 import org.junit.Assert
 import org.junit.Test
@@ -20,7 +16,11 @@ class RecognizableTest {
         it.addSkipped(ws)
     }
 
-    private val id = Parser.fromRegex(RegexParser.parse("[a-z]+"), lexer, true, ToString.getInstance())
+    private val id = Parser.fromRegex(RegexParser.parse("[a-z]+"), lexer, true, object: Mapping<CharSequence, String> {
+        override fun parse(stream: ParserStream?, left: CharSequence): String? = left.toString()
+        override fun left(result: String): CharSequence? = result
+    })
+
     private val append: Fold<String, String, String> = Fold { _, l: String, r: String -> l + r }
 
     @Test

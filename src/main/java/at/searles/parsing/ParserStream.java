@@ -3,7 +3,6 @@ package at.searles.parsing;
 import at.searles.buf.Frame;
 import at.searles.lexer.TokenStream;
 import at.searles.lexer.Tokenizer;
-import at.searles.parsing.utils.ast.SourceInfo;
 
 public class ParserStream {
     private final TokenStream stream;
@@ -42,10 +41,6 @@ public class ParserStream {
 
     public long getEnd() {
         return this.parsedEnd;
-    }
-
-    public SourceInfo createSourceInfo() {
-        return new RangeSourceInfo(this);
     }
 
     public void setStart(long start) {
@@ -102,31 +97,6 @@ public class ParserStream {
     public <C> void notifyAnnotationEnd(C annotation, boolean success) {
         if(listener != null) {
             listener.annotationEnd(this, annotation, success);
-        }
-    }
-
-    private static class RangeSourceInfo implements SourceInfo {
-
-        private final long end;
-        private final long start;
-
-        RangeSourceInfo(ParserStream stream) {
-            this.start = stream.parsedStart;
-            this.end = stream.parsedEnd;
-        }
-
-        @Override
-        public long start() {
-            return start;
-        }
-
-        @Override
-        public long end() {
-            return end;
-        }
-
-        public String toString() {
-            return String.format("[%d:%d]", start(), end());
         }
     }
 

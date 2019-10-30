@@ -1,18 +1,30 @@
 package at.searles.parsing.position.test;
 
 import at.searles.lexer.Lexer;
-import at.searles.lexer.Tokenizer;
 import at.searles.parsing.*;
-import at.searles.parsing.utils.ast.SourceInfo;
-import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.Regex;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ParserPositionTest {
+    private static final Mapping<CharSequence, String> ToString = new Mapping<CharSequence, String>() {
+        @Override
+        public String parse(ParserStream stream, @NotNull CharSequence left) {
+            return left.toString();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence left(@NotNull String result) {
+            return result;
+        }
+    };
+
     final Lexer tokenizer = new Lexer();
-    final Parser<String> a = Parser.fromRegex(Regex.text("A"), tokenizer, false, ToString.getInstance());
-    final Parser<String> b = Parser.fromRegex(Regex.text("B"), tokenizer, false, ToString.getInstance());
+    final Parser<String> a = Parser.fromRegex(Regex.text("A"), tokenizer, false,  ToString);
+    final Parser<String> b = Parser.fromRegex(Regex.text("B"), tokenizer, false, ToString);
 
     final Recognizer z = Recognizer.fromString("Z", tokenizer, false);
 
@@ -24,18 +36,16 @@ public class ParserPositionTest {
 
     Mapping<String, String> positionAssert(int start, int end) {
         return (stream, left) -> {
-            SourceInfo sourceInfo = stream.createSourceInfo();
-            Assert.assertEquals(start, sourceInfo.start());
-            Assert.assertEquals(end, sourceInfo.end());
+            Assert.assertEquals(start, stream.getStart());
+            Assert.assertEquals(end, stream.getEnd());
             return left;
         };
     }
 
     Initializer<String> positionInitAssert(int start, int end) {
         return (stream) -> {
-            SourceInfo sourceInfo = stream.createSourceInfo();
-            Assert.assertEquals(start, sourceInfo.start());
-            Assert.assertEquals(end, sourceInfo.end());
+            Assert.assertEquals(start, stream.getStart());
+            Assert.assertEquals(end, stream.getEnd());
             return "";
         };
     }

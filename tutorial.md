@@ -318,6 +318,9 @@ implemented in the file
 
 # Inversion of parsers
 
+For this part of the tutorial you need the "parsingtools"-project. 
+[You find it here along with the sources.](https://github.com/searles/parsingtools)
+
 Parsers are usually used to create an abstract syntax tree (AST) out of 
 their input. A pretty printer does the exact opposite: It creates source
 code out of an abstract syntax tree.

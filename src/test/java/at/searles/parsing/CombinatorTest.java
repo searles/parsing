@@ -1,21 +1,32 @@
 package at.searles.parsing;
 
 import at.searles.lexer.Lexer;
-import at.searles.lexer.Tokenizer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree;
 import at.searles.parsing.printing.PrinterBacktrackException;
-import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.RegexParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class CombinatorTest {
+    private static final Mapping<CharSequence, String> ToString = new Mapping<CharSequence, String>() {
+        @Override
+        public String parse(ParserStream stream, @NotNull CharSequence left) {
+            return left.toString();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence left(@NotNull String result) {
+            return result;
+        }
+    };
 
     private final Lexer tokenizer = new Lexer();
-    private final Parser<String> chr = Parser.fromRegex(RegexParser.parse("[a-z]"), tokenizer, false, new ToString());
+    private final Parser<String> chr = Parser.fromRegex(RegexParser.parse("[a-z]"), tokenizer, false, ToString);
     private final Recognizer comma = Recognizer.fromString(",", tokenizer, false);
     private final Initializer<String> emptyString = new Initializer<String>() {
         @Override

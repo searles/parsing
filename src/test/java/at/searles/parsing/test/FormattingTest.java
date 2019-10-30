@@ -3,12 +3,27 @@ package at.searles.parsing.test;
 import at.searles.lexer.Lexer;
 import at.searles.lexer.SkipTokenizer;
 import at.searles.parsing.*;
-import at.searles.parsing.utils.common.ToString;
 import at.searles.regex.Regex;
 import at.searles.regex.RegexParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 public class FormattingTest {
+
+    private static final Mapping<CharSequence, String> ToString = new Mapping<CharSequence, String>() {
+        @Override
+        public String parse(ParserStream stream, @NotNull CharSequence left) {
+            return left.toString();
+        }
+
+        @Nullable
+        @Override
+        public CharSequence left(@NotNull String result) {
+            return result;
+        }
+    };
+
 
     enum Annotation { BLOCK, ARGUMENT }
 
@@ -21,7 +36,7 @@ public class FormattingTest {
         int ws = lexer.add(RegexParser.parse("[ \n\r\t]+"));
         tokenizer.addSkipped(ws);
 
-        Parser<String> a = Parser.fromRegex(Regex.text("a"), tokenizer, false, ToString.getInstance());
+        Parser<String> a = Parser.fromRegex(Regex.text("a"), tokenizer, false, ToString);
         Recognizer open = Recognizer.fromString("(", tokenizer, false);
         Recognizer close = Recognizer.fromString(")", tokenizer, false);
 
