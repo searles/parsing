@@ -1,5 +1,6 @@
 package at.searles.regex.parser;
 
+import at.searles.parsing.Parser;
 import at.searles.regex.CharSet;
 import at.searles.regex.Regex;
 
@@ -10,7 +11,7 @@ public class StringToRegex {
         Regex regex = union(stream);
 
         if (!stream.trim().end()) {
-            throw new IllegalArgumentException(); // FIXME
+            throw new ParserException("Not fully parsed: " + stream);
         }
 
         return regex;
@@ -37,11 +38,11 @@ public class StringToRegex {
             return null;
         }
 
-        while (stream.get() == '|') {
-            stream.incr();
+        while (stream.trim().get() == '|') {
+            stream.incr().trim();
             Regex next = concat(stream);
             if (next == null) {
-                throw new IllegalArgumentException(); // TODO
+                throw new ParserException("Could not parse content after |");
             }
 
             regex = regex.or(next);
@@ -153,5 +154,11 @@ public class StringToRegex {
         }
 
         return null;
+    }
+
+    public static class ParserException extends RuntimeException {
+        public ParserException(String msg) {
+            super(msg);
+        }
     }
 }

@@ -2,7 +2,7 @@ package at.searles.regex.parser;
 
 public class EscStringParser {
     /**
-     * double-quoted
+     * double-quoted. Allows \\Uxxxxxxxx, \\uxxxx, \\xXX and other common escape sequences like \\r
      */
     public static String fetch(CodePointStream stream) {
         if (stream.get() != '\"') {

@@ -1,6 +1,7 @@
 package at.searles.regex.parser;
 
 import at.searles.regex.CharSet;
+import at.searles.regex.Regex;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class StringToRegexTest {
 
 
     @Test
-    public void testUnion() {
+    public void testUnionCharSet() {
         CodePointStream stream = new CodePointStream("[^ac-e-g\\]0-9]");
 
         CharSet set = CharSetParser.charSet(stream);
@@ -39,6 +40,15 @@ public class StringToRegexTest {
         Assert.assertFalse(set.contains('-'));
         Assert.assertTrue(set.contains('b'));
         Assert.assertFalse(set.contains(']'));
+    }
+
+    @Test
+    public void testUnion() {
+        CodePointStream stream = new CodePointStream("'a' | 'b'");
+
+        Regex regex = StringToRegex.union(stream);
+
+        Assert.assertTrue(stream.end());
     }
 
 }

@@ -343,19 +343,22 @@ string using `toString()` or it can be further formatted to apply
 certain code rules. But let's first focus on the inversion itself
 and introduce abstract syntax trees.
 
-## AstNodes
+## Abstract Syntax Tree nodes
 
-The class `AstNode` provides nodes of an AST. It requires some
-information of the ParserStream 
-in its constructor which is used to store the position in the stream.
+All nodes of the abstract syntax tree need a common supertype. For this purpose
+we define the interface `AstNode`:
 
-We need `AstNode`s for numbers (these are leafs) and for operations:
+~~~ kotlin
+interface AstNode
+~~~
+
+We need `AstNode`s for numbers (these are leafs) and for operator applications:
 
 ~~~ kotlin
 enum class Op {Add, Sub, Mul, Div, Neg}
 
-class NumNode(info: SourceInfo, val value: Int): AstNode(info)
-class OpNode(info: SourceInfo, val op: Op, vararg val args: AstNode): AstNode(info)
+class NumNode(val value: Int): AstNode
+class OpNode(val op: Op, vararg val args: AstNode): AstNode
 ~~~
 
 ## Inverting a Mapping
@@ -368,7 +371,7 @@ an image of the mapping, and otherwise undo the `parse`-method.
 ~~~ kotlin
     val numMapping = object: Mapping<CharSequence, AstNode> {
         override fun parse(stream: ParserStream, left: CharSequence): AstNode =
-                NumNode(stream.createSourceInfo(), Integer.parseInt(left.toString()))
+                NumNode(Integer.parseInt(left.toString()))
 
         override fun left(result: AstNode): CharSequence? = 
                 if (result is NumNode) result.value.toString() else null 
@@ -386,7 +389,7 @@ argument.
 ~~~ kotlin
     val add = object: Fold<AstNode, AstNode, AstNode> {
         override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
-            OpNode(stream.createSourceInfo(), Op.Add, left, right)
+            OpNode(Op.Add, left, right)
 
         override fun leftInverse(result: AstNode): AstNode? =
             if(result is OpNode && result.op == Op.Add) result.args[0] else null
