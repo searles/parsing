@@ -46,7 +46,7 @@ public class EscCharParser {
     private static int hex(int digitCount, CodePointStream stream) {
         int ret = hexDigit(stream.get());
         for (int i = 1; i < digitCount; ++i) {
-            ret *= 16 + hexDigit(stream.incr().get());
+            ret = ret * 16 + hexDigit(stream.incr().get());
         }
         stream.incr();
         return ret;
