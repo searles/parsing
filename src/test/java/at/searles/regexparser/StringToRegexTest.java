@@ -1,4 +1,4 @@
-package at.searles.regex.parser;
+package at.searles.regexparser;
 
 import at.searles.regex.CharSet;
 import at.searles.regex.Regex;
@@ -51,4 +51,12 @@ public class StringToRegexTest {
         Assert.assertTrue(stream.end());
     }
 
+    @Test
+    public void testComment() {
+        CodePointStream stream = new CodePointStream("'//' [^\\n]*");
+
+        Regex regex = StringToRegex.union(stream);
+
+        Assert.assertTrue(stream.end());
+    }
 }

@@ -1,4 +1,4 @@
-package at.searles.regex.parser;
+package at.searles.regexparser;
 
 import at.searles.lexer.utils.Interval;
 import at.searles.regex.CharSet;

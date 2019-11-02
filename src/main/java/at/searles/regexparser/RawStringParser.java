@@ -1,4 +1,4 @@
-package at.searles.regex.parser;
+package at.searles.regexparser;
 
 public class RawStringParser {
     /**

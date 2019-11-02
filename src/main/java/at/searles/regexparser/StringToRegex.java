@@ -1,6 +1,5 @@
-package at.searles.regex.parser;
+package at.searles.regexparser;
 
-import at.searles.parsing.Parser;
 import at.searles.regex.CharSet;
 import at.searles.regex.Regex;
 
@@ -54,7 +53,7 @@ public class StringToRegex {
     static Regex concat(CodePointStream stream) {
         Regex regex = null;
         while(true) {
-            Regex next = qualified(stream);
+            Regex next = qualified(stream.trim());
             if(next == null) return regex;
             regex = regex != null ? regex.then(next) : next;
         }

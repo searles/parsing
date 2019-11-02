@@ -6,7 +6,7 @@ import at.searles.parsing.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
-import at.searles.regex.parser.StringToRegex
+import at.searles.regexparser.StringToRegex
 
 /**
  * Demo of inversion of a parser for the following grammar:
