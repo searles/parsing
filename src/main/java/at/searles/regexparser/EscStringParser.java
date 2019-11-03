@@ -88,6 +88,10 @@ public class EscStringParser {
             sb.append("\\t");
         } else if(cp == '\b') {
             sb.append("\\b");
+        } else if(cp == '\\') {
+            sb.append("\\\\");
+        } else if(cp == '"') {
+            sb.append("\\\"");
         } else if(cp < ' ') {
             sb.append(String.format("\\u%04x", cp));
         } else if(cp < 0x7f) {
