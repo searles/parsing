@@ -18,7 +18,11 @@ public class Ref<T> implements Parser<T> {
 
     @Override
     public boolean recognize(ParserStream stream) {
-        return ref.recognize(stream);
+        try {
+            return ref.recognize(stream);
+        } catch(StackOverflowError e) {
+            throw new PossiblyInfiniteRecursionException(this, e);
+        }
     }
 
     @Override
