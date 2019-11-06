@@ -62,6 +62,10 @@ public interface Recognizer extends Recognizable {
         return new RecognizerOrRecognizer(this, recognizer);
     }
 
+    default <T> Reducer<T, T> or(Reducer<T, T> reducer) {
+        return this.then(Mapping.<T>identity()).or(reducer);
+    }
+
     default Recognizer rep() { //Caution in printer!
         return new RecognizerRep(this);
     }

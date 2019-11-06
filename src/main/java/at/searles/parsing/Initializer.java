@@ -8,7 +8,7 @@ public interface Initializer<T> extends Parser<T> {
     T parse(ParserStream stream);
 
     default boolean consume(T t) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override

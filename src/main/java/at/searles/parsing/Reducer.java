@@ -23,6 +23,10 @@ public interface Reducer<T, U> extends Recognizable {
         return new ReducerPlus<>(reducer, 1);
     }
 
+    static <T> Reducer<T, T> or(Reducer<T, T> reducer, Recognizer recognizer) {
+        return reducer.or(recognizer.then(Mapping.identity()));
+    }
+
     /**
      * Parses elements from TokStream
      *

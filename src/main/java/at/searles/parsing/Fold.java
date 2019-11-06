@@ -8,11 +8,11 @@ public interface Fold<T, U, V> {
 
     default @Nullable
     T leftInverse(@NotNull V result) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     default @Nullable
     U rightInverse(@NotNull V result) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 }
