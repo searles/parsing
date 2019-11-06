@@ -27,12 +27,20 @@ public class Ref<T> implements Parser<T> {
 
     @Override
     public T parse(ParserStream stream) {
-        return ref.parse(stream);
+        try {
+            return ref.parse(stream);
+        } catch(StackOverflowError e) {
+            throw new PossiblyInfiniteRecursionException(this, e);
+        }
     }
 
     @Override
     public ConcreteSyntaxTree print(T t) {
-        return ref.print(t);
+        try {
+            return ref.print(t);
+        } catch(StackOverflowError e) {
+            throw new PossiblyInfiniteRecursionException(this, e);
+        }
     }
 
     @Override
