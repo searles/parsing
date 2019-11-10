@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer;
 import at.searles.lexer.SkipTokenizer;
 import at.searles.parsing.*;
 import at.searles.regex.Regex;
-import at.searles.regex.RegexParser;
+import at.searles.regexparser.StringToRegex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class FormattingTest {
         Lexer lexer = new Lexer();
         SkipTokenizer tokenizer = new SkipTokenizer(lexer);
 
-        int ws = lexer.add(RegexParser.parse("[ \n\r\t]+"));
+        int ws = lexer.add(StringToRegex.parse("[ \n\r\t]+"));
         tokenizer.addSkipped(ws);
 
         Parser<String> a = Parser.fromRegex(Regex.text("a"), tokenizer, false, ToString);

@@ -7,7 +7,7 @@ import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
 import at.searles.parsing.combinators.ParserAndParser
 import at.searles.regex.Regex
-import at.searles.regex.RegexParser
+import at.searles.regexparser.StringToRegex
 import org.junit.Assert
 import org.junit.Test
 
@@ -22,7 +22,7 @@ class AndTest {
         val lexer = SkipTokenizer(Lexer())
         lexer.addSkipped(lexer.add(Regex.text(" ")))
 
-        val num: Parser<Int> = Parser.fromRegex(RegexParser.parse("[0-9]+"), lexer, false, object: Mapping<CharSequence, Int> {
+        val num: Parser<Int> = Parser.fromRegex(StringToRegex.parse("[0-9]+"), lexer, false, object: Mapping<CharSequence, Int> {
             override fun parse(stream: ParserStream?, left: CharSequence): Int? = left.toString().toInt()
             override fun left(result: Int): CharSequence? = result.toString()
         })

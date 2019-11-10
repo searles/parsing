@@ -51,6 +51,10 @@ public class ParserStream {
         this.parsedEnd = end;
     }
 
+    public Trace createTrace() {
+        return new ParserStreamTrace(this);
+    }
+
     public CharSequence parseToken(Tokenizer tokenizer, int tokId, boolean exclusive) {
         Frame frame = tokenizer.matchToken(stream, tokId, exclusive);
 
@@ -91,9 +95,6 @@ public class ParserStream {
         }
     }
 
-    /**
-     * Override this method if necessary
-     */
     public <C> void notifyAnnotationEnd(C annotation, boolean success) {
         if(listener != null) {
             listener.annotationEnd(this, annotation, success);
@@ -125,5 +126,32 @@ public class ParserStream {
         }
 
         <C> void annotate(ParserStream parserStream, C annotation);
+    }
+
+    public static class ParserStreamTrace implements Trace {
+
+        private final long start;
+        private final long end;
+        private final ParserStream source;
+
+        public ParserStreamTrace(ParserStream stream) {
+            this.start = stream.getStart();
+            this.end = stream.getEnd();
+            this.source = stream;
+        }
+
+        @Override
+        public long getStart() {
+            return start;
+        }
+
+        @Override
+        public long getEnd() {
+            return end;
+        }
+
+        public ParserStream getSource() {
+            return source;
+        }
     }
 }

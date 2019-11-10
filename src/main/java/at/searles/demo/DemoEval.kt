@@ -3,7 +3,7 @@ package at.searles.demo
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.regex.RegexParser
+import at.searles.regexparser.StringToRegex
 
 /**
  * Demo of a simple evaluator of mathematical expressions for
@@ -20,11 +20,11 @@ fun main() {
     val lexer = SkipTokenizer(Lexer())
 
     // ignore white spaces
-    val wsTokenId = lexer.add(RegexParser.parse("[\n\r\t ]+"))
+    val wsTokenId = lexer.add(StringToRegex.parse("[\n\r\t ]+"))
     lexer.addSkipped(wsTokenId)
 
     // num: [0-9]* ;
-    val numTokenId = lexer.add(RegexParser.parse("[0-9]+"))
+    val numTokenId = lexer.add(StringToRegex.parse("[0-9]+"))
     val numMapping = Mapping<CharSequence, Int> { _, left -> Integer.parseInt(left.toString()) }
     
     // ref here provides a label that is used by the parser's toString-method.
@@ -93,5 +93,5 @@ fun main() {
     // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 
     println("Result = ${sum.parse(stream)}")
-    println("Position in stream: ${stream.getEnd()}")
+    println("Position in stream: ${stream.end}")
 }

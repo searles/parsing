@@ -3,7 +3,7 @@ package at.searles.lexer.test
 import at.searles.lexer.Lexer
 import at.searles.lexer.ShadowedTokenizer
 import at.searles.lexer.TokenStream
-import at.searles.regex.RegexParser
+import at.searles.regexparser.StringToRegex
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -22,7 +22,7 @@ class SoftKeywordTest {
     fun testPublic() {
         val publicId = lexer.add("public")
         val ifId = lexer.add("if")
-        val nameId = lexer.add(RegexParser.parse("[a-z]+"))
+        val nameId = lexer.add(StringToRegex.parse("[a-z]+"))
         val comma = lexer.add(",")
 
         shadowedTokenizer.addShadowed(publicId)
@@ -42,7 +42,7 @@ class SoftKeywordTest {
     fun testPublicShadowed() {
         val publicId = lexer.add("public")
         val ifId = lexer.add("if")
-        val nameId = lexer.add(RegexParser.parse("[a-z]+"))
+        val nameId = lexer.add(StringToRegex.parse("[a-z]+"))
         val comma = lexer.add(",")
 
         shadowedTokenizer.addShadowed(publicId)

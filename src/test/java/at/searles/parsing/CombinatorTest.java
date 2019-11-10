@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer;
 import at.searles.parsing.printing.ConcreteSyntaxTree;
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree;
 import at.searles.parsing.printing.PrinterBacktrackException;
-import at.searles.regex.RegexParser;
+import at.searles.regexparser.StringToRegex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -26,7 +26,7 @@ public class CombinatorTest {
     };
 
     private final Lexer tokenizer = new Lexer();
-    private final Parser<String> chr = Parser.fromRegex(RegexParser.parse("[a-z]"), tokenizer, false, ToString);
+    private final Parser<String> chr = Parser.fromRegex(StringToRegex.parse("[a-z]"), tokenizer, false, ToString);
     private final Recognizer comma = Recognizer.fromString(",", tokenizer, false);
     private final Initializer<String> emptyString = new Initializer<String>() {
         @Override
