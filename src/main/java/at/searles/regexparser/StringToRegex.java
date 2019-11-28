@@ -10,7 +10,7 @@ public class StringToRegex {
         Regex regex = union(stream);
 
         if (!stream.trim().end()) {
-            throw new ParserException("Not fully parsed: " + stream);
+            throw new RegexParserException("Not fully parsed: " + stream);
         }
 
         return regex;
@@ -41,7 +41,7 @@ public class StringToRegex {
             stream.incr().trim();
             Regex next = concat(stream);
             if (next == null) {
-                throw new ParserException("Could not parse content after |");
+                throw new RegexParserException("Could not parse content after |");
             }
 
             regex = regex.or(next);
@@ -142,7 +142,7 @@ public class StringToRegex {
             return set;
         }
 
-        String str = EscStringParser.fetch(stream);
+        String str = EscStringParser.parse(stream);
 
         if(str == null) {
             str = RawStringParser.fetch(stream);
@@ -153,11 +153,5 @@ public class StringToRegex {
         }
 
         return null;
-    }
-
-    public static class ParserException extends RuntimeException {
-        public ParserException(String msg) {
-            super(msg);
-        }
     }
 }

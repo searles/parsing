@@ -4,7 +4,7 @@ public class EscStringParser {
     /**
      * double-quoted. Allows \\Uxxxxxxxx, \\uxxxx, \\xXX and other common escape sequences like \\r
      */
-    public static String fetch(CodePointStream stream) {
+    public static String parse(CodePointStream stream) {
         if (stream.get() != '\"') {
             return null;
         }
@@ -17,7 +17,7 @@ public class EscStringParser {
             int cp = stream.get();
 
             if(cp == -1) {
-                throw new IllegalArgumentException(); // FIXME
+                throw new RegexParserException("unexpected end: " + stream);
             }
 
             if(cp == '\"') {

@@ -30,7 +30,7 @@ public class CharSetParser {
             cp = stream.get();
 
             if (cp == -1) {
-                throw new IllegalArgumentException(); // FIXME
+                throw new RegexParserException("unexpected end: " + stream);
             }
 
             if (cp == ']') {

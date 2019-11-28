@@ -4,7 +4,7 @@ public class CodePointStream {
     private final String string;
     private int i = 0;
 
-    CodePointStream(String string) {
+    public CodePointStream(String string) {
         this.string = string;
     }
 
