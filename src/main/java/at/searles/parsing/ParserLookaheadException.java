@@ -5,19 +5,19 @@ public class ParserLookaheadException extends RuntimeException {
     private final Recognizable.Then failedParser;
     private final ParserStream source;
 
-    private final long beforeStart;
-    private final long beforeEnd;
-    private final long failedTokenStart;
-    private final long failedTokenEnd;
+    private final long unitBeforeErrorStart;
+    private final long unitBeforeErrorEnd;
+    private final long unexpectedTokenStart;
+    private final long unexpectedTokenEnd;
 
     public ParserLookaheadException(Recognizable.Then failedParser, ParserStream stream) {
         this.source = stream;
 
-        this.beforeStart = stream.getStart();
-        this.beforeEnd = stream.getEnd();
+        this.unitBeforeErrorStart = stream.getStart();
+        this.unitBeforeErrorEnd = stream.getEnd();
 
-        this.failedTokenStart = stream.tokStream().frame().startPosition();
-        this.failedTokenEnd = stream.tokStream().frame().endPosition();
+        this.unexpectedTokenStart = stream.tokStream().frame().startPosition();
+        this.unexpectedTokenEnd = stream.tokStream().frame().endPosition();
 
         this.failedParser = failedParser;
     }
@@ -30,23 +30,23 @@ public class ParserLookaheadException extends RuntimeException {
         return source;
     }
 
-    public long getBeforeStart() {
-        return beforeStart;
+    public long getUnitBeforeErrorStart() {
+        return unitBeforeErrorStart;
     }
 
-    public long getBeforeEnd() {
-        return beforeEnd;
+    public long getUnitBeforeErrorEnd() {
+        return unitBeforeErrorEnd;
     }
 
-    public long getFailedTokenStart() {
-        return failedTokenStart;
+    public long getUnexpectedTokenStart() {
+        return unexpectedTokenStart;
     }
 
-    public long getFailedTokenEnd() {
-        return failedTokenEnd;
+    public long getUnexpectedTokenEnd() {
+        return unexpectedTokenEnd;
     }
 
     public String toString() {
-        return String.format("%s expected after %s at %d-%d", failedParser.right(), failedParser.left(), getFailedTokenStart(), getFailedTokenEnd());
+        return String.format("%s expected after %s at %d-%d", failedParser.right(), failedParser.left(), getUnexpectedTokenStart(), getUnexpectedTokenEnd());
     }
 }
