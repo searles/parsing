@@ -16,7 +16,7 @@ public class StringToRegex {
         return regex;
     }
 
-    static int integer(CodePointStream stream) {
+    private static int integer(CodePointStream stream) {
         int num = stream.get() - '0';
 
         if(num < 0 || 9 < num) {
@@ -50,7 +50,7 @@ public class StringToRegex {
         return regex;
     }
 
-    static Regex concat(CodePointStream stream) {
+    private static Regex concat(CodePointStream stream) {
         Regex regex = null;
         while(true) {
             Regex next = qualified(stream.trim());
@@ -59,7 +59,7 @@ public class StringToRegex {
         }
     }
 
-    static Regex qualified(CodePointStream stream) {
+    private static Regex qualified(CodePointStream stream) {
         // may return null
         Regex regex = term(stream);
         if (regex == null) {
@@ -93,7 +93,7 @@ public class StringToRegex {
         }
 
         if(stream.get() != ',') {
-            throw new IllegalArgumentException(); // FIXME
+            throw new RegexParserException("missing ','");
         }
 
         stream.incr();
@@ -105,7 +105,7 @@ public class StringToRegex {
         int end = integer(stream);
 
         if(stream.get() != '}') {
-            throw new IllegalArgumentException(); // FIXME
+            throw new RegexParserException("missing '}'");
         }
 
         stream.incr();
@@ -113,7 +113,7 @@ public class StringToRegex {
         return regex.range(start, end);
     }
 
-    static Regex group(CodePointStream stream) {
+    private static Regex group(CodePointStream stream) {
         if (stream.get() != '(') {
             return null;
         }
@@ -121,7 +121,7 @@ public class StringToRegex {
         Regex regex = union(stream.incr());
 
         if (stream.get() != ')') {
-            throw new IllegalArgumentException(); // FIXME
+            throw new RegexParserException("missing ')'");
         }
 
         stream.incr();
@@ -129,7 +129,7 @@ public class StringToRegex {
     }
 
     // the only thing that terminates a regex is a closing ).
-    static Regex term(CodePointStream stream) {
+    private static Regex term(CodePointStream stream) {
         Regex group = group(stream);
 
         if(group != null) {

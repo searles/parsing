@@ -31,8 +31,8 @@ public class ParserStream {
         this.listener = listener;
     }
 
-    public static ParserStream fromString(String string) {
-        return new ParserStream(TokenStream.fromString(string));
+    public static ParserStream fromString(CharSequence s) {
+        return new ParserStream(TokenStream.fromString(s));
     }
 
     public long getStart() {

@@ -46,7 +46,7 @@ public class TokenStream {
         this.listener = listener;
     }
 
-    public static TokenStream fromString(String s) {
+    public static TokenStream fromString(CharSequence s) {
         return new TokenStream(new StringWrapper(s));
     }
 

@@ -27,7 +27,6 @@ public interface Recognizable {
 
             if (!right().recognize(stream)) {
                 if(stream.getOffset() != offset) {
-                    // FIXME test
                     throwIfNoBacktrack(stream);
                     stream.backtrackToOffset(offset);
                 }

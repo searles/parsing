@@ -48,7 +48,6 @@ public class ParserThenRecognizer<T> implements Parser<T>, Recognizer.Then {
 
         if (!right.recognize(stream)) {
             if(stream.getOffset() != offset) {
-                // FIXME test
                 throwIfNoBacktrack(stream);
                 stream.backtrackToOffset(offset);
             }

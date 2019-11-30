@@ -42,8 +42,6 @@ public class ParserThenReducer<T, U> implements Parser<U>, Recognizable.Then {
 
         if (u == null) {
             if(offset != stream.getOffset()) {
-                // FIXME allow reducer if it is a mapping
-                // FIXME check this via
                 throwIfNoBacktrack(stream);
                 stream.backtrackToOffset(offset);
             }

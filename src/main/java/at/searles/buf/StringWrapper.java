@@ -4,26 +4,38 @@ import org.jetbrains.annotations.NotNull;
 
 public class StringWrapper implements FrameStream {
 
-    private final String str;
+    private final CharSequence charSequence;
     private final Frame frame; // singleton
     private int ptr;
     private int frameStart;
     private int frameEnd;
 
-    public StringWrapper(String str) {
-        this.str = str;
+    public StringWrapper(CharSequence charSequence) {
+        this.charSequence = charSequence;
         this.ptr = 0;
         this.frameStart = this.frameEnd = 0;
         this.frame = new CharSeq();
     }
 
+    private int codePointAt(int index) {
+        char c1 = charSequence.charAt(index);
+
+        if (Character.isHighSurrogate(c1) && ++index < charSequence.length()) {
+            char c2 = charSequence.charAt(index);
+            if (Character.isLowSurrogate(c2)) {
+                return Character.toCodePoint(c1, c2);
+            }
+        }
+        return c1;
+    }
+
     @Override
     public int next() {
-        if (ptr >= str.length()) {
+        if (ptr >= charSequence.length()) {
             return -1;
         }
 
-        int ch = str.codePointAt(ptr);
+        int ch = codePointAt(ptr);
         ptr += Character.charCount(ch);
         return ch;
     }
@@ -61,11 +73,11 @@ public class StringWrapper implements FrameStream {
 
     @Override
     public String toString() {
-        return str.substring(Math.max(0, frameStart - 16), frameStart)
+        return charSequence.subSequence(Math.max(0, frameStart - 16), frameStart)
                 + "_"
-                + str.substring(frameStart, frameEnd)
+                + charSequence.subSequence(frameStart, frameEnd)
                 + "_"
-                + str.substring(frameEnd, Math.min(str.length(), frameEnd + 16));
+                + charSequence.subSequence(frameEnd, Math.min(charSequence.length(), frameEnd + 16));
     }
 
     private class CharSeq implements Frame {
@@ -86,18 +98,18 @@ public class StringWrapper implements FrameStream {
 
         @Override
         public char charAt(int index) {
-            return str.charAt(index + frameStart);
+            return charSequence.charAt(index + frameStart);
         }
 
         @Override
         public CharSequence subSequence(int start, int end) {
-            return str.substring(frameStart + start, frameStart + end);
+            return charSequence.subSequence(frameStart + start, frameStart + end);
         }
 
         @NotNull
         @Override
         public String toString() {
-            return str.substring(frameStart, frameEnd);
+            return charSequence.subSequence(frameStart, frameEnd).toString();
         }
     }
 }
