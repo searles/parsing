@@ -79,4 +79,8 @@ public interface Reducer<T, U> extends Recognizable {
     default <C> Reducer<T, U> annotate(C annotation) {
         return new AnnotationReducer<>(annotation, this);
     }
+
+    default Reducer<T, U> ref(String label) {
+        return new ReducerRef<T, U>(this, label);
+    }
 }

@@ -43,4 +43,9 @@ public class AnnotationReducer<C, U, T> implements Reducer<T, U> {
         stream.notifyAnnotationEnd(annotation, status);
         return status;
     }
+
+    @Override
+    public String toString() {
+        return reducer.toString();
+    }
 }
