@@ -96,4 +96,8 @@ public interface Recognizer extends Recognizable {
     default <A> Recognizer annotate(A category) {
         return new AnnotationRecognizer<>(category, this);
     }
+
+    default Recognizer ref(String label) {
+        return new RecognizerRef(this, label);
+    }
 }
