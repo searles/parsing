@@ -32,6 +32,6 @@ public class TokenRecognizer implements Recognizer {
     }
 
     public String toString() {
-        return printed;
+        return "\"" + printed + "\"";
     }
 }
