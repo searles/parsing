@@ -3,6 +3,8 @@ package at.searles.demo
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
+import at.searles.parsing.ParserStream.Companion.createParserStream
+import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
@@ -28,8 +30,8 @@ fun main() {
     // num: [0-9]* ;
     val numTokenId = lexer.add(StringToRegex.parse("[0-9]+"))
     val numMapping = object : Mapping<CharSequence, AstNode> {
-        override fun parse(stream: ParserStream, left: CharSequence): AstNode =
-                NumNode(Integer.parseInt(left.toString()))
+        override fun parse(stream: ParserStream, input: CharSequence): AstNode =
+                NumNode(Integer.parseInt(input.toString()))
 
         override fun left(result: AstNode): CharSequence? =
                 if (result is NumNode) result.value.toString() else null
@@ -55,8 +57,8 @@ fun main() {
     val minus = Recognizer.fromString("-", lexer, false)
 
     val negate = object : Mapping<AstNode, AstNode> {
-        override fun parse(stream: ParserStream, left: AstNode): AstNode =
-                OpNode(Op.Neg, left)
+        override fun parse(stream: ParserStream, input: AstNode): AstNode =
+                OpNode(Op.Neg, input)
 
         override fun left(result: AstNode): AstNode? =
                 if (result is OpNode && result.op == Op.Neg) result.args[0] else null
@@ -95,10 +97,8 @@ fun main() {
     }
 
     val product = literal.then(
-            Reducer.rep(
-                    times.annotate(FormatOp.Infix).then(literal).fold(multiply)
-                            .or(slash.annotate(FormatOp.Infix).then(literal).fold(divide))
-            )
+            times.annotate(FormatOp.Infix).then(literal).fold(multiply)
+                    .or(slash.annotate(FormatOp.Infix).then(literal).fold(divide)).rep()
     ).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
@@ -129,10 +129,9 @@ fun main() {
 
     sum.set(
             product.then(
-                    Reducer.rep(
-                            plus.annotate(FormatOp.Infix).then(product).fold(add)
-                                    .or(minus.annotate(FormatOp.Infix).then(product).fold(sub))
-                    )
+                    plus.annotate(FormatOp.Infix).then(product).fold(add)
+                            .or(minus.annotate(FormatOp.Infix).then(product).fold(sub))
+                            .rep()
             )
     )
 
@@ -161,14 +160,14 @@ fun main() {
 
     println("Pretty-Print: ${sum.print(genericAst1)}")
 
-    val stream = ParserStream.fromString(readLine())
-    val ast = sum.parse(stream)
+    val stream = readLine()!!.createParserStream()
+    val ast = sum.parse(stream)!!
 
     // now pretty-printTo the tree
     val sourceStream = StringOutStream()
 
     val printer = object : CstPrinter(sourceStream) {
-        override fun print(tree: ConcreteSyntaxTree, annotation: Any): CstPrinter =
+        override fun print(tree: ConcreteSyntaxTree, annotation: Any?): CstPrinter =
                 when (annotation) {
                     FormatOp.Infix -> append(" ").print(tree).append(" ")
                     else -> print(tree)

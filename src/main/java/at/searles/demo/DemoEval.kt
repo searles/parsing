@@ -3,6 +3,8 @@ package at.searles.demo
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
+import at.searles.parsing.ParserStream.Companion.createParserStream
+import at.searles.parsing.Reducer.Companion.rep
 import at.searles.regexparser.StringToRegex
 
 /**
@@ -25,8 +27,8 @@ fun main() {
 
     // num: [0-9]* ;
     val numTokenId = lexer.add(StringToRegex.parse("[0-9]+"))
-    val numMapping = Mapping<CharSequence, Int> { _, left -> Integer.parseInt(left.toString()) }
-    
+    val numMapping = Mapping.create<CharSequence, Int> { it.toString().toInt()}
+
     // ref here provides a label that is used by the parser's toString-method.
     // This improves debugging because in case of an error it is easier to spot 
     // the concrete parser.
@@ -48,7 +50,7 @@ fun main() {
 
     val minus = Recognizer.fromString("-", lexer, false)
 
-    val negate = Mapping<Int, Int> { _, value -> -value }
+    val negate = Mapping.create<Int, Int> { -it }
 
     val literal =
             minus.then(term).then(negate)
@@ -58,37 +60,36 @@ fun main() {
 
     val times = Recognizer.fromString("*", lexer, false)
 
-    val multiply = Fold<Int, Int, Int> { _, left, right -> left * right }
+    val multiply = Fold.create<Int, Int, Int> { left, right -> left * right }
 
     val slash = Recognizer.fromString("/", lexer, false)
 
-    val divide = Fold<Int, Int, Int> { _, left, right -> left / right }
+    val divide = Fold.create<Int, Int, Int> { left, right -> left / right }
 
     val product = literal.then(
-            Reducer.rep(
-                    times.then(literal).fold(multiply)
-                            .or(slash.then(literal).fold(divide))
-            )
+            times.then(literal).fold(multiply)
+                    .or(slash.then(literal).fold(divide))
+                    .rep()
+
     ).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
 
     val plus = Recognizer.fromString("+", lexer, false)
 
-    val add = Fold<Int, Int, Int> { _, left, right -> left + right }
+    val add = Fold.create<Int, Int, Int> { left, right -> left + right }
 
-    val sub = Fold<Int, Int, Int> { _, left, right -> left - right }
+    val sub = Fold.create<Int, Int, Int> { left, right -> left - right }
 
     sum.set(
             product.then(
-                    Reducer.rep(
-                            plus.then(product).fold(add)
-                                    .or(minus.then(product).fold(sub))
-                    )
+                    plus.then(product).fold(add)
+                            .or(minus.then(product).fold(sub))
+                            .rep()
             )
     )
 
-    val stream = ParserStream.fromString(readLine())
+    val stream = readLine()!!.createParserStream()
     // To use a reader, the following can be used:
     // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 

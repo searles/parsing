@@ -3,6 +3,9 @@ package at.searles.parsing.recognizable
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
+import at.searles.parsing.ParserStream.Companion.createParserStream
+import at.searles.parsing.Reducer.Companion.opt
+import at.searles.parsing.Reducer.Companion.rep
 import at.searles.regexparser.StringToRegex
 import org.junit.Assert
 import org.junit.Test
@@ -12,16 +15,16 @@ class RecognizableTest {
     private lateinit var inputString: String
 
     private val lexer = SkipTokenizer(Lexer()).also {
-        val ws = it.add(StringToRegex.parse("[ \n]+"));
+        val ws = it.add(StringToRegex.parse("[ \n]+"))
         it.addSkipped(ws)
     }
 
     private val id = Parser.fromRegex(StringToRegex.parse("[a-z]+"), lexer, true, object: Mapping<CharSequence, String> {
-        override fun parse(stream: ParserStream?, left: CharSequence): String? = left.toString()
+        override fun parse(stream: ParserStream, input: CharSequence): String = input.toString()
         override fun left(result: String): CharSequence? = result
     })
 
-    private val append: Fold<String, String, String> = Fold { _, l: String, r: String -> l + r }
+    private val append: Fold<String, String, String> = Fold.create { l: String, r: String -> l + r }
 
     @Test
     fun thenTest() {
@@ -36,7 +39,7 @@ class RecognizableTest {
     fun optTest() {
         withInput("a b")
 
-        withParser(id.then(Reducer.opt(id.fold(append))))
+        withParser(id.then(id.fold(append).opt()))
 
         checkParseRecognizeEquality(true)
     }
@@ -45,7 +48,7 @@ class RecognizableTest {
     fun repTest() {
         withInput("a b")
 
-        withParser(id.then(Reducer.rep(id.fold(append))))
+        withParser(id.then(id.fold(append).rep()))
 
         checkParseRecognizeEquality(true)
     }
@@ -55,15 +58,15 @@ class RecognizableTest {
     }
 
     private fun checkParseRecognizeEquality(success: Boolean) {
-        val stream1 = ParserStream.fromString(inputString)
-        val stream2 = ParserStream.fromString(inputString)
+        val stream1 = inputString.createParserStream()
+        val stream2 = inputString.createParserStream()
 
         val success1 = parser.parse(stream1) != null
         val success2 = parser.recognize(stream2)
 
         Assert.assertEquals(success, success1)
         Assert.assertEquals(success, success2)
-        Assert.assertEquals(stream1.getEnd(), stream2.getEnd())
+        Assert.assertEquals(stream1.end, stream2.end)
     }
 
     private fun withInput(inputString: String) {
