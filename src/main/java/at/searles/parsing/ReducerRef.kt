@@ -2,17 +2,20 @@ package at.searles.parsing
 
 import at.searles.parsing.printing.PartialConcreteSyntaxTree
 
-class ReducerRef<T, U>(private val parent: Reducer<T, U>, private val label: String) : Reducer<T, U> {
+class ReducerRef<T, U>(private val label: String) : Reducer<T, U> {
+
+    lateinit var ref: Reducer<T, U>
+
     override fun parse(stream: ParserStream, input: T): U? {
-        return parent.parse(stream, input)
+        return ref.parse(stream, input)
     }
 
     override fun print(item: U): PartialConcreteSyntaxTree<T>? {
-        return parent.print(item)
+        return ref.print(item)
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return parent.recognize(stream)
+        return ref.recognize(stream)
     }
 
     override fun toString(): String {

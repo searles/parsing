@@ -43,7 +43,9 @@ interface Reducer<T, U> : Recognizable {
     }
 
     fun ref(label: String): Reducer<T, U> {
-        return ReducerRef(this, label)
+        return ReducerRef<T, U>(label).apply {
+            ref = this@Reducer
+        }
     }
 
     companion object {
@@ -55,11 +57,15 @@ interface Reducer<T, U> : Recognizable {
             return ReducerRep(this)
         }
 
-        fun <T> Reducer<T, T>.plus(): Reducer<T, T> {
+        fun <T> Reducer<T, T>.rep1(): Reducer<T, T> {
             return ReducerPlus(this, 1)
         }
 
-        fun <T> Reducer<T, T>.or(other: Recognizer): Reducer<T, T> {
+        fun <T> Reducer<T, T>.rep(min: Int): Reducer<T, T> {
+            return ReducerPlus(this, min)
+        }
+
+        infix fun <T> Reducer<T, T>.or(other: Recognizer): Reducer<T, T> {
             return this or other + Mapping.identity()
         }
     }

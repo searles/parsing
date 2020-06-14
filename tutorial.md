@@ -55,13 +55,13 @@ provides information on the current position in the stream.
 
 | Call              | Description                                                                                      | Common Syntax |
 |-------------------|--------------------------------------------------------------------------------------------------|---------------|
-| `a.or(b)`         | Choice of a or b. a and b must be of the same type.                                              | `a \| b`      |
-| `a.then(b)`       | a followed by b. a and b must not both be parsers.                                               | `a b`         |
-| `Reducer.rep(a)`  | Possibly empty repetition of a. a must be a Reducer<T, T>                                        | `a*`          |
-| `Reducer.plus(a)` | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | `a+`          |
-| `Reducer.opt(a)`  | Optional of a. a must be a Reducer<T, T>.                                                        | `a?`          |
+| `a or b`          | Choice of a or b. a and b must be of the same type.                                              | `a \| b`      |
+| `a + b`           | a followed by b. a and b must not both be parsers.                                               | `a b`         |
+| `a.rep()`         | Possibly empty repetition of a. a must be a Reducer<T, T>                                        | `a*`          |
+| `a.rep1()`        | Non-empty repetition of a. a must be a Reducer<T, T>.                                            | `a+`          |
+| `a.opt()`         | Optional of a. a must be a Reducer<T, T>.                                                        | `a?`          |
 | `a.join(b)`       | For possibly empty sequences "b a b a ... b". a must be a Recognizer, b must be a Reducer<T, T>. | `(b (a b)*)?` |
-| `a.joinPlus(b)`   | Like `join` but for non-empty sequences "b a b a ... b".                                         | `b (a b)*`    |
+| `a.join1(b)`      | Like `join` but for non-empty sequences "b a b a ... b".                                         | `b (a b)*`    |
 
 There are further parser combinators but these should be the most important ones.
 

@@ -83,12 +83,11 @@ fun main() {
 
     val sub = Fold.create<Int, Int, Int> { left, right -> left - right }
 
-    sum.set(
-            product + (
+    sum.ref = product + (
                     plus + product.fold(add) or
                     minus + product.fold(sub)
             ).rep()
-    )
+
 
     val stream = readLine()!!.createParserStream()
     // To use a reader, the following can be used:

@@ -57,7 +57,7 @@ interface Recognizer : Recognizable {
         return ReducerJoin(this, reducer)
     }
 
-    fun <T> joinPlus(reducer: Reducer<T, T>): Reducer<T, T> {
+    fun <T> join1(reducer: Reducer<T, T>): Reducer<T, T> {
         return ReducerJoinPlus(this, reducer)
     }
 

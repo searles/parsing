@@ -122,10 +122,11 @@ fun main() {
                 if (result is OpNode && result.op == Op.Sub) result.args[1] else null
     }
 
-    sum.set(
-            product + ((plus.annotate(FormatOp.Infix) + product).fold(add) or (minus.annotate(FormatOp.Infix) + product).fold(sub))
-                    .rep()
-    )
+    sum.ref = product + (
+                    plus.annotate(FormatOp.Infix) + product.fold(add) or
+                    minus.annotate(FormatOp.Infix) + product.fold(sub)
+            ).rep()
+
 
     // Printing a generic Ast
 

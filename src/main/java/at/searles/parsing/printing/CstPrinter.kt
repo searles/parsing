@@ -27,7 +27,7 @@ open class CstPrinter(private val outStream: OutStream) {
      * if the beginning of a line should be indented, this method should check
      * whether it is at the beginning of a line.
      */
-    fun print(seq: CharSequence): CstPrinter {
+    open fun print(seq: CharSequence): CstPrinter {
         append(seq)
         return this
     }

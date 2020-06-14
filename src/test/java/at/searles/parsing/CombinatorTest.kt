@@ -3,7 +3,7 @@ package at.searles.parsing
 import at.searles.lexer.Lexer
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.ParserStream.Companion.createParserStream
-import at.searles.parsing.Reducer.Companion.plus
+import at.searles.parsing.Reducer.Companion.rep1
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree
 import at.searles.regexparser.StringToRegex
@@ -57,7 +57,7 @@ class CombinatorTest {
     @Test
     fun plus1FailTest() {
         // chr+
-        withParser(emptyString.plus(chr.fold(appendSingleChar).plus()))
+        withParser(emptyString.plus(chr.fold(appendSingleChar).rep1()))
         withInput("")
         actParse()
         Assert.assertFalse(isError)
@@ -67,7 +67,7 @@ class CombinatorTest {
     @Test
     fun plus1SuccessTest() {
         // chr+
-        withParser(emptyString.plus(chr.fold(appendSingleChar).plus()))
+        withParser(emptyString.plus(chr.fold(appendSingleChar).rep1()))
         withInput("abc")
         actParse()
         actPrint()

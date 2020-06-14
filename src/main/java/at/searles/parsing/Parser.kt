@@ -66,7 +66,9 @@ interface Parser<T> : Recognizable {
      * created for each rule.
      */
     fun ref(label: String): Parser<T> {
-        return Ref<T>(label).set(this)
+        return Ref<T>(label).apply {
+            ref = this@Parser
+        }
     }
 
     /**

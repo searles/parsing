@@ -278,7 +278,7 @@ class ParserAndPrinterTest {
 
             // this one is recursive, hence
             init {
-                exprParser.set(term.plus(exprReducer.opt()))
+                exprParser.ref = term + exprReducer.opt()
             }
         },
         ITERATIVE {
@@ -312,7 +312,7 @@ class ParserAndPrinterTest {
             }
 
             init {
-                exprParser.set(term.plus(appReducer.rep()))
+                exprParser.ref = term + appReducer.rep()
             }
         };
 

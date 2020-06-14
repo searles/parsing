@@ -29,11 +29,7 @@ class FormattingTest {
         val close = Recognizer.fromString(")", tokenizer, false)
         val expr = Ref<String>("expr")
         val term = a.or(open.plus(expr).annotate(Annotation.BLOCK).plus(close))
-        expr.set(term.plus(
-                term.
-                annotate(Annotation.ARGUMENT).
-                fold(Fold.create<String, String, String> { left, right -> left + right }).rep()
-        ))
+        expr.ref = term + term.annotate(Annotation.ARGUMENT).fold(Fold.create<String, String, String> { left, right -> left + right }).rep()
         val stream: ParserStream = "a(aa((aaa)a)a)".createParserStream()
         stream.tokStream().setListener { _: TokenStream, _: Int, _: Frame -> }
     }
