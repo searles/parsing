@@ -15,5 +15,4 @@ class RecognizerRep(override val parent: Recognizer) : Recognizer, Rep {
     override fun toString(): String {
         return createString()
     }
-
 }

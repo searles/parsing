@@ -45,9 +45,7 @@ fun main() {
     val openPar = Recognizer.fromString("(", lexer, false)
     val closePar = Recognizer.fromString(")", lexer, false)
 
-    val term = num.or(
-            openPar.then(sum).then(closePar)
-    ).ref("term")
+    val term = (num or openPar + sum + closePar).ref("term")
 
     // literal: '-'? term
     // it is actually much easier to rewrite this rule
@@ -65,8 +63,7 @@ fun main() {
     }
 
     val literal =
-            minus.then(term).then(negate)
-                    .or(term).ref("literal")
+            ((minus + term + negate) or term).ref("literal")
 
     // product: term ('*' term | '/' term)* ;
 
@@ -96,10 +93,8 @@ fun main() {
                 if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
-    val product = literal.then(
-            times.annotate(FormatOp.Infix).then(literal).fold(multiply)
-                    .or(slash.annotate(FormatOp.Infix).then(literal).fold(divide)).rep()
-    ).ref("product")
+    val product = (literal + ((times.annotate(FormatOp.Infix) + literal).fold(multiply) or
+            (slash.annotate(FormatOp.Infix) + literal).fold(divide)).rep()).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
 
@@ -128,11 +123,8 @@ fun main() {
     }
 
     sum.set(
-            product.then(
-                    plus.annotate(FormatOp.Infix).then(product).fold(add)
-                            .or(minus.annotate(FormatOp.Infix).then(product).fold(sub))
-                            .rep()
-            )
+            product + ((plus.annotate(FormatOp.Infix) + product).fold(add) or (minus.annotate(FormatOp.Infix) + product).fold(sub))
+                    .rep()
     )
 
     // Printing a generic Ast

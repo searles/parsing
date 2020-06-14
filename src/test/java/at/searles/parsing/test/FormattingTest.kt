@@ -28,8 +28,8 @@ class FormattingTest {
         val open = Recognizer.fromString("(", tokenizer, false)
         val close = Recognizer.fromString(")", tokenizer, false)
         val expr = Ref<String>("expr")
-        val term = a.or(open.then(expr).annotate(Annotation.BLOCK).then(close))
-        expr.set(term.then(
+        val term = a.or(open.plus(expr).annotate(Annotation.BLOCK).plus(close))
+        expr.set(term.plus(
                 term.
                 annotate(Annotation.ARGUMENT).
                 fold(Fold.create<String, String, String> { left, right -> left + right }).rep()

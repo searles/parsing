@@ -278,7 +278,7 @@ class ParserAndPrinterTest {
 
             // this one is recursive, hence
             init {
-                exprParser.set(term.then(exprReducer.opt()))
+                exprParser.set(term.plus(exprReducer.opt()))
             }
         },
         ITERATIVE {
@@ -312,7 +312,7 @@ class ParserAndPrinterTest {
             }
 
             init {
-                exprParser.set(term.then(appReducer.rep()))
+                exprParser.set(term.plus(appReducer.rep()))
             }
         };
 
@@ -328,7 +328,7 @@ class ParserAndPrinterTest {
                             return result.id()
                         }
                     })
-            val wrappedExprParser: Parser<Expr> = Recognizer.fromString("(", tokenizer, false).then(exprParser).then(Recognizer.fromString(")", tokenizer, false))
+            val wrappedExprParser: Parser<Expr> = Recognizer.fromString("(", tokenizer, false).plus(exprParser).plus(Recognizer.fromString(")", tokenizer, false))
             return idParser.or(wrappedExprParser)
         }
     }

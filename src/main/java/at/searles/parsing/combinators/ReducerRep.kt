@@ -13,7 +13,6 @@ import java.util.*
 class ReducerRep<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Rep {
 
     override fun parse(stream: ParserStream, input: T): T {
-
         var item = input
         val preStart = stream.start
 

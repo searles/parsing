@@ -12,34 +12,34 @@ import at.searles.regex.Regex
 interface Recognizer : Recognizable {
     fun print(): ConcreteSyntaxTree
 
-    fun then(right: Recognizer): Recognizer {
+    operator fun plus(right: Recognizer): Recognizer {
         return RecognizerThenRecognizer(this, right)
     }
 
-    fun <T> then(parser: Parser<T>): Parser<T> {
+    operator fun <T> plus(parser: Parser<T>): Parser<T> {
         // corresponds to prefix.
         return RecognizerThenParser(this, parser)
     }
 
     // corresponds to prefix.
-    fun <T, U> then(right: Reducer<T, U>): Reducer<T, U> {
+    operator fun <T, U> plus(right: Reducer<T, U>): Reducer<T, U> {
         return RecognizerThenReducer(this, right)
     }
 
-    fun or(other: Recognizer): Recognizer {
+    infix fun or(other: Recognizer): Recognizer {
         return RecognizerOrRecognizer(this, other)
     }
 
-    fun <T> or(other: Reducer<T, T>): Reducer<T, T> {
-        return this.then(identity<T>()).or(other)
+    infix fun <T> or(other: Reducer<T, T>): Reducer<T, T> {
+        return this + identity<T>() or other
     }
 
-    fun rep(): Recognizer { //Caution in printer!
+    fun rep(): Recognizer {
         return RecognizerRep(this)
     }
 
-    fun plus(): Recognizer { //Caution in printer!
-        return this.then(rep())
+    fun plus(): Recognizer {
+        return this + rep()
     }
 
     fun opt(alwaysPrint: Boolean = false): Recognizer {

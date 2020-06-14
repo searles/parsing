@@ -49,22 +49,22 @@ class ParserPositionTest {
 
     @Test
     fun singleCharTest() {
-        withParser(a.then(positionAssert(0, 1)))
+        withParser(a.plus(positionAssert(0, 1)))
         actParse("A")
         Assert.assertEquals("A", output)
     }
 
     @Test
     fun sequenceTest() {
-        withParser(a.then(b.then(positionAssert(1, 2)).fold(joiner).then(positionAssert(0, 2))))
+        withParser(a.plus(b.plus(positionAssert(1, 2)).fold(joiner).plus(positionAssert(0, 2))))
         actParse("AB")
         Assert.assertEquals("AB", output)
     }
 
     @Test
     fun backtrackingParserResetTest() {
-        withParser(a.then(
-                b.fold(joiner).then(fail).or(positionAssert(0, 1))
+        withParser(a.plus(
+                b.fold(joiner).plus(fail).or(positionAssert(0, 1))
         ))
         actParse("AB")
         Assert.assertEquals("A", output)
@@ -72,8 +72,8 @@ class ParserPositionTest {
 
     @Test
     fun backtrackingRecognizerResetTest() {
-        withParser(z.then(
-                a.then(fail)
+        withParser(z.plus(
+                a.plus(fail)
                         .or(positionInitAssert(0, 1))
         ))
         actParse("ZB")
@@ -82,8 +82,8 @@ class ParserPositionTest {
 
     @Test
     fun backtrackingParserThenRecognizerTest() {
-        withParser(a.then(
-                z.then(fail)
+        withParser(a.plus(
+                z.plus(fail)
                         .or(positionAssert(0, 1))
         ))
         actParse("AB")

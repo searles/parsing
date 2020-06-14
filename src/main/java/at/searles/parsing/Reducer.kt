@@ -26,15 +26,15 @@ interface Reducer<T, U> : Recognizable {
         throw UnsupportedOperationException("printing not supported")
     }
 
-    fun <V> then(right: Reducer<U, V>): Reducer<T, V> {
+    operator fun <V> plus(right: Reducer<U, V>): Reducer<T, V> {
         return ReducerThenReducer(this, right)
     }
 
-    fun then(right: Recognizer): Reducer<T, U> {
+    operator fun plus(right: Recognizer): Reducer<T, U> {
         return ReducerThenRecognizer(this, right)
     }
 
-    fun or(other: Reducer<T, U>): Reducer<T, U> {
+    infix fun or(other: Reducer<T, U>): Reducer<T, U> {
         return ReducerOrReducer(this, other)
     }
 
@@ -60,7 +60,7 @@ interface Reducer<T, U> : Recognizable {
         }
 
         fun <T> Reducer<T, T>.or(other: Recognizer): Reducer<T, T> {
-            return this.or(other.then(Mapping.identity()))
+            return this or other + Mapping.identity()
         }
     }
 }

@@ -12,13 +12,14 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
 
     init {
         require(minCount >= 1) { "minCount must be >= 1" }
+
         var sequence: Reducer<T, T> = reducer
         for (i in 1 until minCount) {
-            sequence = sequence.then(reducer)
+            sequence += reducer
         }
 
-        parser = sequence.then(reducer.rep())
-        printer = reducer.rep().then(sequence)
+        parser = sequence + reducer.rep()
+        printer = reducer.rep() + sequence
     }
 
     override fun parse(stream: ParserStream, input: T): T? {
@@ -34,6 +35,6 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
     }
 
     override fun toString(): String {
-        return reducer.toString() + if (minCount == 1) "+" else "{$minCount}"
+        return reducer.toString() + if (minCount == 1) "+" else "{$minCount,}"
     }
 }

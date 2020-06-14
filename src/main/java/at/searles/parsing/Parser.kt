@@ -32,11 +32,11 @@ interface Parser<T> : Recognizable {
         throw UnsupportedOperationException("printing not supported")
     }
 
-    fun <U> then(right: Reducer<T, U>): Parser<U> {
+    operator fun <U> plus(right: Reducer<T, U>): Parser<U> {
         return ParserThenReducer(this, right)
     }
 
-    fun then(right: Recognizer): Parser<T> {
+    operator fun plus(right: Recognizer): Parser<T> {
         return ParserThenRecognizer(this, right)
     }
 
@@ -50,7 +50,7 @@ interface Parser<T> : Recognizable {
     /**
      * A | B
      */
-    fun orWithReversedPrintOrder(alternative: Parser<T>): Parser<T> {
+    infix fun orSwapOnPrint(alternative: Parser<T>): Parser<T> {
         return ParserOrParserWithReversedPrintOrder(this, alternative)
     }
 
@@ -84,7 +84,7 @@ interface Parser<T> : Recognizable {
          * to obtain the position of the token).
          */
         fun <T> fromToken(tokenId: Int, tokenizer: Tokenizer, exclusive: Boolean, mapping: Mapping<CharSequence, T>): Parser<T> {
-            return TokenParser(tokenId, tokenizer, exclusive).then(mapping)
+            return TokenParser(tokenId, tokenizer, exclusive) + mapping
         }
 
         /**
@@ -92,7 +92,6 @@ interface Parser<T> : Recognizable {
          * an instance of FrameStream.Frame (this knowledge can be used
          * to obtain the position of the token).
          */
-        @JvmStatic
         fun <T> fromRegex(regex: Regex, tokenizer: Tokenizer, exclusive: Boolean, mapping: Mapping<CharSequence, T>): Parser<T> {
             val tokenId = tokenizer.add(regex)
             return fromToken(tokenId, tokenizer, exclusive, mapping)

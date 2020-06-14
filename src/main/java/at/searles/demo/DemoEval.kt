@@ -40,8 +40,9 @@ fun main() {
     val openPar = Recognizer.fromString("(", lexer, false)
     val closePar = Recognizer.fromString(")", lexer, false)
 
-    val term = num.or(
-            openPar.then(sum).then(closePar)
+    val term = (
+            num or
+            openPar + sum + closePar
     ).ref("term")
 
     // literal: '-'? term
@@ -52,9 +53,10 @@ fun main() {
 
     val negate = Mapping.create<Int, Int> { -it }
 
-    val literal =
-            minus.then(term).then(negate)
-                    .or(term).ref("literal")
+    val literal = (
+            minus + term + negate or
+            term
+    ).ref("literal")
 
     // product: term ('*' term | '/' term)* ;
 
@@ -66,11 +68,11 @@ fun main() {
 
     val divide = Fold.create<Int, Int, Int> { left, right -> left / right }
 
-    val product = literal.then(
-            times.then(literal).fold(multiply)
-                    .or(slash.then(literal).fold(divide))
-                    .rep()
-
+    val product = (
+            literal + (
+                    times + literal.fold(multiply) or
+                    slash + literal.fold(divide)
+            ).rep()
     ).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
@@ -82,11 +84,10 @@ fun main() {
     val sub = Fold.create<Int, Int, Int> { left, right -> left - right }
 
     sum.set(
-            product.then(
-                    plus.then(product).fold(add)
-                            .or(minus.then(product).fold(sub))
-                            .rep()
-            )
+            product + (
+                    plus + product.fold(add) or
+                    minus + product.fold(sub)
+            ).rep()
     )
 
     val stream = readLine()!!.createParserStream()
