@@ -17,7 +17,7 @@ public class EscStringParser {
             int cp = stream.get();
 
             if(cp == -1) {
-                throw new RegexParserException("unexpected end: " + stream);
+                throw new RegexpParserException("unexpected end: " + stream);
             }
 
             if(cp == '\"') {

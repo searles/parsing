@@ -1,12 +1,12 @@
-package at.searles.regex;
+package at.searles.regexp;
 
-class Closure implements Regex {
+class Closure implements Regexp {
 
-    private final Regex t;
+    private final Regexp t;
     private final boolean reflexive;
     private final boolean transitive;
 
-    Closure(Regex t, boolean reflexive, boolean transitive) {
+    Closure(Regexp t, boolean reflexive, boolean transitive) {
         this.t = t;
         this.reflexive = reflexive;
         this.transitive = transitive;

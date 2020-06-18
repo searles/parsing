@@ -1,7 +1,7 @@
-package at.searles.regex;
+package at.searles.regexp;
 
 
-class Text implements Regex {
+class Text implements Regexp {
 
     private final String string;
 

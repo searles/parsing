@@ -4,7 +4,7 @@ import at.searles.buf.FrameStream;
 import at.searles.buf.StringWrapper;
 import at.searles.lexer.fsa.FSA;
 import at.searles.lexer.utils.Counter;
-import at.searles.regex.CharSet;
+import at.searles.regexp.CharSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

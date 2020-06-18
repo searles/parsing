@@ -9,7 +9,7 @@ import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.regex.CharSet
+import at.searles.regexp.CharSet
 import org.junit.Assert
 import org.junit.Test
 import java.util.*

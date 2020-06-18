@@ -2,7 +2,6 @@ package at.searles.parsingtools.common
 
 import at.searles.parsing.Fold
 import at.searles.parsing.ParserStream
-import at.searles.utils.Pair
 
 class PairCreator<T, U> : Fold<T, U, Pair<T, U>> {
     override fun apply(stream: ParserStream, left: T, right: U): Pair<T, U> {
@@ -10,11 +9,11 @@ class PairCreator<T, U> : Fold<T, U, Pair<T, U>> {
     }
 
     override fun leftInverse(result: Pair<T, U>): T? {
-        return result.l()
+        return result.first
     }
 
     override fun rightInverse(result: Pair<T, U>): U? {
-        return result.r()
+        return result.second
     }
 
     override fun toString(): String {

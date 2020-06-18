@@ -1,9 +1,9 @@
 package at.searles.lexer;
 
 import at.searles.lexer.fsa.FSA;
-import at.searles.regex.CharSet;
-import at.searles.regex.Regex;
-import at.searles.regex.Visitor;
+import at.searles.regexp.CharSet;
+import at.searles.regexp.Regexp;
+import at.searles.regexp.Visitor;
 
 /**
  * Visitor to create an fsa out of a regex.
@@ -17,25 +17,25 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitOr(Regex l, Regex r) {
+    public FSA visitOr(Regexp l, Regexp r) {
         FSA fsa = l.accept(this);
         return fsa.or(r.accept(this));
     }
 
     @Override
-    public FSA visitThen(Regex l, Regex r) {
+    public FSA visitThen(Regexp l, Regexp r) {
         FSA fsa = l.accept(this);
         return fsa.then(r.accept(this));
     }
 
     @Override
-    public FSA visitNonGreedy(Regex regex) {
-        return regex.accept(this).shortest();
+    public FSA visitNonGreedy(Regexp regexp) {
+        return regexp.accept(this).shortest();
     }
 
     @Override
-    public FSA visitClosure(Regex regex, boolean reflexive, boolean transitive) {
-        FSA parent = regex.accept(this);
+    public FSA visitClosure(Regexp regexp, boolean reflexive, boolean transitive) {
+        FSA parent = regexp.accept(this);
         if (transitive) {
             parent.plus();
         }
@@ -67,7 +67,7 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitRepRange(Regex regex, int min, int max) {
+    public FSA visitRepRange(Regexp regexp, int min, int max) {
         if (min < 0 || max < min) {
             throw new IllegalArgumentException("bad ranges");
         }
@@ -78,7 +78,7 @@ class LexerVisitor implements Visitor<FSA> {
             FSA fsa = null;
 
             for (int i = 0; i < max; ++i) {
-                FSA nextFsa = regex.accept(this);
+                FSA nextFsa = regexp.accept(this);
 
                 if (i >= min) {
                     nextFsa = nextFsa.opt();
@@ -92,7 +92,7 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitRepCount(Regex regex, int count) {
+    public FSA visitRepCount(Regexp regexp, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count < 0!");
         } else if (count == 0) {
@@ -101,7 +101,7 @@ class LexerVisitor implements Visitor<FSA> {
             FSA fsa = null;
 
             for (int i = 0; i < count; ++i) {
-                FSA nextFsa = regex.accept(this);
+                FSA nextFsa = regexp.accept(this);
 
                 fsa = i == 0 ? nextFsa : fsa.then(nextFsa);
             }
@@ -111,7 +111,7 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitRepMin(Regex regex, int min) {
+    public FSA visitRepMin(Regexp regexp, int min) {
         if (min < 0) {
             throw new IllegalArgumentException("min < 0!");
         }
@@ -119,7 +119,7 @@ class LexerVisitor implements Visitor<FSA> {
         FSA fsa = null;
 
         for (int i = 0; i < min; ++i) {
-            FSA nextFsa = regex.accept(this);
+            FSA nextFsa = regexp.accept(this);
 
             fsa = i == 0 ? nextFsa.plus().opt() : fsa.then(nextFsa);
         }

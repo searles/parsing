@@ -5,7 +5,7 @@ import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 
 /**
  * Demo of a simple evaluator of mathematical expressions for
@@ -22,11 +22,11 @@ fun main() {
     val lexer = SkipTokenizer(Lexer())
 
     // ignore white spaces
-    val wsTokenId = lexer.add(StringToRegex.parse("[\n\r\t ]+"))
+    val wsTokenId = lexer.add(RegexpParser.parse("[\n\r\t ]+"))
     lexer.addSkipped(wsTokenId)
 
     // num: [0-9]* ;
-    val numTokenId = lexer.add(StringToRegex.parse("[0-9]+"))
+    val numTokenId = lexer.add(RegexpParser.parse("[0-9]+"))
     val numMapping = Mapping.create<CharSequence, Int> { it.toString().toInt()}
 
     // ref here provides a label that is used by the parser's toString-method.

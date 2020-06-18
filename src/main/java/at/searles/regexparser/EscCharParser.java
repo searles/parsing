@@ -39,7 +39,7 @@ public class EscCharParser {
         } else if ('a' <= digit && digit <= 'f') {
             return digit - 'a' + 10;
         } else {
-            throw new RegexParserException("not a hex: " + ((char) digit));
+            throw new RegexpParserException("not a hex: " + ((char) digit));
         }
     }
 

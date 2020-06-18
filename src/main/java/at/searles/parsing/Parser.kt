@@ -5,7 +5,7 @@ import at.searles.parsing.annotation.AnnotationParser
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenParser
-import at.searles.regex.Regex
+import at.searles.regexp.Regexp
 
 /**
  * A parser is an object that reads tokens from a parser and
@@ -94,8 +94,8 @@ interface Parser<T> : Recognizable {
          * an instance of FrameStream.Frame (this knowledge can be used
          * to obtain the position of the token).
          */
-        fun <T> fromRegex(regex: Regex, tokenizer: Tokenizer, exclusive: Boolean, mapping: Mapping<CharSequence, T>): Parser<T> {
-            val tokenId = tokenizer.add(regex)
+        fun <T> fromRegex(regexp: Regexp, tokenizer: Tokenizer, exclusive: Boolean, mapping: Mapping<CharSequence, T>): Parser<T> {
+            val tokenId = tokenizer.add(regexp)
             return fromToken(tokenId, tokenizer, exclusive, mapping)
         }
     }

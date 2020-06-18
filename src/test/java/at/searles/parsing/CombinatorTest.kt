@@ -6,14 +6,14 @@ import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep1
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 class CombinatorTest {
     private val tokenizer = Lexer()
-    private val chr = fromRegex(StringToRegex.parse("[a-z]"), tokenizer, false, ToString)
+    private val chr = fromRegex(RegexpParser.parse("[a-z]"), tokenizer, false, ToString)
     private val comma = Recognizer.fromString(",", tokenizer, false)
     private val emptyString: Initializer<String> = object : Initializer<String> {
         override fun parse(stream: ParserStream): String {

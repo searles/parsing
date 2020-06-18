@@ -1,20 +1,20 @@
-package at.searles.regex;
+package at.searles.regexp;
 
-class Concat implements Regex {
+class Concat implements Regexp {
 
-    private final Regex l;
-    private final Regex r;
+    private final Regexp l;
+    private final Regexp r;
 
-    Concat(Regex l, Regex r) {
+    Concat(Regexp l, Regexp r) {
         this.l = l;
         this.r = r;
     }
 
-    public Regex l() {
+    public Regexp l() {
         return l;
     }
 
-    public Regex r() {
+    public Regexp r() {
         return r;
     }
 

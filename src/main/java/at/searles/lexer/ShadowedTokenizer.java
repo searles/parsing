@@ -1,7 +1,7 @@
 package at.searles.lexer;
 
 import at.searles.lexer.utils.IntSet;
-import at.searles.regex.Regex;
+import at.searles.regexp.Regexp;
 
 /**
  * This tokenizer can be used to implement soft keywords like
@@ -50,8 +50,8 @@ public class ShadowedTokenizer implements Tokenizer {
     }
 
     @Override
-    public int add(Regex regex) {
-        return parent.add(regex);
+    public int add(Regexp regexp) {
+        return parent.add(regexp);
     }
 
     @Override

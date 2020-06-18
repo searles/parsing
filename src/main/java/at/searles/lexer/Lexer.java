@@ -4,7 +4,7 @@ import at.searles.buf.FrameStream;
 import at.searles.lexer.fsa.FSA;
 import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
-import at.searles.regex.Regex;
+import at.searles.regexp.Regexp;
 
 import java.util.ArrayList;
 
@@ -68,9 +68,9 @@ public class Lexer implements Tokenizer {
         return tokenIdProvider;
     }
 
-    private FSA regexToFsa(Regex regex) {
+    private FSA regexToFsa(Regexp regexp) {
         // Create an fsa for the lexer. Coupling is bad here btw...
-        return regex.accept(new LexerVisitor(this));
+        return regexp.accept(new LexerVisitor(this));
     }
 
     /**
@@ -152,22 +152,22 @@ public class Lexer implements Tokenizer {
     /**
      * Adds a regular expression as a token.
      *
-     * @param regex The regex to be added.
+     * @param regexp The regex to be added.
      * @return the index for this regex. If
      * there has already been a semantically
      * identical regex, an already existing
      * tokenIndex is returned.
      */
-    public int add(Regex regex) {
+    public int add(Regexp regexp) {
         // XXX Check whether regex is empty to avoid infinite loops
-        return add(regexToFsa(regex));
+        return add(regexToFsa(regexp));
     }
 
     /**
      * Creates a new token from a text
      */
     public int add(String s) {
-        return add(Regex.text(s));
+        return add(Regexp.text(s));
     }
 
     /**

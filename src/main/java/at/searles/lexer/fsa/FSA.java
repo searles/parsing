@@ -5,7 +5,7 @@ import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
 import at.searles.lexer.utils.IntervalSet;
 import at.searles.lexer.utils.LexicalSet;
-import at.searles.regex.CharSet;
+import at.searles.regexp.CharSet;
 
 import java.util.*;
 

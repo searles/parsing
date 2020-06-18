@@ -6,7 +6,7 @@ import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsingtools.formatter.CodeFormatter
 import at.searles.parsingtools.formatter.EditableStringBuilder
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -128,7 +128,7 @@ class FormatterTest {
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
 
-        whiteSpaceTokId = lexer.add(StringToRegex.parse("[ \n\r\t]+"))
+        whiteSpaceTokId = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
         tokenizer.addSkipped(whiteSpaceTokId)
 
         val openPar = Recognizer.fromString("(", tokenizer, false)
@@ -153,8 +153,8 @@ class FormatterTest {
                     if (result is NumNode) result.value.toString() else null
         }
 
-        val id = Parser.fromToken(lexer.add(StringToRegex.parse("[a-z]+")), tokenizer, false, idMapping).ref("id")
-        val num = Parser.fromToken(lexer.add(StringToRegex.parse("[0-9]+")), tokenizer, false, numMapping).ref("num")
+        val id = Parser.fromToken(lexer.add(RegexpParser.parse("[a-z]+")), tokenizer, false, idMapping).ref("id")
+        val num = Parser.fromToken(lexer.add(RegexpParser.parse("[0-9]+")), tokenizer, false, numMapping).ref("num")
 
         val expr = Ref<Node>("expr")
 

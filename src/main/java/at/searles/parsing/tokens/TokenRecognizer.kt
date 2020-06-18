@@ -5,13 +5,13 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class TokenRecognizer(val tokId: Int, private val tokenizer: Tokenizer, val exclusive: Boolean, val printed: String) : Recognizer {
+class TokenRecognizer(val tokenId: Int, private val tokenizer: Tokenizer, val exclusive: Boolean, val printed: String) : Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.parseToken(tokenizer, tokId, exclusive) != null
+        return stream.parseToken(tokenizer, tokenId, exclusive) != null
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return ConcreteSyntaxTree.Companion.fromCharSequence(printed)
+        return ConcreteSyntaxTree.fromCharSequence(printed)
     }
 
     override fun toString(): String {

@@ -2,7 +2,7 @@ package at.searles.lexer;
 
 import at.searles.buf.Frame;
 import at.searles.lexer.utils.IntSet;
-import at.searles.regex.Regex;
+import at.searles.regexp.Regexp;
 
 public interface Tokenizer {
 
@@ -29,7 +29,7 @@ public interface Tokenizer {
         return null;
     }
 
-    int add(Regex regex);
+    int add(Regexp regexp);
 
     Lexer lexer();
 }

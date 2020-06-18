@@ -6,8 +6,8 @@ import at.searles.parsing.annotation.AnnotationRecognizer
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenRecognizer
-import at.searles.regex.CharSet
-import at.searles.regex.Regex
+import at.searles.regexp.CharSet
+import at.searles.regexp.Regexp
 
 interface Recognizer : Recognizable {
     fun print(): ConcreteSyntaxTree
@@ -71,7 +71,7 @@ interface Recognizer : Recognizable {
 
     companion object {
         fun fromString(string: String, tokenizer: Tokenizer, exclusive: Boolean): Recognizer {
-            val tokenId = tokenizer.add(Regex.text(string))
+            val tokenId = tokenizer.add(Regexp.text(string))
             return fromToken(tokenId, tokenizer, exclusive, string)
         }
 

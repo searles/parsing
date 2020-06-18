@@ -8,7 +8,7 @@ import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 
 /**
  * Demo of inversion of a parser for the following grammar:
@@ -24,11 +24,11 @@ fun main() {
     val lexer = SkipTokenizer(Lexer())
             
     // ignore white spaces
-    val wsTokenId = lexer.add(StringToRegex.parse("[\n\r\t ]+"))
+    val wsTokenId = lexer.add(RegexpParser.parse("[\n\r\t ]+"))
     lexer.addSkipped(wsTokenId)
 
     // num: [0-9]* ;
-    val numTokenId = lexer.add(StringToRegex.parse("[0-9]+"))
+    val numTokenId = lexer.add(RegexpParser.parse("[0-9]+"))
     val numMapping = object : Mapping<CharSequence, AstNode> {
         override fun parse(stream: ParserStream, input: CharSequence): AstNode =
                 NumNode(Integer.parseInt(input.toString()))

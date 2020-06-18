@@ -1,7 +1,7 @@
 package at.searles.buf.test;
 
 import at.searles.lexer.utils.Interval;
-import at.searles.regex.CharSet;
+import at.searles.regexp.CharSet;
 import org.junit.Assert;
 import org.junit.Test;
 

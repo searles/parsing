@@ -1,14 +1,14 @@
-package at.searles.regex;
+package at.searles.regexp;
 
 /**
  * Strictly speaking not a regex, but a
  * good and efficient replacement for non-greedy.
  */
-class NonGreedy implements Regex {
+class NonGreedy implements Regexp {
 
-    private final Regex t;
+    private final Regexp t;
 
-    NonGreedy(Regex t) {
+    NonGreedy(Regexp t) {
         this.t = t;
     }
 

@@ -6,7 +6,7 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Recognizable
 import at.searles.parsing.Recognizer
-import at.searles.regex.CharSet
+import at.searles.regexp.CharSet
 import org.junit.Assert
 import org.junit.Test
 

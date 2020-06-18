@@ -8,7 +8,7 @@ import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
 import at.searles.parsingtools.list
 import at.searles.parsingtools.list1
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -147,7 +147,7 @@ class PrinterUtilTest {
     private fun initParserUtilList(mayBeEmpty: Boolean, hasSeparator: Boolean) {
         val tokenizer = SkipTokenizer(Lexer())
 
-        whiteSpaceTokId = tokenizer.add(StringToRegex.parse("[ \n\r\t]+"))
+        whiteSpaceTokId = tokenizer.add(RegexpParser.parse("[ \n\r\t]+"))
         tokenizer.addSkipped(whiteSpaceTokId)
 
         val idMapping = object : Mapping<CharSequence, Node> {
@@ -168,7 +168,7 @@ class PrinterUtilTest {
             }
         }
 
-        val id = Parser.fromRegex(StringToRegex.parse("[a-z]+"), tokenizer, false, idMapping).ref("id")
+        val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, false, idMapping).ref("id")
 
         parser = if (hasSeparator)
             if (mayBeEmpty)

@@ -6,7 +6,7 @@ import at.searles.parsing.*
 import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Test
 
@@ -15,11 +15,11 @@ class RecognizableTest {
     private lateinit var inputString: String
 
     private val lexer = SkipTokenizer(Lexer()).also {
-        val ws = it.add(StringToRegex.parse("[ \n]+"))
+        val ws = it.add(RegexpParser.parse("[ \n]+"))
         it.addSkipped(ws)
     }
 
-    private val id = Parser.fromRegex(StringToRegex.parse("[a-z]+"), lexer, true, object: Mapping<CharSequence, String> {
+    private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, true, object: Mapping<CharSequence, String> {
         override fun parse(stream: ParserStream, input: CharSequence): String = input.toString()
         override fun left(result: String): CharSequence? = result
     })

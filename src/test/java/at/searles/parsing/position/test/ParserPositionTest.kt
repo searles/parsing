@@ -4,14 +4,14 @@ import at.searles.lexer.Lexer
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.ParserStream.Companion.createParserStream
-import at.searles.regex.Regex
+import at.searles.regexp.Regexp
 import org.junit.Assert
 import org.junit.Test
 
 class ParserPositionTest {
     val tokenizer = Lexer()
-    val a = fromRegex(Regex.text("A"), tokenizer, false, ToString)
-    val b = fromRegex(Regex.text("B"), tokenizer, false, ToString)
+    val a = fromRegex(Regexp.text("A"), tokenizer, false, ToString)
+    val b = fromRegex(Regexp.text("B"), tokenizer, false, ToString)
     val z = Recognizer.fromString("Z", tokenizer, false)
     val fail: Reducer<String, String> = object: Reducer<String, String> {
         override fun parse(stream: ParserStream, input: String): String? {

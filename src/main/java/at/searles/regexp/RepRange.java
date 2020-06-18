@@ -1,12 +1,12 @@
-package at.searles.regex;
+package at.searles.regexp;
 
-class RepRange implements Regex {
+class RepRange implements Regexp {
 
-    private final Regex t;
+    private final Regexp t;
     private final int min;
     private final int max;
 
-    RepRange(Regex t, int min, int max) {
+    RepRange(Regexp t, int min, int max) {
         this.t = t;
         this.min = min;
         this.max = max;

@@ -1,7 +1,7 @@
 package at.searles.regexparser;
 
 import at.searles.lexer.utils.Interval;
-import at.searles.regex.CharSet;
+import at.searles.regexp.CharSet;
 
 public class CharSetParser {
     // quoted string may contain charsets and .
@@ -30,7 +30,7 @@ public class CharSetParser {
             cp = stream.get();
 
             if (cp == -1) {
-                throw new RegexParserException("unexpected end: " + stream);
+                throw new RegexpParserException("unexpected end: " + stream);
             }
 
             if (cp == ']') {

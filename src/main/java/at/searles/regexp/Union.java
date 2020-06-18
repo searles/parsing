@@ -1,11 +1,11 @@
-package at.searles.regex;
+package at.searles.regexp;
 
-class Union implements Regex {
+class Union implements Regexp {
 
-    private final Regex l;
-    private final Regex r;
+    private final Regexp l;
+    private final Regexp r;
 
-    Union(Regex l, Regex r) {
+    Union(Regexp l, Regexp r) {
         this.l = l;
         this.r = r;
     }

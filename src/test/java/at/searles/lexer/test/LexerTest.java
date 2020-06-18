@@ -3,8 +3,8 @@ package at.searles.lexer.test;
 import at.searles.lexer.Lexer;
 import at.searles.lexer.TokenStream;
 import at.searles.lexer.utils.IntSet;
-import at.searles.regex.CharSet;
-import at.searles.regex.Regex;
+import at.searles.regexp.CharSet;
+import at.searles.regexp.Regexp;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,9 +16,9 @@ public class LexerTest {
     private Lexer lexer;
     private int token;
 
-    private void with(Regex regex) {
+    private void with(Regexp regexp) {
         lexer = new Lexer();
-        token = lexer.add(regex);
+        token = lexer.add(regexp);
     }
 
     private void testIfIsAccepted(String string, String expected) {
@@ -76,7 +76,7 @@ public class LexerTest {
 
     @Test
     public void testOr() {
-        with(Regex.text("ab").or(Regex.text("ac")));
+        with(Regexp.text("ab").or(Regexp.text("ac")));
         testIfIsAccepted("ab", "ab");
         testIfIsAccepted("ac", "ac");
         testIfIsAccepted("bc", null);

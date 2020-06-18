@@ -8,8 +8,8 @@ import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.regex.Regex
-import at.searles.regexparser.StringToRegex
+import at.searles.regexp.Regexp
+import at.searles.regexparser.RegexpParser
 import org.junit.Test
 
 class FormattingTest {
@@ -22,9 +22,9 @@ class FormattingTest {
         // XXX this test currently only checks whether everything works without problems
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
-        val ws = lexer.add(StringToRegex.parse("[ \n\r\t]+"))
+        val ws = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
         tokenizer.addSkipped(ws)
-        val a = fromRegex(Regex.text("a"), tokenizer, false, ToString)
+        val a = fromRegex(Regexp.text("a"), tokenizer, false, ToString)
         val open = Recognizer.fromString("(", tokenizer, false)
         val close = Recognizer.fromString(")", tokenizer, false)
         val expr = Ref<String>("expr")

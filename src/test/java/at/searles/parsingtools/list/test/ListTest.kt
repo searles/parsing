@@ -5,7 +5,7 @@ import at.searles.parsing.*
 import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsingtools.list.EmptyListCreator
 import at.searles.parsingtools.list.ImmutableList
-import at.searles.regexparser.StringToRegex
+import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Test
 
@@ -17,7 +17,7 @@ class ListTest {
 
     private val tokenizer = Lexer()
     private val id =
-        Parser.fromRegex(StringToRegex.parse("[a-z]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
+        Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
             override fun parse(stream: ParserStream, input: CharSequence): Any {
                 return input.toString()
             }
@@ -28,7 +28,7 @@ class ListTest {
         })
 
     private val num =
-        Parser.fromRegex(StringToRegex.parse("[0-9]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
+        Parser.fromRegex(RegexpParser.parse("[0-9]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
             override fun parse(stream: ParserStream, input: CharSequence): Any {
                 return Integer.parseInt(input.toString())
             }

@@ -1,4 +1,4 @@
-package at.searles.regex;
+package at.searles.regexp;
 
 import at.searles.lexer.utils.Interval;
 import at.searles.lexer.utils.IntervalSet;
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class CharSet implements Regex, Iterable<Interval> {
+public class CharSet implements Regexp, Iterable<Interval> {
 
     private final IntervalSet<Void> set;
 

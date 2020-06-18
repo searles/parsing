@@ -1,23 +1,18 @@
 package at.searles.parsingtools.common
 
-import at.searles.parsing.Fold
+import at.searles.parsing.Mapping
 import at.searles.parsing.ParserStream
-import at.searles.utils.Pair
 
-class PairSwapper<T, U> : Fold<T, U, Pair<U, T>> {
-    override fun apply(stream: ParserStream, left: T, right: U): Pair<U, T> {
-        return Pair(right, left)
-    }
-
-    override fun leftInverse(result: Pair<U, T>): T? {
-        return result.r()
-    }
-
-    override fun rightInverse(result: Pair<U, T>): U? {
-        return result.l()
-    }
-
+class PairSwapper<T, U> : Mapping<Pair<T, U>, Pair<U, T>> {
     override fun toString(): String {
-        return "{<y,x>}"
+        return "{<x,y> -> <y,x>}"
+    }
+
+    override fun parse(stream: ParserStream, input: Pair<T, U>): Pair<U, T> {
+        return Pair(input.second, input.first)
+    }
+
+    override fun left(result: Pair<U, T>): Pair<T, U>? {
+        return Pair(result.second, result.first)
     }
 }

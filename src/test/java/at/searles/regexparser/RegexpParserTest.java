@@ -1,11 +1,11 @@
 package at.searles.regexparser;
 
-import at.searles.regex.CharSet;
-import at.searles.regex.Regex;
+import at.searles.regexp.CharSet;
+import at.searles.regexp.Regexp;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StringToRegexTest {
+public class RegexpParserTest {
     @Test
     public void testRawString() {
         CodePointStream stream = new CodePointStream("'a\\b\\\\c\\'d'");
@@ -46,7 +46,7 @@ public class StringToRegexTest {
     public void testUnion() {
         CodePointStream stream = new CodePointStream("'a' | 'b'");
 
-        Regex regex = StringToRegex.union(stream);
+        Regexp regexp = RegexpParser.union(stream);
 
         Assert.assertTrue(stream.end());
     }
@@ -55,7 +55,7 @@ public class StringToRegexTest {
     public void testComment() {
         CodePointStream stream = new CodePointStream("'//' [^\\n]*");
 
-        Regex regex = StringToRegex.union(stream);
+        Regexp regexp = RegexpParser.union(stream);
 
         Assert.assertTrue(stream.end());
     }
