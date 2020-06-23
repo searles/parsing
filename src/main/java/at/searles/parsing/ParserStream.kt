@@ -120,8 +120,8 @@ class ParserStream(private val stream: TokenStream) {
     }
 
     companion object {
-        fun CharSequence.createParserStream(): ParserStream {
-            return ParserStream(TokenStream.fromString(this))
+        fun create(seq: CharSequence): ParserStream {
+            return ParserStream(TokenStream.fromString(seq))
         }
     }
 }

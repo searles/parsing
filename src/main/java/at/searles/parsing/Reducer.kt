@@ -38,6 +38,10 @@ interface Reducer<T, U> : Recognizable {
         return ReducerOrReducer(this, other)
     }
 
+    infix fun orSwapOnPrint(other: Reducer<T, U>): Reducer<T, U> {
+        return ReducerOrReducerWithReversedPrintOrder(this, other)
+    }
+
     fun <C> annotate(annotation: C): Reducer<T, U>? {
         return AnnotationReducer(annotation, this)
     }
