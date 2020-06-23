@@ -5,7 +5,6 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
@@ -226,7 +225,7 @@ class ParserAndPrinterTest {
     }
 
     private fun withInput(input: String) {
-        this.input = input.createParserStream()
+        this.input = ParserStream.create(input)
     }
 
     private fun parse() {

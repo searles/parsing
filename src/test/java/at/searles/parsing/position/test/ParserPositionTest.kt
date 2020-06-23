@@ -3,7 +3,6 @@ package at.searles.parsing.position.test
 import at.searles.lexer.Lexer
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.regexp.Regexp
 import org.junit.Assert
 import org.junit.Test
@@ -95,7 +94,7 @@ class ParserPositionTest {
     }
 
     private fun actParse(str: String) {
-        val parserStream: ParserStream = str.createParserStream()
+        val parserStream: ParserStream = ParserStream.create(str)
         output = parser!!.parse(parserStream)
     }
 

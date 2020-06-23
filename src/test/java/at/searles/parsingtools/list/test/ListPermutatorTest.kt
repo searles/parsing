@@ -1,7 +1,6 @@
 package at.searles.parsingtools.list.test
 
 import at.searles.parsing.ParserStream
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsingtools.list.ListPermutator
 import org.junit.Assert
 import org.junit.Test
@@ -12,7 +11,7 @@ class ListPermutatorTest {
     fun parse() {
         val mapping = ListPermutator<String>(1, 2, 0)
 
-        val result = mapping.parse("".createParserStream(), listOf("A", "B", "C"))
+        val result = mapping.parse(ParserStream.create(""), listOf("A", "B", "C"))
 
         Assert.assertEquals(listOf("B", "C", "A"), result)
     }

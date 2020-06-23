@@ -5,7 +5,6 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.lexer.TokenStream
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.*
 import at.searles.regexparser.RegexpParser
@@ -141,7 +140,7 @@ class PrinterTest {
     }
 
     private fun withInput(input: String) {
-        this.stream = input.createParserStream()
+        this.stream = ParserStream.create(input)
     }
 
     private fun actFormat() {

@@ -3,7 +3,6 @@ package at.searles.demo
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.regexparser.RegexpParser
 
@@ -89,7 +88,7 @@ fun main() {
             ).rep()
 
 
-    val stream = readLine()!!.createParserStream()
+    val stream = ParserStream.create(readLine()!!)
     // To use a reader, the following can be used:
     // val stream = ParserStream(TokStream.fromCharStream(ReaderCharStream(InputStreamReader(System.`in`))))
 

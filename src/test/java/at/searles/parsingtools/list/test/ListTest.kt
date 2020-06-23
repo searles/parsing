@@ -2,7 +2,6 @@ package at.searles.parsingtools.list.test
 
 import at.searles.lexer.Lexer
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsingtools.list.EmptyListCreator
 import at.searles.parsingtools.list.ImmutableList
 import at.searles.regexparser.RegexpParser
@@ -104,7 +103,7 @@ class ListTest {
     }
 
     private fun withInput(input: String) {
-        this.input = input.createParserStream()
+        this.input = ParserStream.create(input)
 
     }
 }

@@ -3,7 +3,6 @@ package at.searles.parsingtools.formatter.test
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
 import at.searles.parsingtools.list
@@ -122,7 +121,7 @@ class PrinterUtilTest {
 
 
     private fun withInput(input: String) {
-        this.stream = input.createParserStream()
+        this.stream = ParserStream.create(input)
     }
 
     private fun actParse() {

@@ -4,7 +4,6 @@ import at.searles.buf.Frame
 import at.searles.lexer.TokenStream
 import at.searles.parsing.BacktrackNotAllowedException
 import at.searles.parsing.ParserStream
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Recognizable
 
 open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser: Recognizable) {
@@ -19,8 +18,7 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
 
     fun format(editableText: EditableText): Long {
         val formatterInstance = FormatterInstance(editableText)
-
-        val stream = editableText.createParserStream()
+        val stream = ParserStream.create(editableText)
 
         stream.tokStream().setListener(formatterInstance)
         stream.listener = formatterInstance

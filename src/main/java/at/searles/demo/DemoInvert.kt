@@ -3,7 +3,6 @@ package at.searles.demo
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
@@ -153,7 +152,7 @@ fun main() {
 
     println("Pretty-Print: ${sum.print(genericAst1)}")
 
-    val stream = readLine()!!.createParserStream()
+    val stream = ParserStream.create(readLine()!!)
     val ast = sum.parse(stream)!!
 
     // now pretty-printTo the tree

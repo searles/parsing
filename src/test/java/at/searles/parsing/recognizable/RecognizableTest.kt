@@ -3,7 +3,6 @@ package at.searles.parsing.recognizable
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.regexparser.RegexpParser
@@ -58,8 +57,8 @@ class RecognizableTest {
     }
 
     private fun checkParseRecognizeEquality(success: Boolean) {
-        val stream1 = inputString.createParserStream()
-        val stream2 = inputString.createParserStream()
+        val stream1 = ParserStream.create(inputString)
+        val stream2 = ParserStream.create(inputString)
 
         val success1 = parser.parse(stream1) != null
         val success2 = parser.recognize(stream2)

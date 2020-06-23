@@ -3,7 +3,6 @@ package at.searles.parsing.test
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.ParserStream
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Recognizable
 import at.searles.parsing.Recognizer
 import at.searles.regexp.CharSet
@@ -99,6 +98,6 @@ class EofTest {
     }
 
     private fun withInput(input: String) {
-        stream = input.createParserStream()
+        stream = ParserStream.create(input)
     }
 }

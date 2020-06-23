@@ -2,7 +2,6 @@ package at.searles.parsing
 
 import at.searles.lexer.Lexer
 import at.searles.parsing.Parser.Companion.fromRegex
-import at.searles.parsing.ParserStream.Companion.createParserStream
 import at.searles.parsing.Reducer.Companion.rep1
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.EmptyConcreteSyntaxTree
@@ -122,7 +121,7 @@ class CombinatorTest {
     }
 
     private fun withInput(input: String) {
-        this.input = input.createParserStream().apply {
+        this.input = ParserStream.create(input).apply {
             isBacktrackAllowed = false
         }
     }
