@@ -30,11 +30,22 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
     }
 
     companion object {
-        fun chars(vararg chars: Int): CharSet {
+        fun chars(vararg chars: Char): CharSet {
             Arrays.sort(chars)
             val set = IntervalSet()
 
             chars.forEach {
+                set.add(Interval(it.toInt(), it.toInt() + 1))
+            }
+
+            return CharSet(set)
+        }
+
+        fun chars(vararg ints: Int): CharSet {
+            Arrays.sort(ints)
+            val set = IntervalSet()
+
+            ints.forEach {
                 set.add(Interval(it, it + 1))
             }
 
