@@ -167,13 +167,13 @@ class PrinterUtilTest {
             }
         }
 
-        val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, false, idMapping).ref("id")
+        val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, idMapping).ref("id")
 
         parser = if (hasSeparator)
             if (mayBeEmpty)
-                id.list(Recognizer.fromString(",", tokenizer, false)).plus(vecMapping)
+                id.list(Recognizer.fromString(",", tokenizer)).plus(vecMapping)
             else
-                id.list1(Recognizer.fromString(",", tokenizer, false)).plus(vecMapping)
+                id.list1(Recognizer.fromString(",", tokenizer)).plus(vecMapping)
         else
             if (mayBeEmpty)
                 id.list().plus(vecMapping)

@@ -2,6 +2,7 @@ package at.searles.parsing
 
 import at.searles.lexer.TokenStream
 import at.searles.lexer.Tokenizer
+import at.searles.lexer.utils.IntervalSet
 
 class ParserStream(private val stream: TokenStream) {
 
@@ -27,12 +28,14 @@ class ParserStream(private val stream: TokenStream) {
         return ParserStreamTrace(this)
     }
 
-    fun parseToken(tokenizer: Tokenizer, tokId: Int, exclusive: Boolean): CharSequence? {
+    fun parseToken(tokenizer: Tokenizer, tokId: Int, exclusive: IntervalSet): CharSequence? {
         val frame = tokenizer.matchToken(stream, tokId, exclusive)
+
         if (frame != null) {
             start = frame.startPosition()
             end = frame.endPosition()
         }
+
         return frame
     }
 

@@ -12,8 +12,8 @@ import org.junit.Test
 
 class CombinatorTest {
     private val tokenizer = Lexer()
-    private val chr = fromRegex(RegexpParser.parse("[a-z]"), tokenizer, false, ToString)
-    private val comma = Recognizer.fromString(",", tokenizer, false)
+    private val chr = fromRegex(RegexpParser.parse("[a-z]"), tokenizer, ToString)
+    private val comma = Recognizer.fromString(",", tokenizer)
     private val emptyString: Initializer<String> = object : Initializer<String> {
         override fun parse(stream: ParserStream): String {
             return ""

@@ -10,7 +10,7 @@ public class CharSetParser {
 
         if (cp == '.') {
             stream.incr();
-            return CharSet.all();
+            return CharSet.Companion.all();
         }
 
         if (cp != '[') {
@@ -24,7 +24,7 @@ public class CharSetParser {
             stream.incr();
         }
 
-        CharSet set = CharSet.empty();
+        CharSet set = CharSet.Companion.empty();
 
         while (true) {
             cp = stream.get();
@@ -39,7 +39,7 @@ public class CharSetParser {
             }
 
             Interval interval = interval(stream);
-            set = set.union(CharSet.interval(interval.start, interval.end));
+            set = set.union(CharSet.Companion.interval(interval.getStart(), interval.getEnd() - 1));
         }
     }
 
@@ -49,9 +49,9 @@ public class CharSetParser {
         if(stream.get() == '-') {
             stream.incr();
             int end = EscCharParser.chr(stream);
-            return new Interval(start, end);
+            return new Interval(start, end + 1);
         }
 
-        return new Interval(start, start);
+        return new Interval(start, start + 1);
     }
 }

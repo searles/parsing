@@ -29,7 +29,7 @@ public class FSATest {
     }
 
     private FSA step(int... chs) {
-        return new FSA(counter, CharSet.chars(chs));
+        return new FSA(counter, CharSet.Companion.chars(chs));
     }
 
     private void assertFullMatch(boolean match, boolean full) {
@@ -48,8 +48,8 @@ public class FSATest {
     public void testThenForOptionalPlusFSA() {
         // Two FSAs with cycles.
         // q1 -a-> q2[term] -b-> q1
-        FSA fsaLeft = step('a').then(step('b')).plus();
-        FSA fsaRight = step('b').then(step('a')).plus().opt();
+        FSA fsaLeft = step('a').then(step('b')).rep1();
+        FSA fsaRight = step('b').then(step('a')).rep1().opt();
 
         withFSA(fsaLeft.then(fsaRight));
 
@@ -71,8 +71,8 @@ public class FSATest {
 
     @Test
     public void testThenForNonOptionalPlusFSA() {
-        FSA fsaLeft = step('a').then(step('b')).plus();
-        FSA fsaRight = step('b').then(step('a')).plus();
+        FSA fsaLeft = step('a').then(step('b')).rep1();
+        FSA fsaRight = step('b').then(step('a')).rep1();
 
         withFSA(fsaLeft.then(fsaRight));
 
@@ -128,7 +128,7 @@ public class FSATest {
 
     @Test
     public void testRepAutomaton() {
-        withFSA(step('a').plus());
+        withFSA(step('a').rep1());
 
         withString("aaaaa");
         assertFullMatch(true, true);

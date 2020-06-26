@@ -9,23 +9,23 @@ import java.util.Objects;
 /**
  * Set of elements
  */
-public class IntervalSet<A> implements Iterable<A> {
+public class IntervalMap<A> implements Iterable<A> {
     /**
      * There are no conflicts in
      */
     protected final ArrayList<Entry<A>> list;
 
-    public IntervalSet() {
+    public IntervalMap() {
         // make things easier
         list = new ArrayList<>(2);
     }
 
-    public IntervalSet(IntervalSet<A> that) {
+    public IntervalMap(IntervalMap<A> that) {
         // make things easier
         list = new ArrayList<>(that.list);
     }
 
-    public <B> IntervalSet(IntervalSet<B> that, MapFn<B, A> mapFn) {
+    public <B> IntervalMap(IntervalMap<B> that, MapFn<B, A> mapFn) {
         list = new ArrayList<>(that.list.size());
 
         Iter<B> it = that.iterator();
@@ -37,8 +37,8 @@ public class IntervalSet<A> implements Iterable<A> {
 
     }
 
-    public <B> IntervalSet<B> copy(MapFn<A, B> mapFn) {
-        return new IntervalSet<>(this, mapFn);
+    public <B> IntervalMap<B> copy(MapFn<A, B> mapFn) {
+        return new IntervalMap<>(this, mapFn);
     }
 
     public void clear() {
@@ -57,7 +57,7 @@ public class IntervalSet<A> implements Iterable<A> {
     @Override
     public boolean equals(Object that) {
         if (this != that && that != null && this.getClass() == that.getClass()) {
-            return this.list.equals(((IntervalSet<?>) that).list);
+            return this.list.equals(((IntervalMap<?>) that).list);
         }
 
         return this == that;
@@ -93,7 +93,7 @@ public class IntervalSet<A> implements Iterable<A> {
     // first start smaller than pos.
     // then, its end must be right next to it.
 
-    public IntervalSet<A> add(IntervalSet<A> that, MergeFn<A> merger) {
+    public IntervalMap<A> add(IntervalMap<A> that, MergeFn<A> merger) {
         for (int i = 0; i < that.list.size(); i += 2) {
             Entry<A> start = that.list.get(i);
             Entry<A> end = that.list.get(i + 1);
@@ -144,7 +144,7 @@ public class IntervalSet<A> implements Iterable<A> {
         }
     }
 
-    public IntervalSet<A> add(int start, int end, A value, MergeFn<A> merger) {
+    public IntervalMap<A> add(int start, int end, A value, MergeFn<A> merger) {
         int index = findStartInsertIndex(start);
 
         // list.get(index).position <= start
@@ -286,10 +286,10 @@ public class IntervalSet<A> implements Iterable<A> {
     }
 
     public static class Iter<A> implements Iterator<A> {
-        private final IntervalSet<A> set;
+        private final IntervalMap<A> set;
         private int index = 0;
 
-        Iter(IntervalSet<A> set) {
+        Iter(IntervalMap<A> set) {
             this.set = set;
         }
 

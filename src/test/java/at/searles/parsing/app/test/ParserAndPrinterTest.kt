@@ -317,17 +317,18 @@ class ParserAndPrinterTest {
 
         fun term(exprParser: Ref<Expr>): Parser<Expr> {
             val tokenizer = Lexer()
-            val idParser: Parser<Expr> = fromRegex(CharSet.interval('a'.toInt(), 'z'.toInt()), tokenizer, false,
-                    object : Mapping<CharSequence, Expr> {
-                        override fun parse(stream: ParserStream, input: CharSequence): Id {
-                            return Id(input.toString())
-                        }
 
-                        override fun left(result: Expr): CharSequence? {
-                            return result.id()
-                        }
-                    })
-            val wrappedExprParser: Parser<Expr> = Recognizer.fromString("(", tokenizer, false).plus(exprParser).plus(Recognizer.fromString(")", tokenizer, false))
+            val idParser: Parser<Expr> = fromRegex(CharSet.interval('a'.toInt(), 'z'.toInt()), tokenizer, object : Mapping<CharSequence, Expr> {
+                override fun parse(stream: ParserStream, input: CharSequence): Id {
+                    return Id(input.toString())
+                }
+
+                override fun left(result: Expr): CharSequence? {
+                    return result.id()
+                }
+            })
+
+            val wrappedExprParser: Parser<Expr> = Recognizer.fromString("(", tokenizer).plus(exprParser).plus(Recognizer.fromString(")", tokenizer))
             return idParser.or(wrappedExprParser)
         }
     }

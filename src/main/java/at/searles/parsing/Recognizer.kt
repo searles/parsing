@@ -1,13 +1,14 @@
 package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
+import at.searles.lexer.utils.IntervalSet
 import at.searles.parsing.Mapping.Companion.identity
 import at.searles.parsing.annotation.AnnotationRecognizer
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.regexp.CharSet
-import at.searles.regexp.Regexp
+import at.searles.regexp.Text
 
 interface Recognizer : Recognizable {
     fun print(): ConcreteSyntaxTree
@@ -70,13 +71,13 @@ interface Recognizer : Recognizable {
     }
 
     companion object {
-        fun fromString(string: String, tokenizer: Tokenizer, exclusive: Boolean): Recognizer {
-            val tokenId = tokenizer.add(Regexp.text(string))
-            return fromToken(tokenId, tokenizer, exclusive, string)
+        fun fromString(string: String, tokenizer: Tokenizer, exclusive: IntervalSet = IntervalSet()): Recognizer {
+            val tokenId = tokenizer.add(Text(string))
+            return fromToken(tokenId, string, tokenizer, exclusive)
         }
 
-        fun fromToken(tokenId: Int, tokenizer: Tokenizer, exclusive: Boolean, string: String): Recognizer {
-            return TokenRecognizer(tokenId, tokenizer, exclusive, string)
+        fun fromToken(tokenId: Int, tokenString: String, tokenizer: Tokenizer, exclusive: IntervalSet = IntervalSet()): Recognizer {
+            return TokenRecognizer(tokenId, tokenizer, exclusive, tokenString)
         }
 
         /**
@@ -85,7 +86,7 @@ interface Recognizer : Recognizable {
          */
         fun eof(tokenizer: Tokenizer): Recognizer {
             val eofId = tokenizer.add(CharSet.chars(-1))
-            return fromToken(eofId, tokenizer, false, "")
+            return fromToken(eofId, "<eof>", tokenizer)
         }
     }
 }

@@ -89,7 +89,7 @@ public class IntSetTest {
         s1.add(6);
 
         s0.retainAll(s1);
-        Assert.assertEquals(3, s0.getAt(0));
+        Assert.assertEquals(3, s0.get(0));
         Assert.assertEquals(1, s0.size());
     }
 

@@ -220,8 +220,8 @@ class PrinterTest {
         whiteSpaceTokId = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
         tokenizer.addSkipped(whiteSpaceTokId)
 
-        val openPar = Recognizer.fromString("(", tokenizer, false)
-        val closePar = Recognizer.fromString(")", tokenizer, false)
+        val openPar = Recognizer.fromString("(", tokenizer)
+        val closePar = Recognizer.fromString(")", tokenizer)
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
@@ -242,8 +242,8 @@ class PrinterTest {
                     if (result is NumNode) result.value.toString() else null
         }
 
-        val id = Parser.fromToken(lexer.add(RegexpParser.parse("[a-z]+")), tokenizer, false, idMapping).ref("id")
-        val num = Parser.fromToken(lexer.add(RegexpParser.parse("[0-9]+")), tokenizer, false, numMapping).ref("num")
+        val id = Parser.fromToken(lexer.add(RegexpParser.parse("[a-z]+")), tokenizer, idMapping).ref("id")
+        val num = Parser.fromToken(lexer.add(RegexpParser.parse("[0-9]+")), tokenizer, numMapping).ref("num")
 
         val expr = Ref<Node>("expr")
 

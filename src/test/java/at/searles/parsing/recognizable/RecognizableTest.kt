@@ -2,6 +2,8 @@ package at.searles.parsing.recognizable
 
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
+import at.searles.lexer.utils.Interval
+import at.searles.lexer.utils.IntervalSet
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
@@ -18,10 +20,10 @@ class RecognizableTest {
         it.addSkipped(ws)
     }
 
-    private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, true, object: Mapping<CharSequence, String> {
+    private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, object: Mapping<CharSequence, String> {
         override fun parse(stream: ParserStream, input: CharSequence): String = input.toString()
         override fun left(result: String): CharSequence? = result
-    })
+    }) // TODO intervalset needed?
 
     private val append: Fold<String, String, String> = Fold.create { l: String, r: String -> l + r }
 

@@ -16,7 +16,7 @@ class ListTest {
 
     private val tokenizer = Lexer()
     private val id =
-        Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
+        Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, object : Mapping<CharSequence, Any> {
             override fun parse(stream: ParserStream, input: CharSequence): Any {
                 return input.toString()
             }
@@ -27,7 +27,7 @@ class ListTest {
         })
 
     private val num =
-        Parser.fromRegex(RegexpParser.parse("[0-9]+"), tokenizer, false, object : Mapping<CharSequence, Any> {
+        Parser.fromRegex(RegexpParser.parse("[0-9]+"), tokenizer, object : Mapping<CharSequence, Any> {
             override fun parse(stream: ParserStream, input: CharSequence): Any {
                 return Integer.parseInt(input.toString())
             }
@@ -56,10 +56,10 @@ class ListTest {
 
         }
     }
-    private val comma = Recognizer.fromString(",", tokenizer, false)
-    private val colon = Recognizer.fromString(":", tokenizer, false)
-    private val stringsPrefix = Recognizer.fromString("S", tokenizer, false)
-    private val intsPrefix = Recognizer.fromString("I", tokenizer, false)
+    private val comma = Recognizer.fromString(",", tokenizer)
+    private val colon = Recognizer.fromString(":", tokenizer)
+    private val stringsPrefix = Recognizer.fromString("S", tokenizer)
+    private val intsPrefix = Recognizer.fromString("I", tokenizer)
     private val strings = stringsPrefix + comma.join1(id.fold(add))
     private val ints = intsPrefix + comma.join1(num.fold(add))
     private val parser = EmptyListCreator<Any>() + colon.join(strings or ints)

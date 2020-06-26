@@ -5,6 +5,7 @@ import at.searles.lexer.TokenStream;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regexp.CharSet;
 import at.searles.regexp.Regexp;
+import at.searles.regexp.Text;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class LexerTest {
 
     @Test
     public void testRange02() {
-        with(CharSet.chars('a').range(0, 2));
+        with(CharSet.Companion.chars('a').range(0, 2));
         testIfIsAccepted("b", "");
         testIfIsAccepted("a", "a");
         testIfIsAccepted("aa", "aa");
@@ -44,7 +45,7 @@ public class LexerTest {
 
     @Test
     public void testRange13() {
-        with(CharSet.chars('a').range(1, 3));
+        with(CharSet.Companion.chars('a').range(1, 3));
         testIfIsAccepted("b", null);
         testIfIsAccepted("a", "a");
         testIfIsAccepted("aa", "aa");
@@ -54,7 +55,7 @@ public class LexerTest {
 
     @Test
     public void testRange23() {
-        with(CharSet.chars('a').range(2, 3));
+        with(CharSet.Companion.chars('a').range(2, 3));
         testIfIsAccepted("b", null);
         testIfIsAccepted("a", null);
         testIfIsAccepted("aa", "aa");
@@ -64,7 +65,7 @@ public class LexerTest {
 
     @Test
     public void testRange24() {
-        with(CharSet.chars('a').range(2, 4));
+        with(CharSet.Companion.chars('a').range(2, 4));
         testIfIsAccepted("b", null);
         testIfIsAccepted("a", null);
         testIfIsAccepted("aa", "aa");
@@ -76,7 +77,7 @@ public class LexerTest {
 
     @Test
     public void testOr() {
-        with(Regexp.text("ab").or(Regexp.text("ac")));
+        with(new Text("ab").or(new Text("ac")));
         testIfIsAccepted("ab", "ab");
         testIfIsAccepted("ac", "ac");
         testIfIsAccepted("bc", null);

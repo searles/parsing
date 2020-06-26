@@ -7,7 +7,7 @@ import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.regexp.Regexp
+import at.searles.regexp.Text
 import at.searles.regexparser.RegexpParser
 import org.junit.Test
 
@@ -23,9 +23,9 @@ class FormattingTest {
         val tokenizer = SkipTokenizer(lexer)
         val ws = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
         tokenizer.addSkipped(ws)
-        val a = fromRegex(Regexp.text("a"), tokenizer, false, ToString)
-        val open = Recognizer.fromString("(", tokenizer, false)
-        val close = Recognizer.fromString(")", tokenizer, false)
+        val a = fromRegex(Text("a"), tokenizer, ToString)
+        val open = Recognizer.fromString("(", tokenizer)
+        val close = Recognizer.fromString(")", tokenizer)
         val expr = Ref<String>("expr")
         val term = a.or(open.plus(expr).annotate(Annotation.BLOCK).plus(close))
         expr.ref = term + term.annotate(Annotation.ARGUMENT).fold(Fold.create<String, String, String> { left, right -> left + right }).rep()

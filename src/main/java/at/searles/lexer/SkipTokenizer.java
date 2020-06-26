@@ -33,7 +33,7 @@ public class SkipTokenizer implements Tokenizer {
                 break;
             }
 
-            stream.advance(currentTokenIds.getAt(index));
+            stream.advance(currentTokenIds.get(index));
 
             currentTokenIds = parent.currentTokenIds(stream);
         }

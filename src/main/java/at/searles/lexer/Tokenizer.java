@@ -2,15 +2,12 @@ package at.searles.lexer;
 
 import at.searles.buf.Frame;
 import at.searles.lexer.utils.IntSet;
+import at.searles.lexer.utils.IntervalSet;
 import at.searles.regexp.Regexp;
 
 public interface Tokenizer {
 
     IntSet currentTokenIds(TokenStream stream);
-
-    default boolean isExclusiveToken(IntSet tokenIds) {
-        return tokenIds.size() == 1;
-    }
 
     /**
      * Returns whether this tokenizer accepts the current element
@@ -18,10 +15,10 @@ public interface Tokenizer {
      * to the next element.
      * @return null if the tokenizer does not recognize this element.
      */
-    default Frame matchToken(TokenStream stream, int tokId, boolean exclusive) {
+    default Frame matchToken(TokenStream stream, int tokId, IntervalSet exclusive) {
         IntSet currentTokenIds = currentTokenIds(stream);
 
-        if(currentTokenIds != null && currentTokenIds.contains(tokId) && (!exclusive || isExclusiveToken(currentTokenIds))) {
+        if(currentTokenIds != null && currentTokenIds.contains(tokId) && (!exclusive.containsAny(currentTokenIds))) {
             stream.advance(tokId);
             return stream.frame();
         }

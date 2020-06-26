@@ -2,6 +2,7 @@ package at.searles.regexparser;
 
 import at.searles.regexp.CharSet;
 import at.searles.regexp.Regexp;
+import at.searles.regexp.Text;
 
 public class RegexpParser {
 
@@ -55,7 +56,7 @@ public class RegexpParser {
         while(true) {
             Regexp next = qualified(stream.trim());
             if(next == null) return regexp;
-            regexp = regexp != null ? regexp.then(next) : next;
+            regexp = regexp != null ? regexp.plus(next) : next;
         }
     }
 
@@ -68,7 +69,7 @@ public class RegexpParser {
 
         switch(stream.get()) {
             case '*': stream.incr(); return regexp.rep();
-            case '+': stream.incr(); return regexp.plus();
+            case '+': stream.incr(); return regexp.rep1();
             case '?': stream.incr(); return regexp.opt();
             case '!': stream.incr(); return regexp.nonGreedy();
             case '{': return range(regexp, stream);
@@ -149,7 +150,7 @@ public class RegexpParser {
         }
 
         if (str != null) {
-            return Regexp.text(str);
+            return new Text(str);
         }
 
         return null;

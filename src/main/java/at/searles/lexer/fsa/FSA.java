@@ -1,10 +1,7 @@
 package at.searles.lexer.fsa;
 
 import at.searles.buf.FrameStream;
-import at.searles.lexer.utils.Counter;
-import at.searles.lexer.utils.IntSet;
-import at.searles.lexer.utils.IntervalSet;
-import at.searles.lexer.utils.LexicalSet;
+import at.searles.lexer.utils.*;
 import at.searles.regexp.CharSet;
 
 import java.util.*;
@@ -45,7 +42,17 @@ public class FSA {
         this.counter = counter;
 
         Node end = newNode(new IntSet(), null);
-        start = newNode(null, set.copyIntervalSet(end)); // not accepting state
+        start = newNode(null, createMap(set, end)); // not accepting state
+    }
+
+    private IntervalMap<FSA.Node> createMap(CharSet set, FSA.Node node) {
+        IntervalMap<FSA.Node> map = new IntervalMap<>();
+
+        for(Interval interval: set) {
+            map.add(interval.getStart(), interval.getEnd(), node, (arg0, arg1) -> node);
+        }
+
+        return map;
     }
 
     /**
@@ -94,9 +101,9 @@ public class FSA {
      * @param transitions The transitions to be used. if null, an empty transition set is used.
      * @return The new node. If transitions was null here, it must be set before it is used!
      */
-    private Node newNode(IntSet acceptors, IntervalSet<Node> transitions) {
+    private Node newNode(IntSet acceptors, IntervalMap<Node> transitions) {
         Node n = new Node(counter.incr());
-        n.transitions = transitions == null ? new IntervalSet<>() : transitions;
+        n.transitions = transitions == null ? new IntervalMap<>() : transitions;
 
         // when we create a node, it is perfectly fine that it is accepting
         // but does not accept any useful token. These nodes are created in
@@ -141,7 +148,7 @@ public class FSA {
         return this;
     }
 
-    public FSA plus() {
+    public FSA rep1() {
         DFAAlgorithm alg = new DFAAlgorithm();
 
         for (Node n : start.accepting()) {
@@ -198,7 +205,7 @@ public class FSA {
         sb.append("start -> ").append(start).append(";\n");
 
         for (Node n : start.nodes()) {
-            IntervalSet.Iter<Node> iterator = n.transitions.iterator();
+            IntervalMap.Iter<Node> iterator = n.transitions.iterator();
 
             while (iterator.hasNext()) {
                 Node m = iterator.next();
@@ -215,7 +222,7 @@ public class FSA {
         return sb.toString();
     }
 
-    private String rangeString(IntervalSet.Iter<Node> iterator) {
+    private String rangeString(IntervalMap.Iter<Node> iterator) {
         String range = Character.toString((char) iterator.start());
 
         if (iterator.start() + 1 < iterator.end()) {
@@ -248,7 +255,7 @@ public class FSA {
         sb.append("]; ");
 
         for (Node n : start.nodes()) {
-            IntervalSet.Iter<Node> iterator = n.transitions.iterator();
+            IntervalMap.Iter<Node> iterator = n.transitions.iterator();
 
             while (iterator.hasNext()) {
                 iterator.next();
@@ -274,7 +281,7 @@ public class FSA {
          * If acceptors is null, the node is not accepting.
          */
         public IntSet acceptors;
-        IntervalSet<Node> transitions;
+        IntervalMap<Node> transitions;
         boolean mark = false; // for mark-and-sweep
 
         Node(int id) {
@@ -427,11 +434,11 @@ public class FSA {
          * @return an interval set of set of nodes that represents the union of
          * all transitions of nodes.
          */
-        private IntervalSet<LexicalSet<Node>> mergeTransitions(LexicalSet<Node> nodes) {
-            IntervalSet<LexicalSet<Node>> transitions = null;
+        private IntervalMap<LexicalSet<Node>> mergeTransitions(LexicalSet<Node> nodes) {
+            IntervalMap<LexicalSet<Node>> transitions = null;
 
             for (Node node : nodes) {
-                IntervalSet<LexicalSet<Node>> currentTransitionsInSet = node.transitions.copy(n -> new LexicalSet<Node>().add(n));
+                IntervalMap<LexicalSet<Node>> currentTransitionsInSet = node.transitions.copy(n -> new LexicalSet<Node>().add(n));
                 if (transitions == null) { // first run in loop
                     transitions = currentTransitionsInSet;
                 } else {
@@ -447,10 +454,10 @@ public class FSA {
         /**
          * Calculates all transitions based on current values in this object.
          */
-        Map<LexicalSet<Node>, IntervalSet<LexicalSet<Node>>> transitions() {
+        Map<LexicalSet<Node>, IntervalMap<LexicalSet<Node>>> transitions() {
             Queue<LexicalSet<Node>> queue = new LinkedList<>();
 
-            Map<LexicalSet<Node>, IntervalSet<LexicalSet<Node>>> transitions = new TreeMap<>();
+            Map<LexicalSet<Node>, IntervalMap<LexicalSet<Node>>> transitions = new TreeMap<>();
 
             for (LexicalSet<Node> set : replacementMap.values()) {
                 queue.offer(set);
@@ -460,7 +467,7 @@ public class FSA {
                 LexicalSet<Node> current = queue.poll();
 
                 if (!transitions.containsKey(current)) {
-                    IntervalSet<LexicalSet<Node>> dests = mergeTransitions(current);
+                    IntervalMap<LexicalSet<Node>> dests = mergeTransitions(current);
 
                     // must update dests according to replacement map.
 
@@ -498,7 +505,7 @@ public class FSA {
         }
 
         void commit() {
-            Map<LexicalSet<Node>, IntervalSet<LexicalSet<Node>>> transitions = transitions();
+            Map<LexicalSet<Node>, IntervalMap<LexicalSet<Node>>> transitions = transitions();
 
             // Need to assign nodes
             Map<LexicalSet<Node>, Node> nodeAssignment = new TreeMap<>();
@@ -522,7 +529,7 @@ public class FSA {
             // Update transitions to new nodes
             // XXX optimization: This is only necessary for those nodes that are not kept.
             for (Node n : start.nodes()) {
-                for (IntervalSet.Iter<Node> it = n.transitions.iterator(); it.hasNext(); ) {
+                for (IntervalMap.Iter<Node> it = n.transitions.iterator(); it.hasNext(); ) {
                     if (replacementMap.containsKey(it.next())) {
                         it.setValue(nodeAssignment.get(replacementMap.get(it.value())));
                     }

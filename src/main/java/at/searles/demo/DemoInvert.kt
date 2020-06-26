@@ -36,13 +36,13 @@ fun main() {
                 if (result is NumNode) result.value.toString() else null
     }
 
-    val num = Parser.fromToken(numTokenId, lexer, true, numMapping).ref("num")
+    val num = Parser.fromToken(numTokenId, lexer, numMapping).ref("num")
 
     // term: num | '(' sum ')'
     val sum = Ref<AstNode>("sum")
 
-    val openPar = Recognizer.fromString("(", lexer, false)
-    val closePar = Recognizer.fromString(")", lexer, false)
+    val openPar = Recognizer.fromString("(", lexer)
+    val closePar = Recognizer.fromString(")", lexer)
 
     val term = (num or openPar + sum + closePar).ref("term")
 
@@ -51,7 +51,7 @@ fun main() {
     // literal: '-' term | term
 
 
-    val minus = Recognizer.fromString("-", lexer, false)
+    val minus = Recognizer.fromString("-", lexer)
 
     val negate = object : Mapping<AstNode, AstNode> {
         override fun parse(stream: ParserStream, input: AstNode): AstNode =
@@ -66,7 +66,7 @@ fun main() {
 
     // product: term ('*' term | '/' term)* ;
 
-    val times = Recognizer.fromString("*", lexer, false)
+    val times = Recognizer.fromString("*", lexer)
 
     val multiply = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
@@ -79,7 +79,7 @@ fun main() {
                 if (result is OpNode && result.op == Op.Mul) result.args[1] else null
     }
 
-    val slash = Recognizer.fromString("/", lexer, false)
+    val slash = Recognizer.fromString("/", lexer)
 
     val divide = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =
@@ -97,7 +97,7 @@ fun main() {
 
     // sum: product ('+' product | '-' product)* ;
 
-    val plus = Recognizer.fromString("+", lexer, false)
+    val plus = Recognizer.fromString("+", lexer)
 
     val add = object : Fold<AstNode, AstNode, AstNode> {
         override fun apply(stream: ParserStream, left: AstNode, right: AstNode): AstNode =

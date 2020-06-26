@@ -5,6 +5,7 @@ import at.searles.lexer.fsa.FSA;
 import at.searles.lexer.utils.Counter;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regexp.Regexp;
+import at.searles.regexp.Text;
 
 import java.util.ArrayList;
 
@@ -167,7 +168,7 @@ public class Lexer implements Tokenizer {
      * Creates a new token from a text
      */
     public int add(String s) {
-        return add(Regexp.text(s));
+        return add(new Text(s));
     }
 
     /**

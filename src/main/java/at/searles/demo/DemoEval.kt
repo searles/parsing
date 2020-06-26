@@ -31,13 +31,13 @@ fun main() {
     // ref here provides a label that is used by the parser's toString-method.
     // This improves debugging because in case of an error it is easier to spot 
     // the concrete parser.
-    val num = Parser.fromToken(numTokenId, lexer, true, numMapping).ref("num")
+    val num = Parser.fromToken(numTokenId, lexer, numMapping).ref("num")
     
     // term: num | '(' sum ')'
     val sum = Ref<Int>("sum")
 
-    val openPar = Recognizer.fromString("(", lexer, false)
-    val closePar = Recognizer.fromString(")", lexer, false)
+    val openPar = Recognizer.fromString("(", lexer)
+    val closePar = Recognizer.fromString(")", lexer)
 
     val term = (
             num or
@@ -48,7 +48,7 @@ fun main() {
     // it is actually much easier to rewrite this rule
     // literal: '-' term | term
 
-    val minus = Recognizer.fromString("-", lexer, false)
+    val minus = Recognizer.fromString("-", lexer)
 
     val negate = Mapping.create<Int, Int> { -it }
 
@@ -59,11 +59,11 @@ fun main() {
 
     // product: term ('*' term | '/' term)* ;
 
-    val times = Recognizer.fromString("*", lexer, false)
+    val times = Recognizer.fromString("*", lexer)
 
     val multiply = Fold.create<Int, Int, Int> { left, right -> left * right }
 
-    val slash = Recognizer.fromString("/", lexer, false)
+    val slash = Recognizer.fromString("/", lexer)
 
     val divide = Fold.create<Int, Int, Int> { left, right -> left / right }
 
@@ -76,7 +76,7 @@ fun main() {
 
     // sum: product ('+' product | '-' product)* ;
 
-    val plus = Recognizer.fromString("+", lexer, false)
+    val plus = Recognizer.fromString("+", lexer)
 
     val add = Fold.create<Int, Int, Int> { left, right -> left + right }
 

@@ -34,17 +34,21 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitClosure(Regexp regexp, boolean reflexive, boolean transitive) {
+    public FSA visitRep(Regexp regexp) {
         FSA parent = regexp.accept(this);
-        if (transitive) {
-            parent.plus();
-        }
+        return parent.rep1().opt();
+    }
 
-        if (reflexive) {
-            parent.opt();
-        }
+    @Override
+    public FSA visitRep1(Regexp regexp) {
+        FSA parent = regexp.accept(this);
+        return parent.rep1();
+    }
 
-        return parent;
+    @Override
+    public FSA visitOpt(Regexp regexp) {
+        FSA parent = regexp.accept(this);
+        return parent.rep1().opt();
     }
 
     @Override
@@ -53,7 +57,7 @@ class LexerVisitor implements Visitor<FSA> {
         FSA fsa = null; // empty one.
 
         for (int i = 0; i < string.length(); ) {
-            FSA nextFSA = new FSA(lexer.fsaNodeCounter, CharSet.chars(string.codePointAt(i)));
+            FSA nextFSA = new FSA(lexer.fsaNodeCounter, CharSet.Companion.chars(string.codePointAt(i)));
             if (fsa == null) {
                 fsa = nextFSA;
             } else {
@@ -121,7 +125,7 @@ class LexerVisitor implements Visitor<FSA> {
         for (int i = 0; i < min; ++i) {
             FSA nextFsa = regexp.accept(this);
 
-            fsa = i == 0 ? nextFsa.plus().opt() : fsa.then(nextFsa);
+            fsa = i == 0 ? nextFsa.rep1().opt() : fsa.then(nextFsa);
         }
 
         return fsa;
