@@ -10,5 +10,4 @@ class Text(seq: CharSequence) : Regexp {
     override fun <A> accept(visitor: Visitor<A>): A {
         return visitor.visitText(string)
     }
-
 }

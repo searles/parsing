@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer;
 import at.searles.lexer.SkipTokenizer;
 import at.searles.lexer.TokenStream;
 import at.searles.lexer.utils.Counter;
-import at.searles.lexer.utils.IntervalSet;
+import at.searles.lexer.utils.IntSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +39,10 @@ public class TokenStreamListenerTest {
         });
 
         for(int i = 0; i < 4; ++i) {
-            Assert.assertNotNull(tokenizer.matchToken(stream, aId, new IntervalSet()));
+            Assert.assertNotNull(tokenizer.matchToken(stream, aId, new IntSet()));
         }
 
-        Assert.assertNull(tokenizer.matchToken(stream, aId, new IntervalSet()));
+        Assert.assertNull(tokenizer.matchToken(stream, aId, new IntSet()));
         Assert.assertEquals(8, counter.get());
     }
 }
