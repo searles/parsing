@@ -1,12 +1,13 @@
 package at.searles.parsing.tokens
 
 import at.searles.lexer.Tokenizer
+import at.searles.lexer.utils.IntSet
 import at.searles.lexer.utils.IntervalSet
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class TokenParser(val tokenId: Int, val tokenizer: Tokenizer, val exclusive: IntervalSet = IntervalSet()) : Parser<CharSequence> {
+class TokenParser(val tokenId: Int, val tokenizer: Tokenizer, val exclusive: IntSet = IntSet()) : Parser<CharSequence> {
     override fun recognize(stream: ParserStream): Boolean {
         return stream.parseToken(tokenizer, tokenId, exclusive) != null
     }
