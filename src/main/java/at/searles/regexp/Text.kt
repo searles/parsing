@@ -10,4 +10,10 @@ class Text(seq: CharSequence) : Regexp {
     override fun <A> accept(visitor: Visitor<A>): A {
         return visitor.visitText(string)
     }
+
+    companion object {
+        fun many(vararg seqs: CharSequence): Regexp {
+            return seqs.drop(1).fold(Text(seqs.first()) as Regexp, { a, b -> a or Text(b) } )
+        }
+    }
 }
