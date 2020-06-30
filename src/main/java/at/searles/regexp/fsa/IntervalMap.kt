@@ -1,7 +1,6 @@
 package at.searles.regexp.fsa
 
 import at.searles.lexer.utils.Interval
-import kotlin.math.max
 import kotlin.math.min
 
 class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
@@ -17,7 +16,7 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
     }
 
     fun add(interval: Interval, value: A, mergeFn: (A, A) -> A = { _, _ -> error("intersect") }) {
-        var pos = indexOfCeil(interval.start)
+        var pos = indexOfOverlapOrCeil(interval.start)
 
         var start = interval.start
         val end = interval.end
@@ -55,14 +54,13 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
         }
     }
 
-    private fun indexOfCeil(value: Int): Int {
+    private fun indexOfOverlapOrCeil(value: Int): Int {
         var l = 0
         var r = size
 
         while(l != r) {
             val m = (l + r) / 2
 
-            // is interval left of intervals[m]
             when {
                 value < entries[m].interval.start -> r = m
                 entries[m].interval.end <= value -> l = m + 1
@@ -74,7 +72,7 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
     }
 
     operator fun get(value: Int): A? {
-        val pos = indexOfCeil(value)
+        val pos = indexOfOverlapOrCeil(value)
 
         return entries.getOrNull(pos)?.let {
             return if(it.interval.contains(value)) {

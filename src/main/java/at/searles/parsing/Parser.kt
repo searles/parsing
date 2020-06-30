@@ -2,7 +2,6 @@ package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
 import at.searles.lexer.utils.IntSet
-import at.searles.lexer.utils.IntervalSet
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.annotation.AnnotationParser
 import at.searles.parsing.combinators.*
@@ -120,7 +119,7 @@ interface Parser<T> : Recognizable {
          * to obtain the position of the token).
          */
         fun <T> fromToken(tokenId: Int, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>, exclusive: IntSet = IntSet()): Parser<T> {
-            return TokenParser(tokenId, tokenizer, exclusive) + mapping
+            return TokenParser(tokenId, tokenizer) + mapping
         }
 
         /**

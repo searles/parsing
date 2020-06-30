@@ -77,7 +77,7 @@ interface Recognizer : Recognizable {
         }
 
         fun fromToken(tokenId: Int, tokenString: String, tokenizer: Tokenizer, exclusive: IntSet = IntSet()): Recognizer {
-            return TokenRecognizer(tokenId, tokenizer, exclusive, tokenString)
+            return TokenRecognizer(tokenId, tokenizer, tokenString)
         }
 
         /**

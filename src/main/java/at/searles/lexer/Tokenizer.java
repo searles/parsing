@@ -2,7 +2,6 @@ package at.searles.lexer;
 
 import at.searles.buf.Frame;
 import at.searles.lexer.utils.IntSet;
-import at.searles.lexer.utils.IntervalSet;
 import at.searles.regexp.Regexp;
 
 public interface Tokenizer {
@@ -15,10 +14,10 @@ public interface Tokenizer {
      * to the next element.
      * @return null if the tokenizer does not recognize this element.
      */
-    default Frame matchToken(TokenStream stream, int tokId, IntSet exclusive) {
+    default Frame matchToken(TokenStream stream, int tokId) {
         IntSet currentTokenIds = currentTokenIds(stream);
 
-        if(currentTokenIds != null && currentTokenIds.contains(tokId) && (!exclusive.containsAny(currentTokenIds))) {
+        if(currentTokenIds != null && currentTokenIds.contains(tokId)) {
             stream.advance(tokId);
             return stream.frame();
         }

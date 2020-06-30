@@ -80,7 +80,9 @@ class Automaton(val startNode: Node) {
             makeComplement()
         }
 
-        return complement1.union(complement2).apply {
+        val intersectComplement = complement1.union(complement2)
+
+        return intersectComplement.apply {
             makeComplement()
             removeTraps()
         }
@@ -136,20 +138,35 @@ class Automaton(val startNode: Node) {
         }
     }
 
-    private fun removeTraps(node: Node = startNode, isTrapMap: HashMap<Node, Boolean> = HashMap()) {
-        if(isTrapMap.contains(node)) {
-            return
+    private fun removeTraps() {
+        val isConnectedToFinalNodeMap = HashMap<Node, Boolean>()
+
+        isConnectedToFinalNode(startNode, isConnectedToFinalNodeMap)
+
+        nodes.forEach { node ->
+            node.connections.removeAll { dst ->
+                !isConnectedToFinalNodeMap.getValue(dst.value)
+            }
+        }
+    }
+
+    private fun isConnectedToFinalNode(node: Node, isConnectedToFinalNodeMap: HashMap<Node, Boolean>): Boolean {
+        isConnectedToFinalNodeMap[node]?.let {
+            return it
         }
 
-        isTrapMap[node] = !node.isFinal // pessimistic
+        isConnectedToFinalNodeMap[node] = node.isFinal // pessimistic
+
+        var isConnectedToFinalNode = node.isFinal
 
         node.connections.values.forEach {
-            removeTraps(it, isTrapMap)
+            if(isConnectedToFinalNode(it, isConnectedToFinalNodeMap)) {
+                isConnectedToFinalNode = true
+            }
         }
 
-        node.connections.removeAll {
-            isTrapMap.getValue(it.value)
-        }
+        isConnectedToFinalNodeMap[node] = isConnectedToFinalNode
+        return isConnectedToFinalNode
     }
 
     private fun makeComplement() {

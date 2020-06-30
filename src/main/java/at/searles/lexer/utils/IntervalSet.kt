@@ -23,25 +23,26 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
     }
 
     fun add(interval: Interval) {
-        val ceilPos = indexOfCeil(interval.start)
+        // -1 because touch is fine.
+        val pos = indexOfOverlapOrCeil(interval.start - 1)
 
-        if(ceilPos == intervals.size) {
+        if(pos == intervals.size) {
             intervals.add(interval)
             return
         }
 
-        val start = min(interval.start, intervals[ceilPos].start)
+        val start = min(interval.start, intervals[pos].start)
         var end = interval.end
 
-        while(ceilPos < intervals.size && intervals[ceilPos].start <= end) {
-            end = max(end, intervals[ceilPos].end)
-            intervals.removeAt(ceilPos)
+        while(pos < intervals.size && intervals[pos].start <= end) {
+            end = max(end, intervals[pos].end)
+            intervals.removeAt(pos)
         }
 
-        intervals.add(ceilPos, Interval(start, end))
+        intervals.add(pos, Interval(start, end))
     }
 
-    private fun indexOfCeil(value: Int): Int {
+    private fun indexOfOverlapOrCeil(value: Int): Int {
         var l = 0
         var r = size
 
@@ -51,7 +52,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
             // is interval left of intervals[m]
             when {
                 value < intervals[m].start -> r = m
-                intervals[m].end < value -> l = m + 1 // TODO Check why not <=?
+                intervals[m].end <= value -> l = m + 1
                 else -> return m
             }
         }
@@ -106,7 +107,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
     }
 
     fun contains(value: Int): Boolean {
-        val pos = indexOfCeil(value)
+        val pos = indexOfOverlapOrCeil(value)
         return pos < intervals.size && intervals[pos].contains(value)
     }
 

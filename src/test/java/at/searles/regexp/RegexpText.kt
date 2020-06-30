@@ -89,4 +89,78 @@ class RegexpText {
         Assert.assertEquals(
                 "q0 --[97, 98)--> q1*", automaton.toString())
     }
+
+    @Test
+    fun testMinusOfRep() {
+        val regexp = Text("a").or(Text("b")).rep1().minus(Text("bb").rep())
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0 --[97, 98)--> q2*, q0 --[98, 99)--> q1*; q1* --[97, 98)--> q2*; q2* --[97, 98)--> q2*, q2* --[98, 99)--> q3*; q3* --[97, 98)--> q2*, q3* --[98, 99)--> q3*", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfRep() {
+        val regexp = Text("a").or(Text("b")).rep1().and(Text("bb").rep())
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "should be 'bb'", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfSame() {
+        val regexp = Text("a").or(Text("b")).rep1().and(Text("a").or(Text("b")).rep1())
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0 --[97, 98)--> q2*, " +
+                        "q0 --[98, 99)--> q1*; " +
+                        "q1* --[97, 98)--> q2*, " +
+                        "q1* --[98, 99)--> q1*; " +
+                        "q2* --[97, 98)--> q2*, " +
+                        "q2* --[98, 99)--> q1*", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfSubset() {
+        val regexp = Text("a").or(Text("aa")).and(Text("a"))
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0 --[97, 98)--> q1*", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfSuperset() {
+        val regexp = Text("a").or(Text("aa")).and(Text("a").rep())
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0 --[97, 98)--> q1*; q1* --[97, 98)--> q2*", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfMultiplesOf2And3() {
+        val regexp = Text("aa").rep().and(Text("aaa").rep())
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0* --[97, 98)--> q1; " +
+                        "q1 --[97, 98)--> q2; " +
+                        "q2 --[97, 98)--> q3; " +
+                        "q3 --[97, 98)--> q4; " +
+                        "q4 --[97, 98)--> q5; " +
+                        "q5 --[97, 98)--> q6*; " +
+                        "q6* --[97, 98)--> q1", automaton.toString())
+    }
+
+    @Test
+    fun testAndOfConcatenation() {
+        val regexp = Text("a").or(Text("aa")).and(Text("aa"))
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals(
+                "q0 --[97, 98)--> q1; q1 --[97, 98)--> q2*", automaton.toString())
+    }
+
+    @Test
+    fun textEmptyIntersection() {
+        val regexp = Text("a").and(Text("c"))
+        val automaton = regexp.accept(RegexpToFsaVisitor)
+        Assert.assertEquals("", automaton.toString())
+    }
 }
