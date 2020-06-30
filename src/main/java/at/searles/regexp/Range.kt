@@ -1,8 +1,8 @@
 package at.searles.regexp
 
-internal class RepRange(private val t: Regexp, private val min: Int, private val max: Int) : Regexp {
+internal class Range(private val t: Regexp, private val min: Int, private val max: Int) : Regexp {
     override fun <A> accept(visitor: Visitor<A>): A {
-        return visitor.visitRepRange(t, min, max)
+        return visitor.visitRange(t, min, max)
     }
 
     override fun toString(): String {

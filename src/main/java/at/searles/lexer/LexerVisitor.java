@@ -1,9 +1,11 @@
 package at.searles.lexer;
 
 import at.searles.lexer.fsa.FSA;
+import at.searles.lexer.utils.IntervalSet;
 import at.searles.regexp.CharSet;
 import at.searles.regexp.Regexp;
 import at.searles.regexp.Visitor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Visitor to create an fsa out of a regex.
@@ -29,20 +31,8 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitNonGreedy(Regexp regexp) {
+    public FSA visitFirstMatch(Regexp regexp) {
         return regexp.accept(this).shortest();
-    }
-
-    @Override
-    public FSA visitRep(Regexp regexp) {
-        FSA parent = regexp.accept(this);
-        return parent.rep1().opt();
-    }
-
-    @Override
-    public FSA visitRep1(Regexp regexp) {
-        FSA parent = regexp.accept(this);
-        return parent.rep1();
     }
 
     @Override
@@ -70,52 +60,52 @@ class LexerVisitor implements Visitor<FSA> {
         return fsa;
     }
 
+//    @Override
+//    public FSA visitRepRange(Regexp regexp, int min, int max) {
+//        if (min < 0 || max < min) {
+//            throw new IllegalArgumentException("bad ranges");
+//        }
+//
+//        if (min == 0 && max == 0) {
+//            return visitEmpty();
+//        } else {
+//            FSA fsa = null;
+//
+//            for (int i = 0; i < max; ++i) {
+//                FSA nextFsa = regexp.accept(this);
+//
+//                if (i >= min) {
+//                    nextFsa = nextFsa.opt();
+//                }
+//
+//                fsa = i == 0 ? nextFsa : fsa.then(nextFsa);
+//            }
+//
+//            return fsa;
+//        }
+//    }
+//
+//    @Override
+//    public FSA visitRepCount(Regexp regexp, int count) {
+//        if (count < 0) {
+//            throw new IllegalArgumentException("count < 0!");
+//        } else if (count == 0) {
+//            return visitEmpty();
+//        } else {
+//            FSA fsa = null;
+//
+//            for (int i = 0; i < count; ++i) {
+//                FSA nextFsa = regexp.accept(this);
+//
+//                fsa = i == 0 ? nextFsa : fsa.then(nextFsa);
+//            }
+//
+//            return fsa;
+//        }
+//    }
+
     @Override
-    public FSA visitRepRange(Regexp regexp, int min, int max) {
-        if (min < 0 || max < min) {
-            throw new IllegalArgumentException("bad ranges");
-        }
-
-        if (min == 0 && max == 0) {
-            return visitEmpty();
-        } else {
-            FSA fsa = null;
-
-            for (int i = 0; i < max; ++i) {
-                FSA nextFsa = regexp.accept(this);
-
-                if (i >= min) {
-                    nextFsa = nextFsa.opt();
-                }
-
-                fsa = i == 0 ? nextFsa : fsa.then(nextFsa);
-            }
-
-            return fsa;
-        }
-    }
-
-    @Override
-    public FSA visitRepCount(Regexp regexp, int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count < 0!");
-        } else if (count == 0) {
-            return visitEmpty();
-        } else {
-            FSA fsa = null;
-
-            for (int i = 0; i < count; ++i) {
-                FSA nextFsa = regexp.accept(this);
-
-                fsa = i == 0 ? nextFsa : fsa.then(nextFsa);
-            }
-
-            return fsa;
-        }
-    }
-
-    @Override
-    public FSA visitRepMin(Regexp regexp, int min) {
+    public FSA visitAtLeast(Regexp regexp, int min) {
         if (min < 0) {
             throw new IllegalArgumentException("min < 0!");
         }
@@ -137,7 +127,37 @@ class LexerVisitor implements Visitor<FSA> {
     }
 
     @Override
-    public FSA visitCharSet(CharSet set) {
-        return new FSA(lexer.fsaNodeCounter, set);
+    public FSA visitKleeneStar(@NotNull Regexp regexp) {
+        return null;
+    }
+
+    @Override
+    public FSA visitKleenePlus(@NotNull Regexp regexp) {
+        return null;
+    }
+
+    @Override
+    public FSA visitMinus(@NotNull Regexp l, @NotNull Regexp r) {
+        return null;
+    }
+
+    @Override
+    public FSA visitAnd(@NotNull Regexp l, @NotNull Regexp r) {
+        return null;
+    }
+
+    @Override
+    public FSA visitSet(@NotNull IntervalSet set) {
+        return null;
+    }
+
+    @Override
+    public FSA visitCount(@NotNull Regexp regexp, int count) {
+        return null;
+    }
+
+    @Override
+    public FSA visitRange(@NotNull Regexp regexp, int min, int max) {
+        return null;
     }
 }

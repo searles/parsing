@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  * Set of elements
  */
+@Deprecated
 public class IntervalMap<A> implements Iterable<A> {
     /**
      * There are no conflicts in

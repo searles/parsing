@@ -14,7 +14,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
     }
 
     override fun <A> accept(visitor: Visitor<A>): A {
-        return visitor.visitCharSet(this)
+        return visitor.visitSet(set)
     }
 
     override fun toString(): String {

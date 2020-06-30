@@ -1,11 +1,17 @@
 package at.searles.lexer.utils
 
 import java.util.*
+import kotlin.math.min
 
-class IntSet(size: Int = 16) {
+class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
 
     private var elements: IntArray
     private var size: Int
+
+    init {
+        elements = IntArray(size)
+        this.size = 0
+    }
 
     operator fun get(index: Int): Int {
         return elements[index]
@@ -120,21 +126,38 @@ class IntSet(size: Int = 16) {
         return elements[size - 1]
     }
 
-    override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append("{")
-        for (i in 0 until size) {
-            if (i > 0) {
-                sb.append(", ")
-            }
-            sb.append(get(i))
-        }
-        sb.append("}")
-        return sb.toString()
+    fun clear() {
+        size = 0
     }
 
-    init {
-        elements = IntArray(size)
-        this.size = 0
+    override fun compareTo(other: IntSet): Int {
+        repeat(min(size, other.size)) {
+            val cmp = elements[it].compareTo(elementAt(it))
+
+            if(cmp != 0) {
+                return cmp
+            }
+        }
+
+        return size.compareTo(other.size)
+    }
+
+    override fun toString(): String {
+        return "{${this.joinToString(", ")}}"
+    }
+
+
+    override fun iterator(): Iterator<Int> {
+        return object: Iterator<Int>{
+            var index = 0
+
+            override fun hasNext(): Boolean {
+                return index < size
+            }
+
+            override fun next(): Int {
+                return this@IntSet[index++]
+            }
+        }
     }
 }

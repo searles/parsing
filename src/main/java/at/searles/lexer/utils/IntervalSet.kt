@@ -3,9 +3,18 @@ package at.searles.lexer.utils
 import kotlin.math.max
 import kotlin.math.min
 
-class IntervalSet: Iterable<Interval> {
+/**
+ * Format is start - end - start - end ...
+ */
+class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
 
     private val intervals = ArrayList<Interval>()
+
+    init {
+        intervals.forEach {
+            this.intervals.add(it)
+        }
+    }
 
     val size get() = intervals.size
 
@@ -14,42 +23,41 @@ class IntervalSet: Iterable<Interval> {
     }
 
     fun add(interval: Interval) {
+        val ceilPos = indexOfCeil(interval.start)
+
+        if(ceilPos == intervals.size) {
+            intervals.add(interval)
+            return
+        }
+
+        val start = min(interval.start, intervals[ceilPos].start)
+        var end = interval.end
+
+        while(ceilPos < intervals.size && intervals[ceilPos].start <= end) {
+            end = max(end, intervals[ceilPos].end)
+            intervals.removeAt(ceilPos)
+        }
+
+        intervals.add(ceilPos, Interval(start, end))
+    }
+
+    private fun indexOfCeil(value: Int): Int {
         var l = 0
         var r = size
 
         while(l != r) {
             val m = (l + r) / 2
 
-        // is interval left of intervals[m]
-            if(interval.end < intervals[m].start) {
-                r = m
-            } else if(intervals[m].end < interval.start) {
-                l = m + 1
-            } else {
-                intervals[m] = Interval(min(interval.start, intervals[m].start), max(interval.end, intervals[m].end))
-                mergeIfPossibleAt(m)
-                return
+            // is interval left of intervals[m]
+            when {
+                value < intervals[m].start -> r = m
+                intervals[m].end < value -> l = m + 1 // TODO Check why not <=?
+                else -> return m
             }
         }
 
-        intervals.add(l, interval)
+        return l
     }
-
-    private fun mergeIfPossibleAt(index: Int) {
-        if(canMergeWithRight(index)) {
-            intervals[index] = Interval(intervals[index].start, intervals[index + 1].end)
-            intervals.removeAt(index + 1)
-        }
-
-        if(canMergeWithLeft(index)) {
-            intervals[index - 1] = Interval(intervals[index - 1].start, intervals[index].end)
-            intervals.removeAt(index)
-        }
-    }
-
-    private fun canMergeWithLeft(index: Int) = index > 0 && intervals[index - 1].end >= intervals[index].start
-
-    private fun canMergeWithRight(index: Int) = index < intervals.size - 1 && intervals[index].end >= intervals[index + 1].start
 
     fun copy(): IntervalSet {
         return IntervalSet().also {
@@ -60,7 +68,7 @@ class IntervalSet: Iterable<Interval> {
     /**
      * Invert for the range
      */
-    fun inverted(rangeStart: Int, rangeEnd: Int): IntervalSet {
+    fun inverted(rangeStart: Int = Integer.MIN_VALUE, rangeEnd: Int = Integer.MAX_VALUE): IntervalSet {
         var start = rangeStart
 
         val invertedSet = IntervalSet()
@@ -98,23 +106,8 @@ class IntervalSet: Iterable<Interval> {
     }
 
     fun contains(value: Int): Boolean {
-        var l = 0
-        var r = size
-
-        while(l != r) {
-            val m = (l + r) / 2
-
-            // is value left of intervals[m]
-            if(value < intervals[m].start) {
-                r = m
-            } else if(intervals[m].end <= value) {
-                l = m + 1
-            } else {
-                return true
-            }
-        }
-
-        return false
+        val pos = indexOfCeil(value)
+        return pos < intervals.size && intervals[pos].contains(value)
     }
 
     fun containsAny(other: IntervalSet): Boolean {

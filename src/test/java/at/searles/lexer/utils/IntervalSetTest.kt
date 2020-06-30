@@ -148,6 +148,38 @@ class IntervalSetTest {
     }
 
     @Test
+    fun testInsertLargeRange() {
+        val set = IntervalSet()
+
+        set.add(Interval(1, 2))
+        set.add(Interval(3, 4))
+        set.add(Interval(5, 6))
+        set.add(Interval(0, 7))
+
+        val iterator = set.iterator()
+
+        Assert.assertEquals(Interval(0, 7), iterator.next())
+
+        Assert.assertFalse(iterator.hasNext())
+    }
+
+    @Test
+    fun testInsertLargeRangeOuterOverlap() {
+        val set = IntervalSet()
+
+        set.add(Interval(1, 2))
+        set.add(Interval(3, 4))
+        set.add(Interval(5, 6))
+        set.add(Interval(2, 5))
+
+        val iterator = set.iterator()
+
+        Assert.assertEquals(Interval(1, 6), iterator.next())
+
+        Assert.assertFalse(iterator.hasNext())
+    }
+
+    @Test
     fun testContains() {
         val set = IntervalSet()
 

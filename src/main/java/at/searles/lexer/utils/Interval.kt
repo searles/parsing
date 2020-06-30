@@ -20,4 +20,10 @@ data class Interval(val start: Int, val end: Int) : Comparable<Interval> {
     override fun toString(): String {
         return "[$start, $end)"
     }
+
+    companion object {
+        val all by lazy {
+            Interval(Int.MIN_VALUE, Int.MAX_VALUE)
+        }
+    }
 }
