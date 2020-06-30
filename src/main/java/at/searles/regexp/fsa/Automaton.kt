@@ -1,5 +1,6 @@
 package at.searles.regexp.fsa
 
+import at.searles.buf.FrameStream
 import at.searles.lexer.utils.Interval
 import at.searles.lexer.utils.IntervalSet
 import java.util.*
@@ -7,6 +8,24 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
 class Automaton(val startNode: Node) {
+
+    fun accept(stream: FrameStream): Node? {
+        var n: Node? = startNode
+        var acceptedNode: Node? = null
+
+        while (n != null) {
+            if (n.isFinal) {
+                stream.mark()
+                acceptedNode = n
+            }
+
+            val ch = stream.next()
+            n = n.accept(ch)
+        }
+
+        return acceptedNode
+    }
+
     fun union(other: Automaton): Automaton {
         require(this != other) { "Automata must be distinct" }
 
@@ -47,7 +66,7 @@ class Automaton(val startNode: Node) {
     fun kleeneStar(): Automaton {
         val algorithm = Determinization()
 
-        val newStartNode = Node() // will be set final in Determinization
+        val newStartNode = Node()
         algorithm.addFinalStates(nodes.filter { it.isFinal } + newStartNode)
 
         algorithm.epsilonConnect(newStartNode, startNode)
@@ -113,19 +132,19 @@ class Automaton(val startNode: Node) {
         val nodeMap = HashMap<Node, Node>()
 
         nodes.forEach {
-            nodeMap[it] = Node().apply {
-                // TODO correct if sth is added
-                isFinal = it.isFinal
-            }
+            nodeMap[it] = Node(it.isFinal, it.set)
         }
 
         nodes.forEach { node ->
             val copyNode = nodeMap.getValue(node)
-            // TODO Yuck, don't like.
             copyNode.connections = node.connections.mapValues { nodeMap.getValue(it) }
         }
 
         return Automaton(nodeMap.getValue(startNode))
+    }
+
+    fun setId(id: Int) {
+        nodes.filter { it.isFinal }.forEach { it.addId(id) }
     }
 
     private fun addTrap() {
@@ -266,6 +285,10 @@ class Automaton(val startNode: Node) {
             }
 
             return Automaton(startNode)
+        }
+
+        fun all(): Automaton {
+            return create(IntervalSet(Interval(0, Int.MAX_VALUE)))
         }
     }
 }

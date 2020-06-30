@@ -95,7 +95,16 @@ class RegexpText {
         val regexp = Text("a").or(Text("b")).rep1().minus(Text("bb").rep())
         val automaton = regexp.accept(RegexpToFsaVisitor)
         Assert.assertEquals(
-                "q0 --[97, 98)--> q2*, q0 --[98, 99)--> q1*; q1* --[97, 98)--> q2*; q2* --[97, 98)--> q2*, q2* --[98, 99)--> q3*; q3* --[97, 98)--> q2*, q3* --[98, 99)--> q3*", automaton.toString())
+                "q0 --[97, 98)--> q3*, " +
+                        "q0 --[98, 99)--> q1*; " +
+                        "q1* --[97, 98)--> q3*, " +
+                        "q1* --[98, 99)--> q2; " +
+                        "q2 --[97, 98)--> q3*, " +
+                        "q2 --[98, 99)--> q1*; " +
+                        "q3* --[97, 98)--> q3*, " +
+                        "q3* --[98, 99)--> q4*; " +
+                        "q4* --[97, 98)--> q3*, " +
+                        "q4* --[98, 99)--> q4*", automaton.toString())
     }
 
     @Test

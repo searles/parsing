@@ -1,5 +1,6 @@
 package at.searles.regexp.fsa
 
+import at.searles.lexer.utils.IntSet
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -48,13 +49,17 @@ class Determinization {
     }
 
     private fun getNodeFromSet(nodeSet: Set<Node>, nodeTable: HashMap<Set<Node>, Node> = HashMap()): Node {
-        val epsilonClosure = getEpsilonClosure(nodeSet)
-
         return nodeTable.getOrPut(nodeSet) {
-            // TODO Create node with specific properties!
-            Node().apply {
-                isFinal = epsilonClosure.any { finalStates.contains(it) }
+            val epsilonClosure = getEpsilonClosure(nodeSet)
+
+            val isFinal = epsilonClosure.any { finalStates.contains(it) }
+            val set = IntSet()
+
+            epsilonClosure.forEach {
+                set.addAll(it.set)
             }
+
+            Node(isFinal, set)
         }
     }
 

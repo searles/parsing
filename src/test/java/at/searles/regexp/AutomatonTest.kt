@@ -1,5 +1,6 @@
 package at.searles.regexp
 
+import at.searles.buf.StringWrapper
 import at.searles.lexer.utils.Interval
 import at.searles.lexer.utils.IntervalSet
 import at.searles.regexp.fsa.Automaton
@@ -46,4 +47,65 @@ class AutomatonTest {
         Assert.assertEquals(automaton.toString(), automaton.createCopy().toString())
     }
 
+    @Test
+    fun acceptSingleLetter() {
+        val automaton = Automaton.create("a")
+        val stream = StringWrapper("a")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals(-1, stream.next())
+    }
+
+    @Test
+    fun acceptLetterInUnion() {
+        val automaton = Automaton.create("a").union(Automaton.create("aa"))
+        val stream = StringWrapper("a")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals(-1, stream.next())
+    }
+
+    @Test
+    fun acceptLettersInRep() {
+        val automaton = Automaton.create("a").kleeneStar()
+        val stream = StringWrapper("aaa")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals(-1, stream.next())
+    }
+
+    @Test
+    fun acceptLettersInRepWithNonFullMatch() {
+        val automaton = Automaton.create("a").kleeneStar()
+        val stream = StringWrapper("aaab")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals("aaa", stream.frame().toString())
+    }
+
+    @Test
+    fun firstMatchTest() {
+        val automaton = Automaton.create("(").concat(Automaton.all().kleeneStar()).concat(Automaton.create(")")).firstMatch()
+        val stream = StringWrapper("(aa))")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals("(aa)", stream.frame().toString())
+    }
+
+    @Test
+    fun longestMatchTest() {
+        val automaton = Automaton.create("(").concat(Automaton.all().kleeneStar()).concat(Automaton.create(")"))
+        val stream = StringWrapper("(aa))")
+
+        Assert.assertTrue(automaton.accept(stream) != null)
+        Assert.assertEquals("(aa))", stream.frame().toString())
+    }
+
+    @Test
+    fun mismatch() {
+        val automaton = Automaton.create("ab")
+        val stream = StringWrapper("aa")
+
+        Assert.assertTrue(automaton.accept(stream) == null)
+    }
 }

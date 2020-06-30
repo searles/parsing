@@ -1,4 +1,4 @@
-package at.searles.parsingtools.formatter.test
+package at.searles.parsingtools.formatter
 
 import at.searles.buf.Frame
 import at.searles.lexer.Lexer
@@ -225,7 +225,7 @@ class PrinterTest {
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                IdNode(stream.createTrace(), input.toString())
+                    IdNode(stream.createTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -233,10 +233,10 @@ class PrinterTest {
 
         val numMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                NumNode(
-                    stream.createTrace(),
-                    Integer.parseInt(input.toString())
-                )
+                    NumNode(
+                            stream.createTrace(),
+                            Integer.parseInt(input.toString())
+                    )
 
             override fun left(result: Node): CharSequence? =
                     if (result is NumNode) result.value.toString() else null

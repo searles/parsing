@@ -1,4 +1,4 @@
-package at.searles.parsingtools.formatter.test
+package at.searles.parsingtools.formatter
 
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer

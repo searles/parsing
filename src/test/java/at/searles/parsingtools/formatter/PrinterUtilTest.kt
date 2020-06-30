@@ -1,4 +1,4 @@
-package at.searles.parsingtools.formatter.test
+package at.searles.parsingtools.formatter
 
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
@@ -149,7 +149,7 @@ class PrinterUtilTest {
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, left: CharSequence): Node =
-                IdNode(stream.createTrace(), left.toString())
+                    IdNode(stream.createTrace(), left.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null

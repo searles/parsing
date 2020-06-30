@@ -1,4 +1,4 @@
-package at.searles.parsingtools.list.test
+package at.searles.parsingtools.list
 
 import at.searles.parsingtools.list.ListAppender
 import org.junit.Assert

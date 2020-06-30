@@ -1,4 +1,4 @@
-package at.searles.parsingtools.list.test
+package at.searles.parsingtools.list
 
 import at.searles.lexer.Lexer
 import at.searles.parsing.*
