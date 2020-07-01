@@ -148,16 +148,16 @@ class PrinterUtilTest {
         tokenizer.addSkipped(whiteSpaceTokId)
 
         val idMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(stream: ParserStream, left: CharSequence): Node =
-                    IdNode(stream.createTrace(), left.toString())
+            override fun parse(stream: ParserStream, input: CharSequence): Node =
+                    IdNode(stream.createTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
         }
 
         val vecMapping = object: Mapping<List<Node>, Node> {
-            override fun parse(stream: ParserStream, left: List<Node>): Node {
-                return VecNode(stream.createTrace(), left)
+            override fun parse(stream: ParserStream, input: List<Node>): Node {
+                return VecNode(stream.createTrace(), input)
             }
 
             override fun left(result: Node): List<Node>? {

@@ -2,8 +2,6 @@ package at.searles.parsingtools.list
 
 import at.searles.lexer.Lexer
 import at.searles.parsing.*
-import at.searles.parsingtools.list.EmptyListCreator
-import at.searles.parsingtools.list.ImmutableList
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Test

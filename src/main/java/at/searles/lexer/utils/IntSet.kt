@@ -5,13 +5,10 @@ import kotlin.math.min
 
 class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
 
-    private var elements: IntArray
-    private var size: Int
-
-    init {
-        elements = IntArray(size)
-        this.size = 0
-    }
+    private var elements = IntArray(size)
+    
+    var size: Int = 0
+        private set
 
     operator fun get(index: Int): Int {
         return elements[index]
@@ -47,25 +44,21 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
         return true
     }
 
-    fun size(): Int {
-        return size
-    }
-
     val isEmpty: Boolean
         get() = size == 0
 
     fun addAll(other: IntSet) {
-        for (i in 0 until other.size()) {
+        for (i in 0 until other.size) {
             add(other[i])
         }
     }
 
     operator fun contains(item: Int): Boolean {
-        return Arrays.binarySearch(elements, 0, size(), item) >= 0
+        return Arrays.binarySearch(elements, 0, size, item) >= 0
     }
 
     fun retainAll(other: IntSet) {
-        for (i in size() - 1 downTo 0) {
+        for (i in size - 1 downTo 0) {
             if (!other.contains(get(i))) {
                 removeAt(i)
             }
@@ -73,7 +66,7 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
     }
 
     fun removeAll(other: IntSet) {
-        for (i in 0 until other.size()) {
+        for (i in 0 until other.size) {
             remove(other[i])
         }
     }
@@ -95,7 +88,7 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
     fun containsAny(other: IntSet): Boolean {
         var i0 = 0
         var i1 = 0
-        while (i0 < size() && i1 < other.size()) {
+        while (i0 < size && i1 < other.size) {
             if (get(i0) < other[i1]) {
                 i0++
             } else if (get(i0) > other[i1]) {
@@ -110,7 +103,7 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
     fun indexOfFirstMatch(other: IntSet): Int {
         var i0 = 0
         var i1 = 0
-        while (i0 < size() && i1 < other.size()) {
+        while (i0 < size && i1 < other.size) {
             if (get(i0) < other[i1]) {
                 i0++
             } else if (get(i0) > other[i1]) {

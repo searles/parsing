@@ -1,7 +1,6 @@
 package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
-import at.searles.lexer.utils.IntSet
 import at.searles.parsing.Mapping.Companion.identity
 import at.searles.parsing.annotation.AnnotationRecognizer
 import at.searles.parsing.combinators.*
@@ -71,12 +70,12 @@ interface Recognizer : Recognizable {
     }
 
     companion object {
-        fun fromString(string: String, tokenizer: Tokenizer, exclusive: IntSet = IntSet()): Recognizer {
+        fun fromString(string: String, tokenizer: Tokenizer): Recognizer {
             val tokenId = tokenizer.add(Text(string))
-            return fromToken(tokenId, string, tokenizer, exclusive)
+            return fromToken(tokenId, string, tokenizer)
         }
 
-        fun fromToken(tokenId: Int, tokenString: String, tokenizer: Tokenizer, exclusive: IntSet = IntSet()): Recognizer {
+        fun fromToken(tokenId: Int, tokenString: String, tokenizer: Tokenizer): Recognizer {
             return TokenRecognizer(tokenId, tokenizer, tokenString)
         }
 

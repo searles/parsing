@@ -58,7 +58,7 @@ object RegexpToFsaVisitor: Visitor<Automaton> {
         return when (count) {
             0 -> Automaton.empty()
             1 -> automaton
-            else -> repeat(count - 1, automaton).concat(automaton)
+            else -> repeat(count - 1, automaton.createCopy()).concat(automaton)
         }
     }
 

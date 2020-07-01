@@ -1,4 +1,4 @@
-package at.searles.buf.test
+package at.searles.buf
 
 import at.searles.lexer.utils.Interval
 import at.searles.regexp.CharSet
@@ -7,14 +7,14 @@ import org.junit.Test
 import java.util.*
 
 class CharSetTest {
-    private var set: CharSet? = null
+    private lateinit var set: CharSet
 
     @Test
     fun testCharSetInvert() {
         with(CharSet.chars('.'.toInt()))
-        set = set!!.invert()
+        set = set.invert()
         val l: MutableList<Interval> = LinkedList()
-        for (i in set!!) {
+        for (i in set) {
             l.add(i)
         }
         Assert.assertEquals(2, l.size.toLong())

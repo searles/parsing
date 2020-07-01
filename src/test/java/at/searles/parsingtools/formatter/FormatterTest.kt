@@ -4,8 +4,6 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsingtools.formatter.CodeFormatter
-import at.searles.parsingtools.formatter.EditableStringBuilder
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before

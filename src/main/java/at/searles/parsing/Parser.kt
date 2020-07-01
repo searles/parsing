@@ -1,7 +1,6 @@
 package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
-import at.searles.lexer.utils.IntSet
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.annotation.AnnotationParser
 import at.searles.parsing.combinators.*
@@ -118,7 +117,7 @@ interface Parser<T> : Recognizable {
          * an instance of FrameStream.Frame (this knowledge can be used
          * to obtain the position of the token).
          */
-        fun <T> fromToken(tokenId: Int, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>, exclusive: IntSet = IntSet()): Parser<T> {
+        fun <T> fromToken(tokenId: Int, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>): Parser<T> {
             return TokenParser(tokenId, tokenizer) + mapping
         }
 
@@ -127,9 +126,9 @@ interface Parser<T> : Recognizable {
          * an instance of FrameStream.Frame (this knowledge can be used
          * to obtain the position of the token).
          */
-        fun <T> fromRegex(regexp: Regexp, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>, exclusive: IntSet = IntSet()): Parser<T> {
+        fun <T> fromRegex(regexp: Regexp, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>): Parser<T> {
             val tokenId = tokenizer.add(regexp)
-            return fromToken(tokenId, tokenizer, mapping, exclusive)
+            return fromToken(tokenId, tokenizer, mapping)
         }
     }
 }

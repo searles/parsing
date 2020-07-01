@@ -1,10 +1,9 @@
-package at.searles.parsing.test
+package at.searles.parsing
 
 import at.searles.buf.Frame
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.lexer.TokenStream
-import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.regexp.Text
@@ -30,7 +29,9 @@ class FormattingTest {
         val term = a.or(open.plus(expr).annotate(Annotation.BLOCK).plus(close))
         expr.ref = term + term.annotate(Annotation.ARGUMENT).fold(Fold.create<String, String, String> { left, right -> left + right }).rep()
         val stream: ParserStream = ParserStream.create("a(aa((aaa)a)a)")
-        stream.tokStream().setListener { _: TokenStream, _: Int, _: Frame -> }
+        stream.tokStream().setListener(object: TokenStream.Listener {
+            override fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame) {}
+        })
     }
 
     companion object {

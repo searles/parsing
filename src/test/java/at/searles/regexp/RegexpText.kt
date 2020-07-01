@@ -112,7 +112,7 @@ class RegexpText {
         val regexp = Text("a").or(Text("b")).rep1().and(Text("bb").rep())
         val automaton = regexp.accept(RegexpToFsaVisitor)
         Assert.assertEquals(
-                "should be 'bb'", automaton.toString())
+                "q0 --[98, 99)--> q1; q1 --[98, 99)--> q2*; q2* --[98, 99)--> q1", automaton.toString())
     }
 
     @Test

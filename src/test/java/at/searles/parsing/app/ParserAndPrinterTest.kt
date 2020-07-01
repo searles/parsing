@@ -1,4 +1,4 @@
-package at.searles.parsing.app.test
+package at.searles.parsing.app
 
 import at.searles.buf.CharStream
 import at.searles.lexer.Lexer
@@ -258,11 +258,11 @@ class ParserAndPrinterTest {
                         }
 
                         override fun leftInverse(result: Expr): Expr? {
-                            return result.left()
+                            return (result as? App)?.left
                         }
 
                         override fun rightInverse(result: Expr): Expr? {
-                            return result.right()
+                            return (result as? App)?.right
                         }
                     }
             )
@@ -294,11 +294,11 @@ class ParserAndPrinterTest {
                         }
 
                         override fun leftInverse(result: Expr): Expr? {
-                            return result.left()
+                            return (result as? App)?.left
                         }
 
                         override fun rightInverse(result: Expr): Expr? {
-                            return result.right()
+                            return (result as? App)?.right
                         }
                     })
 
@@ -324,7 +324,7 @@ class ParserAndPrinterTest {
                 }
 
                 override fun left(result: Expr): CharSequence? {
-                    return result.id()
+                    return (result as? Id)?.id
                 }
             })
 

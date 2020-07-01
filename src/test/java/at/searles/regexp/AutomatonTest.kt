@@ -80,7 +80,7 @@ class AutomatonTest {
         val stream = StringWrapper("aaab")
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("aaa", stream.frame().toString())
+        Assert.assertEquals("aaa", stream.frame.toString())
     }
 
     @Test
@@ -89,7 +89,7 @@ class AutomatonTest {
         val stream = StringWrapper("(aa))")
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa)", stream.frame().toString())
+        Assert.assertEquals("(aa)", stream.frame.toString())
     }
 
     @Test
@@ -98,7 +98,7 @@ class AutomatonTest {
         val stream = StringWrapper("(aa))")
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa))", stream.frame().toString())
+        Assert.assertEquals("(aa))", stream.frame.toString())
     }
 
     @Test

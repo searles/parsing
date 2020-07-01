@@ -1,7 +1,5 @@
-package at.searles.lexer.test;
+package at.searles.lexer;
 
-import at.searles.lexer.Lexer;
-import at.searles.lexer.TokenStream;
 import at.searles.lexer.utils.IntSet;
 import at.searles.regexp.CharSet;
 import at.searles.regexp.Regexp;
@@ -23,15 +21,13 @@ public class LexerTest {
     }
 
     private void testIfIsAccepted(String string, String expected) {
-        TokenStream stream = TokenStream.fromString(string);
+        TokenStream stream = TokenStream.Companion.fromString(string);
 
         IntSet tokIds = stream.current(lexer);
 
         Assert.assertEquals(expected != null, tokIds != null);
-
         Assert.assertEquals(expected != null, tokIds != null && tokIds.contains(token));
-
-        Assert.assertEquals(expected, tokIds != null ? stream.frame().toString() : null);
+        Assert.assertEquals(expected, tokIds != null ? stream.getFrame().toString() : null);
     }
 
     @Test

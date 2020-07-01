@@ -1,6 +1,6 @@
-package at.searles.buf;
+package at.searles.buf
 
-public interface CharStream {
+interface CharStream {
     /**
      * Returns the next char from this stream (unicode).
      * This method considers chars beyond the 65536-limit in
@@ -8,5 +8,5 @@ public interface CharStream {
      *
      * @return -1 if there are no more elements.
      */
-    int next();
+    operator fun next(): Int
 }

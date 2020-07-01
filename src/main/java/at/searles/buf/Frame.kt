@@ -1,13 +1,13 @@
-package at.searles.buf;
+package at.searles.buf
 
-public interface Frame extends CharSequence {
+interface Frame : CharSequence {
     /**
      * The pointer to the current frame start.
      */
-    long startPosition();
+    fun startPosition(): Long
 
     /**
      * The pointer to the current frame start.
      */
-    long endPosition();
+    fun endPosition(): Long
 }

@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class Automaton(val startNode: Node) {
+class Automaton(val startNode: Node = Node()) {
 
     fun accept(stream: FrameStream): Node? {
         var n: Node? = startNode
@@ -157,35 +157,40 @@ class Automaton(val startNode: Node) {
         }
     }
 
-    private fun removeTraps() {
-        val isConnectedToFinalNodeMap = HashMap<Node, Boolean>()
+    fun removeTraps() {
+        val reverseConnections = getReverseConnections()
+        val reachableFromFinalStates = HashSet<Node>()
 
-        isConnectedToFinalNode(startNode, isConnectedToFinalNodeMap)
+        nodes.filter { it.isFinal }.forEach {
+            collectAllReachableFromState(it, reverseConnections, reachableFromFinalStates)
+        }
 
-        nodes.forEach { node ->
-            node.connections.removeAll { dst ->
-                !isConnectedToFinalNodeMap.getValue(dst.value)
-            }
+        nodes.forEach { src ->
+            src.connections.removeAll { !reachableFromFinalStates.contains(it.value) }
         }
     }
 
-    private fun isConnectedToFinalNode(node: Node, isConnectedToFinalNodeMap: HashMap<Node, Boolean>): Boolean {
-        isConnectedToFinalNodeMap[node]?.let {
-            return it
-        }
-
-        isConnectedToFinalNodeMap[node] = node.isFinal // pessimistic
-
-        var isConnectedToFinalNode = node.isFinal
-
-        node.connections.values.forEach {
-            if(isConnectedToFinalNode(it, isConnectedToFinalNodeMap)) {
-                isConnectedToFinalNode = true
+    private fun getReverseConnections(): Map<Node, Set<Node>> {
+        val reverseConnections = HashMap<Node, HashSet<Node>>()
+        nodes.forEach { src ->
+            src.connections.values.forEach { dst ->
+                reverseConnections.getOrPut(dst) { HashSet<Node>() }.add(src)
             }
         }
 
-        isConnectedToFinalNodeMap[node] = isConnectedToFinalNode
-        return isConnectedToFinalNode
+        return reverseConnections
+    }
+
+    private fun collectAllReachableFromState(node: Node, reverseConnections: Map<Node, Set<Node>>, reachableFromState: HashSet<Node>) {
+        if(reachableFromState.contains(node)) {
+            return
+        }
+
+        reachableFromState.add(node)
+
+        reverseConnections[node]?.forEach {
+            collectAllReachableFromState(it, reverseConnections, reachableFromState)
+        }
     }
 
     private fun makeComplement() {
@@ -198,6 +203,8 @@ class Automaton(val startNode: Node) {
     val nodes = object : Iterable<Node> {
         override fun iterator() = NodesIter(startNode)
     }
+
+    val finalNodes get() = nodes.filter { it.isFinal }
 
     private class NodesIter(node: Node): Iterator<Node> {
         val traversed = HashSet<Node>()

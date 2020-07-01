@@ -92,7 +92,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         var intervalIndex = 0
         var valuesIndex = 0
 
-        while(intervalIndex < intervals.size && valuesIndex < values.size()) {
+        while(intervalIndex < intervals.size && valuesIndex < values.size) {
             val interval = intervals[intervalIndex]
             val value = values[valuesIndex]
 
