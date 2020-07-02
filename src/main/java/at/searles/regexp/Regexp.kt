@@ -51,14 +51,11 @@ interface Regexp {
         return FirstMatch(this)
     }
 
-    fun and(other: Regexp): Regexp {
+    infix fun and(other: Regexp): Regexp {
         return Intersect(this, other)
     }
 
-    fun minus(other: Regexp): Regexp {
+    operator fun minus(other: Regexp): Regexp {
         return Subtract(this, other)
     }
-
-    // TODO minus
-    // [a-z] - c =
 }
