@@ -52,6 +52,10 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
             return CharSet(set)
         }
 
+        fun interval(vararg intervals: Char): CharSet {
+            return interval(*intervals.map { it.toInt() }.toIntArray())
+        }
+
         /**
          * @param intervals [a, b], b is inclusive!
          * @return The CharSet convaining the intervals provided
