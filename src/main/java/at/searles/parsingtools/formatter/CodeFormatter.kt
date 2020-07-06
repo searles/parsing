@@ -82,7 +82,7 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
                 else -> forceEmptyLine = true
             }
 
-            changeRunnables.add(DeleteCommand(editableText, frame.startPosition(), frame.endPosition()))
+            changeRunnables.add(DeleteCommand(editableText, frame.start, frame.end))
         }
 
         fun indent() {
@@ -98,7 +98,7 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
         }
 
         override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
-            require(position == frame.startPosition())
+            require(position == frame.start)
 
             if (tokenId == whiteSpaceTokenId) {
                 addDeleteWhiteSpaceCommand(frame)
@@ -106,7 +106,7 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
                 addWhiteSpaceInsertCommand()
             }
 
-            position = frame.endPosition()
+            position = frame.end
         }
 
         override fun <C> annotationBegin(parserStream: ParserStream, annotation: C) {

@@ -1,13 +1,25 @@
 package at.searles.buf
 
+import at.searles.parsing.Trace
+
 interface Frame : CharSequence {
     /**
      * The pointer to the current frame start.
      */
-    fun startPosition(): Long
+    val start: Long
 
     /**
-     * The pointer to the current frame start.
+     * The pointer to the current frame end (exclusive).
      */
-    fun endPosition(): Long
+    val end: Long
+
+    fun toTrace(): Trace {
+        return FrameStreamTrace(this)
+    }
+
+    class FrameStreamTrace(frame: Frame) : Trace {
+        override val start: Long = frame.start
+        override val end: Long = frame.end
+    }
+
 }

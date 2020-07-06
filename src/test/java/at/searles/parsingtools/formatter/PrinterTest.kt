@@ -167,9 +167,9 @@ class PrinterTest {
         })
 
         this.stream.tokStream().setListener(object: TokenStream.Listener {
-            override fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame) {
+            override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
                 // skip all white spaces
-                if(tokId == whiteSpaceTokId) {
+                if(tokenId == whiteSpaceTokId) {
                     return
                 }
 
@@ -225,7 +225,7 @@ class PrinterTest {
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                    IdNode(stream.createTrace(), input.toString())
+                    IdNode(stream.toTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -234,7 +234,7 @@ class PrinterTest {
         val numMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
                     NumNode(
-                            stream.createTrace(),
+                            stream.toTrace(),
                             Integer.parseInt(input.toString())
                     )
 
@@ -253,7 +253,7 @@ class PrinterTest {
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
             override fun apply(stream: ParserStream, left: Node, right: Node): Node {
-                return AppNode(stream.createTrace(), left, right)
+                return AppNode(stream.toTrace(), left, right)
             }
 
             override fun leftInverse(result: Node): Node? {

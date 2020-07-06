@@ -25,9 +25,9 @@ class TokenStreamListenerTest {
         val stream = TokenStream.fromString("abaababb")
         val counter = Counter()
         stream.setListener(object: TokenStream.Listener {
-            override fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame) {
-                Assert.assertEquals(lastEnd, frame.startPosition())
-                lastEnd = frame.endPosition()
+            override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+                Assert.assertEquals(lastEnd, frame.start)
+                lastEnd = frame.end
                 counter.incr()
             }
         })

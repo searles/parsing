@@ -1,5 +1,6 @@
 package at.searles.parsing
 
+import at.searles.buf.Frame
 import at.searles.lexer.TokenStream
 import at.searles.lexer.Tokenizer
 
@@ -23,16 +24,16 @@ class ParserStream(private val stream: TokenStream) {
         return stream
     }
 
-    fun createTrace(): Trace {
+    fun toTrace(): Trace {
         return ParserStreamTrace(this)
     }
 
-    fun parseToken(tokenizer: Tokenizer, tokId: Int): CharSequence? {
+    fun parseToken(tokenizer: Tokenizer, tokId: Int): Frame? {
         val frame = tokenizer.matchToken(stream, tokId)
 
         if (frame != null) {
-            start = frame.startPosition()
-            end = frame.endPosition()
+            start = frame.start
+            end = frame.end
         }
 
         return frame

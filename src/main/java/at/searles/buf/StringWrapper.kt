@@ -64,13 +64,9 @@ class StringWrapper(private val charSequence: CharSequence) : FrameStream {
     }
 
     private inner class CharSeq : Frame {
-        override fun startPosition(): Long {
-            return frameStart.toLong()
-        }
+        override val start: Long get() = frameStart.toLong()
 
-        override fun endPosition(): Long {
-            return frameEnd.toLong()
-        }
+        override val end: Long get() = frameEnd.toLong()
 
         override val length: Int get() {
             return frameEnd - frameStart

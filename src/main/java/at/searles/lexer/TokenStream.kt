@@ -47,7 +47,7 @@ class TokenStream(private val stream: FrameStream) {
     fun offset(): Long {
         // if lexer == null, use endPosition because framestream still captures last match.
         // if lexer is set, use startPosition.
-        return if (isConsumed) stream.frame.endPosition() else stream.frame.startPosition()
+        return if (isConsumed) stream.frame.end else stream.frame.start
     }
 
     /**
@@ -114,7 +114,7 @@ class TokenStream(private val stream: FrameStream) {
     }
 
     interface Listener {
-        fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame)
+        fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame)
     }
 
     companion object {

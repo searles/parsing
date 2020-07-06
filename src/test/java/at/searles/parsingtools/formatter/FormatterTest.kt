@@ -134,7 +134,7 @@ class FormatterTest {
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                IdNode(stream.createTrace(), input.toString())
+                IdNode(stream.toTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -143,7 +143,7 @@ class FormatterTest {
         val numMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
                 NumNode(
-                    stream.createTrace(),
+                    stream.toTrace(),
                     Integer.parseInt(input.toString())
                 )
 
@@ -162,7 +162,7 @@ class FormatterTest {
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
             override fun apply(stream: ParserStream, left: Node, right: Node): Node {
-                return AppNode(stream.createTrace(), left, right)
+                return AppNode(stream.toTrace(), left, right)
             }
 
             override fun leftInverse(result: Node): Node? {

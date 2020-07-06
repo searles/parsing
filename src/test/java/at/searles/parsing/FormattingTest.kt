@@ -30,7 +30,7 @@ class FormattingTest {
         expr.ref = term + term.annotate(Annotation.ARGUMENT).fold(Fold.create<String, String, String> { left, right -> left + right }).rep()
         val stream: ParserStream = ParserStream.create("a(aa((aaa)a)a)")
         stream.tokStream().setListener(object: TokenStream.Listener {
-            override fun tokenConsumed(src: TokenStream, tokId: Int, frame: Frame) {}
+            override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {}
         })
     }
 

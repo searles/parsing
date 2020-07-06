@@ -47,5 +47,17 @@ interface Mapping<T, U> : Reducer<T, U> {
                 }
             }
         }
+
+        fun <T, U>  create(inverse: (U) -> T?, mapping: (Trace, T) -> U): Mapping<T, U> {
+            return object: Mapping<T, U> {
+                override fun parse(stream: ParserStream, input: T): U {
+                    return mapping(stream.toTrace(), input)
+                }
+
+                override fun left(result: U): T? {
+                    return inverse(result)
+                }
+            }
+        }
     }
 }

@@ -56,14 +56,9 @@ class FrameStreamImpl(private val stream: BufferedStream.Impl) : FrameStream {
             }
         }
 
-        override fun startPosition(): Long {
-            return frameStart
-        }
+        override val start: Long get() = frameStart
 
-        override fun endPosition(): Long {
-            return frameEnd
-        }
-
+        override val end: Long get() = frameEnd
         override val length: Int get() {
             update()
             return str.length

@@ -149,7 +149,7 @@ class PrinterUtilTest {
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                    IdNode(stream.createTrace(), input.toString())
+                    IdNode(stream.toTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -157,7 +157,7 @@ class PrinterUtilTest {
 
         val vecMapping = object: Mapping<List<Node>, Node> {
             override fun parse(stream: ParserStream, input: List<Node>): Node {
-                return VecNode(stream.createTrace(), input)
+                return VecNode(stream.toTrace(), input)
             }
 
             override fun left(result: Node): List<Node>? {

@@ -1,5 +1,6 @@
 package at.searles.parsing.tokens
 
+import at.searles.buf.Frame
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
@@ -10,7 +11,7 @@ class TokenParser(val tokenId: Int, val tokenizer: Tokenizer) : Parser<CharSeque
         return stream.parseToken(tokenizer, tokenId) != null
     }
 
-    override fun parse(stream: ParserStream): CharSequence? {
+    override fun parse(stream: ParserStream): Frame? {
         return stream.parseToken(tokenizer, tokenId)
     }
 
