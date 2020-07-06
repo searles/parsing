@@ -5,4 +5,38 @@ interface Consumer<T> {
     fun inverse(): T? {
         return null
     }
+
+    companion object {
+        fun <T>create(consumer: (T) -> Boolean): Consumer<T> {
+            return object: Consumer<T> {
+                override fun consume(stream: ParserStream, t: T): Boolean {
+                    return consumer(t)
+                }
+            }
+        }
+
+        fun <T>create(inverted: () -> T?, consumer: (T) -> Boolean): Consumer<T> {
+            return object: Consumer<T> {
+                override fun consume(stream: ParserStream, t: T): Boolean {
+                    return consumer(t)
+                }
+
+                override fun inverse(): T? {
+                    return inverted()
+                }
+            }
+        }
+
+        fun <T>create(inverted: () -> T?, consumer: (Trace, T) -> Boolean): Consumer<T> {
+            return object: Consumer<T> {
+                override fun consume(stream: ParserStream, t: T): Boolean {
+                    return consumer(stream.toTrace(), t)
+                }
+
+                override fun inverse(): T? {
+                    return inverted()
+                }
+            }
+        }
+    }
 }
