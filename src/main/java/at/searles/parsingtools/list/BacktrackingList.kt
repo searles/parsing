@@ -10,7 +10,7 @@ import java.util.ArrayList
  *
  * @param <E>
 </E> */
-internal class ImmutableList<E> : AbstractList<E> {
+internal class BacktrackingList<E> : AbstractList<E> {
 
     private val list: MutableList<E>
     override val size: Int
@@ -25,7 +25,7 @@ internal class ImmutableList<E> : AbstractList<E> {
         this.size = list.size
     }
 
-    private constructor(parent: ImmutableList<E>, lastElement: E) {
+    private constructor(parent: BacktrackingList<E>, lastElement: E) {
         this.list = parent.list
         this.size = parent.size + 1
 
@@ -34,7 +34,7 @@ internal class ImmutableList<E> : AbstractList<E> {
         assert(this.list.size == this.size)
     }
 
-    fun pushBack(element: E?): ImmutableList<E> {
+    fun pushBack(element: E?): BacktrackingList<E> {
         if (element == null) {
             throw NullPointerException()
         }
@@ -42,7 +42,7 @@ internal class ImmutableList<E> : AbstractList<E> {
         // remove all elements behind size.
         this.list.subList(size, list.size).clear()
 
-        return ImmutableList(this, element)
+        return BacktrackingList(this, element)
     }
 
     private fun rangeCheck(index: Int) {
@@ -56,11 +56,11 @@ internal class ImmutableList<E> : AbstractList<E> {
     }
 
     companion object {
-        fun <T> create(list: List<T>): ImmutableList<T> {
-            return if (list is ImmutableList<*>) {
+        fun <T> create(list: List<T>): BacktrackingList<T> {
+            return if (list is BacktrackingList<*>) {
                 // Fast lane for immutable lists.
-                list as ImmutableList<T>
-            } else ImmutableList(ArrayList(list))
+                list as BacktrackingList<T>
+            } else BacktrackingList(ArrayList(list))
         }
     }
 

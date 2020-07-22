@@ -6,7 +6,7 @@ import at.searles.parsing.ParserStream
 class ListAppender<T>(private val minSize: Int = 0) : Fold<List<T>, T, List<T>> {
 
     override fun apply(stream: ParserStream, left: List<T>, right: T): List<T> {
-        return ImmutableList.create(left).pushBack(right)
+        return BacktrackingList.create(left).pushBack(right)
     }
 
     private fun cannotInvert(list: List<T>): Boolean {

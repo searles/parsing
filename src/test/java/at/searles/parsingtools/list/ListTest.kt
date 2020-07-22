@@ -37,7 +37,7 @@ class ListTest {
 
     private val add = object : Fold<List<Any>, Any, List<Any>> {
         override fun apply(stream: ParserStream, left: List<Any>, right: Any): List<Any> {
-            return ImmutableList.create(left).pushBack(right)
+            return BacktrackingList.create(left).pushBack(right)
         }
 
         override fun leftInverse(result: List<Any>): List<Any>? {

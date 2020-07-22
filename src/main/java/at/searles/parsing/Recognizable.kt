@@ -47,7 +47,7 @@ interface Recognizable {
             val rightString = when(right) {
                 is Or -> "($right)"
                 is Then -> "($right)"
-                else -> "$left"
+                else -> "$right"
             }
 
             return "$leftString $rightString"

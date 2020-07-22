@@ -3,7 +3,7 @@ package at.searles.parsingtools.common
 import at.searles.parsing.Fold
 import at.searles.parsing.ParserStream
 
-class PairSwapped<T, U> : Fold<T, U, Pair<U, T>> {
+class SwappedPairCreator<T, U> : Fold<T, U, Pair<U, T>> {
     override fun apply(stream: ParserStream, left: T, right: U): Pair<U, T> {
         return Pair(right, left)
     }
