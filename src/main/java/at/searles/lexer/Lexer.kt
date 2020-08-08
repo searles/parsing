@@ -35,7 +35,9 @@ class Lexer(val tokenIdProvider: Counter = Counter()) : Tokenizer {
         val regexpAutomaton = regexp.accept(RegexpToFsaVisitor)
 
         // add -1 to regexpAutomaton
-        regexpAutomaton.setId(-1)
+        val MARKER = -1
+
+        regexpAutomaton.setId(MARKER)
 
         automaton = automaton.union(regexpAutomaton)
 
@@ -43,7 +45,7 @@ class Lexer(val tokenIdProvider: Counter = Counter()) : Tokenizer {
         val idsOfNonMatches = IntSet()
 
         automaton.finalNodes.forEach {
-            if(it.set.contains(-1)) {
+            if(it.set.contains(MARKER)) {
                 if(idsOfMatches.isEmpty) {
                     idsOfMatches.addAll(it.set)
                 } else {
@@ -54,23 +56,28 @@ class Lexer(val tokenIdProvider: Counter = Counter()) : Tokenizer {
             }
         }
 
-        require(idsOfMatches.size <= 2)
         idsOfMatches.removeAll(idsOfNonMatches)
-        require(idsOfMatches.contains(-1))
-        idsOfMatches.remove(-1)
+        require(idsOfMatches.contains(MARKER))
 
-        if(idsOfMatches.isEmpty) {
-            return addNewId()
+        idsOfMatches.remove(MARKER)
+
+        require(idsOfMatches.size <= 1)
+
+        return if(idsOfMatches.isEmpty) {
+            replaceMarkerByNewId()
         } else {
-            automaton.finalNodes.forEach {
-                it.set.remove(-1)
-            }
-
-            return idsOfMatches[0]
+            removeMarker()
+            idsOfMatches[0]
         }
     }
 
-    private fun addNewId(): Int {
+    private fun removeMarker() {
+        automaton.finalNodes.forEach {
+            it.set.remove(-1)
+        }
+    }
+
+    private fun replaceMarkerByNewId(): Int {
         val newId = tokenIdProvider.next()
 
         automaton.finalNodes.forEach {
