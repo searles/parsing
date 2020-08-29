@@ -1,17 +1,15 @@
 package at.searles.parsingtools.list
 
-import at.searles.parsingtools.list.ListAppender
 import org.junit.Assert
 import org.junit.Test
-
-import java.util.Arrays
+import java.util.*
 
 class AddListTest {
     @Test
     fun testAppendMayBeEmpty() {
         val cons = ListAppender<Int>(0)
 
-        var l: List<Int>? = Arrays.asList(1, 2)
+        var l: List<Int>? = listOf(1, 2)
 
         Assert.assertEquals(2, cons.rightInverse(l!!))
         l = cons.leftInverse(l)
@@ -29,7 +27,7 @@ class AddListTest {
     fun testAppendMayNotBeEmpty() {
         val cons = ListAppender<Int>(1)
 
-        var l: List<Int>? = Arrays.asList(1, 2)
+        var l: List<Int>? = listOf(1, 2)
 
         Assert.assertEquals(2, cons.rightInverse(l!!))
         l = cons.leftInverse(l)

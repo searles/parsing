@@ -19,7 +19,7 @@ class PrinterUtilTest {
 
     @Test
     fun singleTTTest() {
-        initParserUtilList(true, true)
+        initParserUtilList(mayBeEmpty = true, hasSeparator = true)
         withInput("a")
         actParse()
         actPrint()

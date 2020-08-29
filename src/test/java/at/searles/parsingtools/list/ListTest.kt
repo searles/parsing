@@ -58,8 +58,8 @@ class ListTest {
     private val colon = Recognizer.fromString(":", tokenizer)
     private val stringsPrefix = Recognizer.fromString("S", tokenizer)
     private val intsPrefix = Recognizer.fromString("I", tokenizer)
-    private val strings = stringsPrefix + comma.join1(id.fold(add))
-    private val ints = intsPrefix + comma.join1(num.fold(add))
+    private val strings = stringsPrefix + comma.join1(id.plus(add))
+    private val ints = intsPrefix + comma.join1(num.plus(add))
     private val parser = EmptyListCreator<Any>() + colon.join(strings or ints)
     private lateinit var input: ParserStream
     private var item: List<Any>? = null

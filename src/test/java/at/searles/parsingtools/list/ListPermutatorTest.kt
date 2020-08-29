@@ -1,7 +1,6 @@
 package at.searles.parsingtools.list
 
 import at.searles.parsing.ParserStream
-import at.searles.parsingtools.list.ListPermutator
 import org.junit.Assert
 import org.junit.Test
 

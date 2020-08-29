@@ -2,7 +2,6 @@ package at.searles.parsingtools.map
 
 import at.searles.parsing.Initializer
 import at.searles.parsing.ParserStream
-import java.util.HashMap
 
 class EmptyMapCreator<K, V> : Initializer<Map<K, V>> {
 

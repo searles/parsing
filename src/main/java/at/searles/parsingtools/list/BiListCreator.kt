@@ -3,8 +3,6 @@ package at.searles.parsingtools.list
 import at.searles.parsing.Fold
 import at.searles.parsing.ParserStream
 
-import java.util.Arrays
-
 class BiListCreator<T> : Fold<T, T, List<T>> {
     override fun apply(stream: ParserStream, left: T, right: T): List<T> {
         return listOf(left, right)

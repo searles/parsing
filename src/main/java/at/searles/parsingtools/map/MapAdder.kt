@@ -3,8 +3,6 @@ package at.searles.parsingtools.map
 import at.searles.parsing.Fold
 import at.searles.parsing.ParserStream
 
-import java.util.LinkedHashMap
-
 class MapAdder<K, V>(private val key: K) : Fold<Map<K, V>, V, Map<K, V>> {
 
     override fun apply(stream: ParserStream, left: Map<K, V>, right: V): Map<K, V> {

@@ -157,7 +157,7 @@ class Automaton(val startNode: Node = Node()) {
         }
     }
 
-    fun removeTraps() {
+    private fun removeTraps() {
         val reverseConnections = getReverseConnections()
         val reachableFromFinalStates = HashSet<Node>()
 
@@ -174,7 +174,7 @@ class Automaton(val startNode: Node = Node()) {
         val reverseConnections = HashMap<Node, HashSet<Node>>()
         nodes.forEach { src ->
             src.connections.values.forEach { dst ->
-                reverseConnections.getOrPut(dst) { HashSet<Node>() }.add(src)
+                reverseConnections.getOrPut(dst) { HashSet() }.add(src)
             }
         }
 

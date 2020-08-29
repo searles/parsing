@@ -92,8 +92,8 @@ fun main() {
                 if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
-    val product = (literal + ((times.annotate(FormatOp.Infix) + literal).fold(multiply) or
-            (slash.annotate(FormatOp.Infix) + literal).fold(divide)).rep()).ref("product")
+    val product = (literal + ((times.annotate(FormatOp.Infix) + literal).plus(multiply) or
+            (slash.annotate(FormatOp.Infix) + literal).plus(divide)).rep()).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
 
@@ -122,8 +122,8 @@ fun main() {
     }
 
     sum.ref = product + (
-                    plus.annotate(FormatOp.Infix) + product.fold(add) or
-                    minus.annotate(FormatOp.Infix) + product.fold(sub)
+                    plus.annotate(FormatOp.Infix) + product.plus(add) or
+                    minus.annotate(FormatOp.Infix) + product.plus(sub)
             ).rep()
 
 

@@ -9,11 +9,9 @@ import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.regexp.CharSet
 import at.searles.regexp.Regexp
 import at.searles.regexp.Text
+import kotlin.streams.toList
 
-interface Grammar<T: Tokenizer> {
-
-    val tokenizer: T
-
+class Grammar<T: Tokenizer>(val tokenizer: T) {
     fun eof(): TokenRecognizer {
         val regexp = CharSet.eof()
         val tokenId = tokenizer.add(regexp)
@@ -21,7 +19,7 @@ interface Grammar<T: Tokenizer> {
     }
 
     fun <T> regexp(regexp: Regexp, conversion: (Frame) -> T): Parser<T> {
-        val mapping = Mapping.create<CharSequence, T>( { it.toString() } ) { it -> conversion(it as Frame) }
+        val mapping = Mapping.create<CharSequence, T>( { it.toString() } ) { frame -> conversion(frame as Frame) }
         val tokenId = tokenizer.add(regexp)
         return TokenParser(tokenId, tokenizer) + mapping
     }
@@ -30,5 +28,33 @@ interface Grammar<T: Tokenizer> {
         val regex = Text(text)
         val tokenId = tokenizer.add(regex)
         return TokenRecognizer(tokenId, tokenizer, text)
+    }
+
+    fun itext(text: String): TokenRecognizer {
+        require(text.isNotEmpty())
+
+        val regexps = text.codePoints().mapToObj { convertToCaseInsensitiveRegexp(it) }.toList()
+
+        val head = regexps.first()
+        val tail = regexps.subList(1, regexps.size)
+
+        val regexp = tail.fold(head) { prefix, codePoint -> prefix + codePoint }
+
+        val tokenId = tokenizer.add(regexp)
+        return TokenRecognizer(tokenId, tokenizer, text)
+    }
+
+    private fun convertToCaseInsensitiveRegexp(codePoint: Int): Regexp {
+        return when {
+            codePoint in upperCaseRange -> CharSet.chars(codePoint, codePoint + caseAddend)
+            codePoint in lowerCaseRange -> CharSet.chars(codePoint - caseAddend, codePoint)
+            else -> CharSet.chars(codePoint)
+        }
+    }
+
+    companion object {
+        private val upperCaseRange = 'A'.toInt() .. 'Z'.toInt()
+        private val lowerCaseRange = 'a'.toInt() .. 'z'.toInt()
+        private val caseAddend = 'a'.toInt() - 'A'.toInt()
     }
 }

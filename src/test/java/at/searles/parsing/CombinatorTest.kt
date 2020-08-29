@@ -56,7 +56,7 @@ class CombinatorTest {
     @Test
     fun plus1FailTest() {
         // chr+
-        withParser(emptyString.plus(chr.fold(appendSingleChar).rep1()))
+        withParser(emptyString.plus(chr.plus(appendSingleChar).rep1()))
         withInput("")
         actParse()
         Assert.assertFalse(isError)
@@ -66,7 +66,7 @@ class CombinatorTest {
     @Test
     fun plus1SuccessTest() {
         // chr+
-        withParser(emptyString.plus(chr.fold(appendSingleChar).rep1()))
+        withParser(emptyString.plus(chr.plus(appendSingleChar).rep1()))
         withInput("abc")
         actParse()
         actPrint()
@@ -78,7 +78,7 @@ class CombinatorTest {
     @Test
     fun joinFailTest() {
         // chr+
-        withParser(emptyString.plus(comma.join(chr.fold(appendSingleChar))))
+        withParser(emptyString.plus(comma.join(chr.plus(appendSingleChar))))
         withInput("a,,")
         actParse()
         Assert.assertTrue(isError)
@@ -87,7 +87,7 @@ class CombinatorTest {
     @Test
     fun joinSingleCharTest() {
         // chr+
-        withParser(emptyString.plus(comma.join(chr.fold(appendSingleChar))))
+        withParser(emptyString.plus(comma.join(chr.plus(appendSingleChar))))
         withInput("a")
         actParse()
         actPrint()
@@ -99,7 +99,7 @@ class CombinatorTest {
     @Test
     fun joinMultiCharTest() {
         // chr+
-        withParser(emptyString.plus(comma.join(chr.fold(appendSingleChar))))
+        withParser(emptyString.plus(comma.join(chr.plus(appendSingleChar))))
         withInput("a,b,c")
         actParse()
         actPrint()

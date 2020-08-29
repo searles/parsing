@@ -61,6 +61,6 @@ fully takes care of this task.
 There is some information available on how to proceed to use this project:
 
 * [Tutorial](tutorial.md)
-* [Demo of evaluating mathematical functions (kotlin)](src/main/java/at/searles/demo/DemoEval.kt)
-* [Demo of inverting a parser (kotlin)](src/main/java/at/searles/demo/DemoInvert.kt)
+* [Demo of evaluating mathematical functions (kotlin)](src/main/java/at/searles/at.searles.demo/DemoEval.kt)
+* [Demo of inverting a parser (kotlin)](src/main/java/at/searles/at.searles.demo/DemoInvert.kt)
 * [HowTo: Some use cases for common situations](howto.md)

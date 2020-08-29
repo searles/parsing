@@ -70,7 +70,7 @@ interface Reducer<T, U> : Recognizable {
         }
 
         infix fun <T> Reducer<T, T>.or(other: Recognizer): Reducer<T, T> {
-            return this or other + Mapping.identity()
+            return this or other + Mapping.create { it }
         }
     }
 }

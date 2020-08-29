@@ -55,7 +55,7 @@ class ParserPositionTest {
 
     @Test
     fun sequenceTest() {
-        withParser(a.plus(b.plus(positionAssert(1, 2)).fold(joiner).plus(positionAssert(0, 2))))
+        withParser(a.plus(b.plus(positionAssert(1, 2)).plus(joiner).plus(positionAssert(0, 2))))
         actParse("AB")
         Assert.assertEquals("AB", output)
     }
@@ -63,7 +63,7 @@ class ParserPositionTest {
     @Test
     fun backtrackingParserResetTest() {
         withParser(a.plus(
-                b.fold(joiner).plus(fail).or(positionAssert(0, 1))
+                b.plus(joiner).plus(fail).or(positionAssert(0, 1))
         ))
         actParse("AB")
         Assert.assertEquals("A", output)

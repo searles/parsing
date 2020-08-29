@@ -59,5 +59,17 @@ interface Mapping<T, U> : Reducer<T, U> {
                 }
             }
         }
+
+        fun <T: U, U> cast(originalClass: Class<T>): Mapping<T, U> {
+            return object: Mapping<T, U> {
+                override fun parse(stream: ParserStream, input: T): U {
+                    return input
+                }
+
+                override fun left(result: U): T? {
+                    return if(originalClass.isInstance(result)) originalClass.cast(result) else null
+                }
+            }
+        }
     }
 }

@@ -174,7 +174,7 @@ class FormatterTest {
             }
         }
 
-        val app = term.plus(term.fold(appFold).rep()).ref("app")
+        val app = term.plus(term.plus(appFold).rep()).ref("app")
 
         expr.ref = app
 

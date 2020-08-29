@@ -69,8 +69,8 @@ fun main() {
 
     val product = (
             literal + (
-                    times + literal.fold(multiply) or
-                    slash + literal.fold(divide)
+                    times + literal.plus(multiply) or
+                    slash + literal.plus(divide)
             ).rep()
     ).ref("product")
 
@@ -83,8 +83,8 @@ fun main() {
     val sub = Fold.create<Int, Int, Int> { left, right -> left - right }
 
     sum.ref = product + (
-                    plus + product.fold(add) or
-                    minus + product.fold(sub)
+                    plus + product.plus(add) or
+                    minus + product.plus(sub)
             ).rep()
 
 

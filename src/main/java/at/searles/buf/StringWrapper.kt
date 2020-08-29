@@ -1,5 +1,8 @@
 package at.searles.buf
 
+import kotlin.math.max
+import kotlin.math.min
+
 class StringWrapper(private val charSequence: CharSequence) : FrameStream {
     override val frame: Frame = CharSeq()
 
@@ -56,11 +59,9 @@ class StringWrapper(private val charSequence: CharSequence) : FrameStream {
     }
 
     override fun toString(): String {
-        return (charSequence.subSequence(Math.max(0, frameStart - 16), frameStart)
-                .toString() + "_"
-                + charSequence.subSequence(frameStart, frameEnd)
-                + "_"
-                + charSequence.subSequence(frameEnd, Math.min(charSequence.length, frameEnd + 16)))
+        return (charSequence.subSequence(max(0, frameStart - 16), frameStart).toString() + "_" +
+                charSequence.subSequence(frameStart, frameEnd) + "_" +
+                charSequence.subSequence(frameEnd, min(charSequence.length, frameEnd + 16)))
     }
 
     private inner class CharSeq : Frame {

@@ -12,6 +12,7 @@ import at.searles.regexp.CharSet
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
+import kotlin.math.abs
 
 class ParserAndPrinterTest {
     private var parser: Parser<Expr>? = null
@@ -199,7 +200,7 @@ class ParserAndPrinterTest {
             var count = 0
             var justOpened = true
             override fun next(): Int {
-                var random = Math.abs(rnd.nextInt())
+                var random = abs(rnd.nextInt())
                 if (count > sizeLimit && !justOpened) {
                     if (countOpen > 0) {
                         countOpen--
@@ -251,7 +252,7 @@ class ParserAndPrinterTest {
 
             val exprParser = Ref<Expr>("expr")
             val term = term(exprParser)
-            val exprReducer: Reducer<Expr, Expr> = exprParser.fold(
+            val exprReducer: Reducer<Expr, Expr> = exprParser.plus(
                     object : Fold<Expr, Expr, Expr> {
                         override fun apply(stream: ParserStream, left: Expr, right: Expr): Expr {
                             return left.app(right)
@@ -287,7 +288,7 @@ class ParserAndPrinterTest {
 
             val exprParser = Ref<Expr>("expr")
             val term = term(exprParser)
-            val appReducer: Reducer<Expr, Expr> = term.fold(
+            val appReducer: Reducer<Expr, Expr> = term.plus(
                     object : Fold<Expr, Expr, Expr> {
                         override fun apply(stream: ParserStream, left: Expr, right: Expr): Expr {
                             return left.app(right)

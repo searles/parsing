@@ -29,7 +29,7 @@ class RecognizableTest {
     fun thenTest() {
         withInput("a b")
 
-        withParser(id.plus(id.fold(append)))
+        withParser(id.plus(id.plus(append)))
 
         checkParseRecognizeEquality(true)
     }
@@ -38,7 +38,7 @@ class RecognizableTest {
     fun optTest() {
         withInput("a b")
 
-        withParser(id.plus(id.fold(append).opt()))
+        withParser(id.plus(id.plus(append).opt()))
 
         checkParseRecognizeEquality(true)
     }
@@ -47,7 +47,7 @@ class RecognizableTest {
     fun repTest() {
         withInput("a b")
 
-        withParser(id.plus(id.fold(append).rep()))
+        withParser(id.plus(id.plus(append).rep()))
 
         checkParseRecognizeEquality(true)
     }

@@ -265,7 +265,7 @@ class PrinterTest {
             }
         }
 
-        val app = term.plus(term.annotate(Markers.Arg).fold(appFold).rep()).ref("app")
+        val app = term.plus(term.annotate(Markers.Arg).plus(appFold).rep()).ref("app")
 
         expr.ref = app
 

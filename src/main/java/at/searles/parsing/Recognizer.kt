@@ -1,7 +1,6 @@
 package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
-import at.searles.parsing.Mapping.Companion.identity
 import at.searles.parsing.annotation.AnnotationRecognizer
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
@@ -31,7 +30,7 @@ interface Recognizer : Recognizable {
     }
 
     infix fun <T> or(other: Reducer<T, T>): Reducer<T, T> {
-        return this + identity<T>() or other
+        return this + Mapping.create<T, T> { it } or other
     }
 
     fun rep(): Recognizer {

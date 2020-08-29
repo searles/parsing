@@ -49,23 +49,23 @@ interface Parser<T> : Recognizable {
     }
 
     operator fun <U> plus(right: Parser<U>): Parser<Pair<T, U>> {
-        return this + right.fold(PairCreator())
+        return this + right.plus(PairCreator())
     }
 
     fun rep1(separator: Recognizer): Parser<List<T>> {
-        return (this + ListCreator()) + (separator + this.fold(ListAppender(1))).rep()
+        return (this + ListCreator()) + (separator + this.plus(ListAppender(1))).rep()
     }
 
     fun rep1(): Parser<List<T>> {
-        return (this + ListCreator()) + this.fold(ListAppender(1)).rep()
+        return (this + ListCreator()) + this.plus(ListAppender(1)).rep()
     }
 
     fun rep(separator: Recognizer): Parser<List<T>> {
-        return EmptyListCreator<T>() + separator.join(this.fold(ListAppender(0)))
+        return EmptyListCreator<T>() + separator.join(this.plus(ListAppender(0)))
     }
 
     fun rep(): Parser<List<T>> {
-        return EmptyListCreator<T>() + this.fold(ListAppender(0)).rep()
+        return EmptyListCreator<T>() + this.plus(ListAppender(0)).rep()
     }
 
     fun opt(): Parser<Optional<T>> {
@@ -89,7 +89,7 @@ interface Parser<T> : Recognizable {
     /**
      * A > fold
      */
-    fun <L, V> fold(fold: Fold<L, T, V>): Reducer<L, V> {
+    operator fun <L, V> plus(fold: Fold<L, T, V>): Reducer<L, V> {
         return ParserToReducer(this, fold)
     }
 
@@ -129,6 +129,10 @@ interface Parser<T> : Recognizable {
         fun <T> fromRegex(regexp: Regexp, tokenizer: Tokenizer, mapping: Mapping<CharSequence, T>): Parser<T> {
             val tokenId = tokenizer.add(regexp)
             return fromToken(tokenId, tokenizer, mapping)
+        }
+
+        fun <T> Parser<List<T>>.orEmpty(): Parser<List<T>> {
+            return this orSwapOnPrint EmptyListCreator()
         }
     }
 }

@@ -98,7 +98,7 @@ similar methods for `Reducer` and `Recognizer`.
 In the following, a simple recursive-descent parser is created that evaluates 
 mathematical expressions. Inversion is not used here since the result 
 will be the result of the calculation.
-[The source code can be found here.](src/main/java/at/searles/demo/DemoEval.kt)
+[The source code can be found here.](src/main/java/at/searles/at.searles.demo/DemoEval.kt)
  
 ## Number Parser
 
@@ -314,7 +314,7 @@ full character due to UTF-16.
 
 The grammar enriched with multiplication, division and negation is
 implemented in the file 
-[`at.searles.demo.DemoEval.kt`.](src/main/java/at/searles/demo/DemoEval.kt)
+[`at.searles.at.searles.demo.DemoEval.kt`.](src/main/java/at/searles/at.searles.demo/DemoEval.kt)
 
 # Inversion of parsers
 
@@ -479,7 +479,7 @@ can be obtained from the `StringOutStream` using `toString()`.
     println("Pretty-Print: $sourceStream")
 ~~~
 
-[You find the pretty-printer demo here.](src/main/java/at/searles/demo/DemoInvert.kt)
+[You find the pretty-printer at.searles.demo here.](src/main/java/at/searles/at.searles.demo/DemoInvert.kt)
 
 In order to format source code with indentations or
 more complex patterns, the 

@@ -2,7 +2,7 @@ package at.searles.parsingtools.formatter
 
 import java.lang.StringBuilder
 
-class EditableStringBuilder(val sb: StringBuilder): EditableText {
+class EditableStringBuilder(private val sb: StringBuilder): EditableText {
     override fun delete(start: Long, end: Long) {
         sb.delete(start.toInt(), end.toInt())
     }
