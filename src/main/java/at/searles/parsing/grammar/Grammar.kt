@@ -11,7 +11,7 @@ import at.searles.regexp.Regexp
 import at.searles.regexp.Text
 import kotlin.streams.toList
 
-class Grammar<T: Tokenizer>(val tokenizer: T) {
+open class Grammar<T: Tokenizer>(val tokenizer: T) {
     fun eof(): TokenRecognizer {
         val regexp = CharSet.eof()
         val tokenId = tokenizer.add(regexp)
@@ -55,6 +55,6 @@ class Grammar<T: Tokenizer>(val tokenizer: T) {
     companion object {
         private val upperCaseRange = 'A'.toInt() .. 'Z'.toInt()
         private val lowerCaseRange = 'a'.toInt() .. 'z'.toInt()
-        private val caseAddend = 'a'.toInt() - 'A'.toInt()
+        private const val caseAddend = 'a'.toInt() - 'A'.toInt()
     }
 }
