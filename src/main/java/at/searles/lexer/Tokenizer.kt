@@ -5,6 +5,8 @@ import at.searles.lexer.utils.IntSet
 import at.searles.regexp.Regexp
 
 interface Tokenizer {
+    val lexer: Lexer
+
     fun currentTokenIds(stream: TokenStream): IntSet?
 
     /**
@@ -23,5 +25,4 @@ interface Tokenizer {
     }
 
     fun add(regexp: Regexp): Int
-    fun lexer(): Lexer
 }

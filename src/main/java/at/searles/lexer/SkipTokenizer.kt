@@ -7,9 +7,7 @@ class SkipTokenizer(private val parent: Tokenizer) : Tokenizer {
 
     private val skippedTokenIds: IntSet = IntSet()
 
-    override fun lexer(): Lexer {
-        return parent.lexer()
-    }
+    override val lexer get() = parent.lexer
 
     fun addSkipped(tokId: Int) {
         skippedTokenIds.add(tokId)
