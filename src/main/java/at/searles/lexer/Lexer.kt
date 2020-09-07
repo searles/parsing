@@ -23,9 +23,7 @@ class Lexer(val tokenIdProvider: Counter = Counter()) : Tokenizer {
      */
     private var automaton = Automaton()
 
-    override fun lexer(): Lexer {
-        return this
-    }
+    override val lexer: Lexer get() = this
 
     override fun currentTokenIds(stream: TokenStream): IntSet? {
         return stream.current(this)
