@@ -32,7 +32,7 @@ public class RegexpParser {
     }
 
     static Regexp union(CodePointStream stream) {
-        Regexp regexp = concat(stream);
+        Regexp regexp = diff(stream);
 
         if (regexp == null) {
             return null;
@@ -40,12 +40,32 @@ public class RegexpParser {
 
         while (stream.trim().get() == '|') {
             stream.incr().trim();
-            Regexp next = concat(stream);
+            Regexp next = diff(stream);
             if (next == null) {
                 throw new RegexpParserException("Could not parse content after |");
             }
 
             regexp = regexp.or(next);
+        }
+
+        return regexp;
+    }
+
+    static Regexp diff(CodePointStream stream) {
+        Regexp regexp = concat(stream);
+
+        if (regexp == null) {
+            return null;
+        }
+
+        while (stream.trim().get() == '-') {
+            stream.incr().trim();
+            Regexp next = concat(stream);
+            if (next == null) {
+                throw new RegexpParserException("Could not parse content after |");
+            }
+
+            regexp = regexp.minus(next);
         }
 
         return regexp;
