@@ -4,6 +4,7 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
+import at.searles.parsing.ref.Ref
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
@@ -111,9 +112,9 @@ class FormatterTest {
     private fun actFormat() {
         val formatter = CodeFormatter(whiteSpaceTokId, parser)
 
-        formatter.addIndentAnnotation(Markers.Block)
-        formatter.addForceSpaceAnnotation(Markers.SpaceAfter)
-        formatter.addForceNewlineAnnotation(Markers.NewlineAfter)
+        formatter.addIndentLabel(Markers.Block)
+        formatter.addForceSpaceLabel(Markers.SpaceAfter)
+        formatter.addForceNewlineLabel(Markers.NewlineAfter)
 
         formatter.format(EditableStringBuilder(source))
     }
@@ -157,7 +158,7 @@ class FormatterTest {
         val expr = Ref<Node>("expr")
 
         // term = id | num | '(' expr ')'
-        val term = (id or num or (openPar.annotate(Markers.NewlineAfter) + expr.annotate(Markers.Block).annotate(Markers.NewlineAfter)) + closePar.annotate(Markers.NewlineAfter)).annotate(Markers.SpaceAfter)
+        val term = (id or num or (openPar.ref(Markers.NewlineAfter) + expr.ref(Markers.Block).ref(Markers.NewlineAfter)) + closePar.ref(Markers.NewlineAfter)).ref(Markers.SpaceAfter)
 
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
@@ -188,5 +189,8 @@ class FormatterTest {
 
     class AppNode(trace: Trace, val left: Node, val right: Node) : Node(trace)
 
-    enum class Markers { Block, SpaceAfter, NewlineAfter }
+    object Markers {
+        const val Block = "block"
+        const val SpaceAfter = "space after"
+        const val NewlineAfter = "newline after" }
 }

@@ -12,9 +12,9 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
     var newline = "\n"
     var space = " "
 
-    private val indentAnnotations = HashSet<Any?>()
-    private val forceNewLineAnnotations = HashSet<Any?>()
-    private val forceSpaceAnnotations = HashSet<Any?>()
+    private val indentAnnotations = HashSet<String>()
+    private val forceNewLineAnnotations = HashSet<String>()
+    private val forceSpaceAnnotations = HashSet<String>()
 
     fun format(editableText: EditableText): Long {
         val formatterInstance = FormatterInstance(editableText)
@@ -37,16 +37,16 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
         return formatterInstance.position
     }
 
-    fun addIndentAnnotation(annotation: Any?) {
-        this.indentAnnotations.add(annotation)
+    fun addIndentLabel(label: String) {
+        this.indentAnnotations.add(label)
     }
 
-    fun addForceSpaceAnnotation(annotation: Any?) {
-        this.forceSpaceAnnotations.add(annotation)
+    fun addForceSpaceLabel(label: String) {
+        this.forceSpaceAnnotations.add(label)
     }
 
-    fun addForceNewlineAnnotation(annotation: Any?) {
-        this.forceNewLineAnnotations.add(annotation)
+    fun addForceNewlineLabel(label: String) {
+        this.forceNewLineAnnotations.add(label)
     }
 
     private inner class FormatterInstance(val editableText: EditableText): TokenStream.Listener, ParserStream.Listener {
@@ -109,28 +109,28 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
             position = frame.end
         }
 
-        override fun <C> annotationBegin(parserStream: ParserStream, annotation: C) {
-            if (indentAnnotations.contains(annotation)) {
+        override fun onRefStart(parserStream: ParserStream, label: String) {
+            if (indentAnnotations.contains(label)) {
                 indent()
             }
         }
 
-        override fun <C> annotationEndSuccess(parserStream: ParserStream, annotation: C) {
-            if (indentAnnotations.contains(annotation)) {
+        override fun onRefSuccess(parserStream: ParserStream, label: String) {
+            if (indentAnnotations.contains(label)) {
                 unindent()
             }
 
-            if (forceSpaceAnnotations.contains(annotation)) {
+            if (forceSpaceAnnotations.contains(label)) {
                 forceSpace = true
             }
 
-            if (forceNewLineAnnotations.contains(annotation)) {
+            if (forceNewLineAnnotations.contains(label)) {
                 forceNewLine = true
             }
         }
 
-        override fun <C> annotationEndFail(parserStream: ParserStream, annotation: C) {
-            if (indentAnnotations.contains(annotation)) {
+        override fun onRefFail(parserStream: ParserStream, label: String) {
+            if (indentAnnotations.contains(label)) {
                 unindent()
             }
         }

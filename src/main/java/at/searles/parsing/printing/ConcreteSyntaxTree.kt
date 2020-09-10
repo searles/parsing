@@ -15,8 +15,8 @@ interface ConcreteSyntaxTree {
         return ConsConcreteSyntaxTree(left, this)
     }
 
-    fun <C> annotate(annotate: C): ConcreteSyntaxTree {
-        return AnnotatedConcreteSyntaxTree(annotate, this)
+    fun annotate(label: String): ConcreteSyntaxTree {
+        return LabelledConcreteSyntaxTree(label, this)
     }
 
     companion object {

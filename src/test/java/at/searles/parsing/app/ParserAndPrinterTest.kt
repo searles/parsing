@@ -8,6 +8,7 @@ import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.ref.Ref
 import at.searles.regexp.CharSet
 import org.junit.Assert
 import org.junit.Test

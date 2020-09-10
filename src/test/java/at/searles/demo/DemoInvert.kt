@@ -7,6 +7,7 @@ import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.CstPrinter
 import at.searles.parsing.printing.StringOutStream
+import at.searles.parsing.ref.Ref
 import at.searles.regexparser.RegexpParser
 
 /**
@@ -92,8 +93,8 @@ fun main() {
                 if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
-    val product = (literal + ((times.annotate(FormatOp.Infix) + literal).plus(multiply) or
-            (slash.annotate(FormatOp.Infix) + literal).plus(divide)).rep()).ref("product")
+    val product = (literal + ((times.ref(FormatOp.Infix) + literal).plus(multiply) or
+            (slash.ref(FormatOp.Infix) + literal).plus(divide)).rep()).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
 
@@ -122,8 +123,8 @@ fun main() {
     }
 
     sum.ref = product + (
-                    plus.annotate(FormatOp.Infix) + product.plus(add) or
-                    minus.annotate(FormatOp.Infix) + product.plus(sub)
+                    plus.ref(FormatOp.Infix) + product.plus(add) or
+                    minus.ref(FormatOp.Infix) + product.plus(sub)
             ).rep()
 
 
@@ -159,8 +160,8 @@ fun main() {
     val sourceStream = StringOutStream()
 
     val printer = object : CstPrinter(sourceStream) {
-        override fun print(tree: ConcreteSyntaxTree, annotation: Any?): CstPrinter =
-                when (annotation) {
+        override fun print(tree: ConcreteSyntaxTree, label: String): CstPrinter =
+                when (label) {
                     FormatOp.Infix -> append(" ").print(tree).append(" ")
                     else -> print(tree)
                 }
@@ -173,7 +174,9 @@ fun main() {
 
 enum class Op { Add, Sub, Mul, Div, Neg }
 
-enum class FormatOp { Infix }
+object FormatOp {
+    const val Infix = "infix"
+}
 
 interface AstNode
 

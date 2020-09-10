@@ -12,12 +12,12 @@ open class CstPrinter(private val outStream: OutStream) {
      * ignores them.
      *
      * @param tree       The cst that is wrapped inside the annotation
-     * @param annotation The object that is used in the annotation parser. Useful
+     * @param label The object that is used in the annotation parser. Useful
      * elements here can be enums that indicate that the wrapped cst
      * is a block or an infix symbol.
      * @return this for chaining
      */
-    open fun print(tree: ConcreteSyntaxTree, annotation: Any?): CstPrinter {
+    open fun print(tree: ConcreteSyntaxTree, label: String): CstPrinter {
         return print(tree)
     }
 

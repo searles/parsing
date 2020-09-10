@@ -70,21 +70,21 @@ class ParserStream(private val stream: TokenStream) {
         return "$stream: [$start, $end]"
     }
 
-    fun <C> notifyAnnotationBegin(annotation: C) {
+    fun fireRefStart(label: String) {
         if (listener != null) {
-            listener!!.annotationBegin(this, annotation)
+            listener!!.onRefStart(this, label)
         }
     }
 
-    fun <C> notifyAnnotationEndSuccess(annotation: C) {
+    fun fireRefSuccess(label: String) {
         if (listener != null) {
-            listener!!.annotationEndSuccess(this, annotation)
+            listener!!.onRefSuccess(this, label)
         }
     }
 
-    fun <C> notifyAnnotationEndFail(annotation: C) {
+    fun fireRefFail(label: String) {
         if (listener != null) {
-            listener!!.annotationEndFail(this, annotation)
+            listener!!.onRefFail(this, label)
         }
     }
 
@@ -96,25 +96,25 @@ class ParserStream(private val stream: TokenStream) {
          * in this method must be undone if the arguments to annotationEnd
          * indicate that the annotation parser did not succeed.
          */
-        fun <C> annotationBegin(parserStream: ParserStream, annotation: C)
-        fun <C> annotationEndFail(parserStream: ParserStream, annotation: C)
-        fun <C> annotationEndSuccess(parserStream: ParserStream, annotation: C)
+        fun onRefStart(parserStream: ParserStream, label: String)
+        fun onRefFail(parserStream: ParserStream, label: String)
+        fun onRefSuccess(parserStream: ParserStream, label: String)
     }
 
     interface SimpleListener : Listener {
-        override fun <C> annotationBegin(parserStream: ParserStream, annotation: C) {
+        override fun onRefStart(parserStream: ParserStream, label: String) {
             // ignore
         }
 
-        override fun <C> annotationEndFail(parserStream: ParserStream, annotation: C) {
+        override fun onRefFail(parserStream: ParserStream, label: String) {
             // ignore fails.
         }
 
-        override fun <C> annotationEndSuccess(parserStream: ParserStream, annotation: C) {
-            annotate(parserStream, annotation)
+        override fun onRefSuccess(parserStream: ParserStream, label: String) {
+            onRef(parserStream, label)
         }
 
-        fun <C> annotate(parserStream: ParserStream, annotation: C)
+        fun onRef(parserStream: ParserStream, label: String)
     }
 
     class ParserStreamTrace(val stream: ParserStream) : Trace {

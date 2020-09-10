@@ -1,8 +1,8 @@
 package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
-import at.searles.parsing.annotation.AnnotationRecognizer
 import at.searles.parsing.combinators.*
+import at.searles.parsing.label.RecognizerRef
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.regexp.CharSet
@@ -60,12 +60,10 @@ interface Recognizer : Recognizable {
         return ReducerJoinPlus(this, reducer)
     }
 
-    fun <A> annotate(category: A): Recognizer {
-        return AnnotationRecognizer(category, this)
-    }
-
     fun ref(label: String): Recognizer {
-        return RecognizerRef(this, label)
+        return RecognizerRef(label).apply {
+            this.ref = this@Recognizer
+        }
     }
 
     companion object {

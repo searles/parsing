@@ -2,7 +2,7 @@ package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.annotation.AnnotationParser
+import at.searles.parsing.ref.Ref
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenParser
@@ -101,14 +101,6 @@ interface Parser<T> : Recognizable {
         return Ref<T>(label).apply {
             ref = this@Parser
         }
-    }
-
-    /**
-     * A @ annotation
-     * \
-     */
-    fun <M> annotate(annotation: M): Parser<T> {
-        return AnnotationParser(annotation, this)
     }
 
     companion object {

@@ -43,12 +43,12 @@ val stack: Stack<ArrayList<ConcreteSyntaxTree>> = Stack()
 stack.push(ArrayList())
 
 this.stream.setListener(object: ParserStream.Listener {
-    override fun <C : Any?> annotationBegin(annotation: C) {
+    override fun <C : Any?> annotationBegin(label: String) {
         // each annotation will create a new branch
         stack.push(ArrayList())
     }
 
-    override fun <C : Any?> annotationEnd(annotation: C, success: Boolean) {
+    override fun <C : Any?> annotationEnd(label: String, success: Boolean) {
         if(!success) {
             // we created the list for nothing. Remove it.
             stack.pop()

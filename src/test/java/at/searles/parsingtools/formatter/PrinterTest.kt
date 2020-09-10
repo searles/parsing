@@ -7,6 +7,7 @@ import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.*
+import at.searles.parsing.ref.Ref
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
@@ -149,20 +150,20 @@ class PrinterTest {
         stack.push(ArrayList())
 
         this.stream.listener = (object: ParserStream.Listener {
-            override fun <C> annotationBegin(parserStream: ParserStream, annotation: C) {
+            override fun onRefStart(parserStream: ParserStream, label: String) {
                 stack.push(ArrayList())
             }
 
-            override fun <C> annotationEndFail(parserStream: ParserStream, annotation: C) {
+            override fun onRefFail(parserStream: ParserStream, label: String) {
                 // we created the list for nothing...
                 stack.pop()
                 return
             }
 
-            override fun <C> annotationEndSuccess(parserStream: ParserStream, annotation: C) {
+            override fun onRefSuccess(parserStream: ParserStream, label: String) {
                 val list = stack.pop()
                 val cstNode = ListConcreteSyntaxTree(list)
-                stack.peek().add(AnnotatedConcreteSyntaxTree(annotation, cstNode))
+                stack.peek().add(LabelledConcreteSyntaxTree(label, cstNode))
             }
         })
 
@@ -248,7 +249,7 @@ class PrinterTest {
         val expr = Ref<Node>("expr")
 
         // term = id | num | '(' expr ')'
-        val term = id.or(num).or(openPar.plus(expr.annotate(Markers.Block)).plus(closePar))
+        val term = id.or(num).or(openPar.plus(expr.ref(Markers.Block)).plus(closePar))
 
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
@@ -265,7 +266,7 @@ class PrinterTest {
             }
         }
 
-        val app = term.plus(term.annotate(Markers.Arg).plus(appFold).rep()).ref("app")
+        val app = term.plus(term.ref(Markers.Arg).plus(appFold).rep()).ref("app")
 
         expr.ref = app
 
@@ -283,8 +284,8 @@ class PrinterTest {
                 atBeginningOfLine = true
             }
 
-            override fun print(tree: ConcreteSyntaxTree, annotation: Any?): CstPrinter {
-                return when (annotation) {
+            override fun print(tree: ConcreteSyntaxTree, label: String): CstPrinter {
+                return when (label) {
                     Markers.Block -> {
                         newline()
                         indent++
@@ -318,5 +319,8 @@ class PrinterTest {
 
     class AppNode(trace: Trace, val left: Node, val right: Node) : Node(trace)
 
-    enum class Markers { Block, Arg }
+    object Markers {
+        const val Block = "block"
+        const val Arg = "arg"
+    }
 }

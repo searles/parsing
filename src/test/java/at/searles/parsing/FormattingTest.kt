@@ -6,13 +6,15 @@ import at.searles.lexer.SkipTokenizer
 import at.searles.lexer.TokenStream
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep
+import at.searles.parsing.ref.Ref
 import at.searles.regexp.Text
 import at.searles.regexparser.RegexpParser
 import org.junit.Test
 
 class FormattingTest {
-    internal enum class Annotation {
-        BLOCK, ARGUMENT
+    internal object Annotation {
+        const val BLOCK = "block"
+        const val ARGUMENT = "argument"
     }
 
     @Test
@@ -26,8 +28,8 @@ class FormattingTest {
         val open = Recognizer.fromString("(", tokenizer)
         val close = Recognizer.fromString(")", tokenizer)
         val expr = Ref<String>("expr")
-        val term = a.or(open.plus(expr).annotate(Annotation.BLOCK).plus(close))
-        expr.ref = term + term.annotate(Annotation.ARGUMENT).plus(Fold.create<String, String, String> { left, right -> left + right }).rep()
+        val term = a.or(open.plus(expr).ref(Annotation.BLOCK).plus(close))
+        expr.ref = term + term.ref(Annotation.ARGUMENT).plus(Fold.create<String, String, String> { left, right -> left + right }).rep()
         val stream: ParserStream = ParserStream.create("a(aa((aaa)a)a)")
         stream.tokStream().setListener(object: TokenStream.Listener {
             override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {}

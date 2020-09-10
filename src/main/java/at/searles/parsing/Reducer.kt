@@ -1,6 +1,6 @@
 package at.searles.parsing
 
-import at.searles.parsing.annotation.AnnotationReducer
+import at.searles.parsing.ref.ReducerRef
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.PartialConcreteSyntaxTree
 
@@ -40,10 +40,6 @@ interface Reducer<T, U> : Recognizable {
 
     infix fun orSwapOnPrint(other: Reducer<T, U>): Reducer<T, U> {
         return ReducerOrReducerWithReversedPrintOrder(this, other)
-    }
-
-    fun <C> annotate(annotation: C): Reducer<T, U>? {
-        return AnnotationReducer(annotation, this)
     }
 
     fun ref(label: String): Reducer<T, U> {
