@@ -1,12 +1,7 @@
 package at.searles.parsing
 
-import at.searles.parsing.Recognizable.Then
-
-class BacktrackNotAllowedException(val failedParser: Then, val requestedOffset: Long, source: ParserStream) : RuntimeException() {
-    val beforeErrorTrace: Trace = source.toTrace()
-    val unexpectedTokenTrace: Trace = source.tokStream().frame.toTrace()
-
+class BacktrackNotAllowedException(val trace: BacktrackingTrace) : RuntimeException() {
     override fun toString(): String {
-        return String.format("%s expected after %s at %d-%d", failedParser.right, failedParser.left, unexpectedTokenTrace)
+        return String.format("%s expected after %s at %d-%d", trace.failedParser.right, trace.failedParser.left, trace.unexpectedTokenTrace)
     }
 }

@@ -20,8 +20,7 @@ class ParserStream(private val stream: TokenStream) {
 
     var isBacktrackAllowed: Boolean = true
 
-    var lastUnmatchedTokenTrace: Trace? = null
-    var lastUnmatchedParser: Recognizable? = null
+    var lastBacktrackingTrace: BacktrackingTrace? = null
 
     fun tokStream(): TokenStream {
         return stream
@@ -56,25 +55,17 @@ class ParserStream(private val stream: TokenStream) {
             return
         }
 
+        val trace = BacktrackingTrace(failedParser, offset, this)
+
         if(!isBacktrackAllowed) {
-            throw BacktrackNotAllowedException(failedParser, offset, this)
+            throw BacktrackNotAllowedException(trace)
         }
 
-        // for debugging, this is very useful
-        val unmatchedTokenTrace = tokStream().frame.toTrace()
-
-        with(lastUnmatchedTokenTrace) {
-            if(this == null || unmatchedTokenTrace.end > this.end) {
-                lastUnmatchedTokenTrace = unmatchedTokenTrace
-                lastUnmatchedParser = failedParser.right
-            }
+        if(lastBacktrackingTrace == null || lastBacktrackingTrace!!.requestedOffset > offset) {
+            lastBacktrackingTrace = trace
         }
 
         stream.setPositionTo(offset)
-    }
-
-    private fun setDebuggingInformation() {
-
     }
 
     /**
