@@ -41,7 +41,7 @@ interface Recognizer : Recognizable {
         return this + rep()
     }
 
-    fun opt(alwaysPrint: Boolean = false): Recognizer {
+    fun opt(): Recognizer {
         return RecognizerOpt(this)
     }
 
