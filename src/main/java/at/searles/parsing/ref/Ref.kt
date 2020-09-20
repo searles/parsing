@@ -16,8 +16,6 @@ class Ref<T>(private val label: String) : Parser<T> {
     private var internalRef: Parser<T>? = null
 
     override fun parse(stream: ParserStream): T? {
-
-
         stream.fireRefStart(label)
         return ref.parse(stream).also {
             if(it != null) {

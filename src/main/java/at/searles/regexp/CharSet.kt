@@ -32,6 +32,10 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
     companion object {
         fun chars(vararg chars: Char): CharSet {
             Arrays.sort(chars)
+            return chars(chars.asIterable())
+        }
+
+        fun chars(chars: Iterable<Char>): CharSet {
             val set = IntervalSet()
 
             chars.forEach {
@@ -39,6 +43,18 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
             }
 
             return CharSet(set)
+        }
+
+        fun ichars(vararg chars: Char): CharSet {
+            val ichars = chars.fold(emptyList<Char>()) {
+                l, chr -> if(chr.toLowerCase() != chr.toUpperCase()) {
+                    l + chr.toUpperCase() + chr.toLowerCase()
+                } else {
+                    l + chr
+                }
+            }.sorted()
+
+            return chars(ichars)
         }
 
         fun chars(vararg ints: Int): CharSet {
