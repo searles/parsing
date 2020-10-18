@@ -171,8 +171,8 @@ class ParserAndPrinterTest {
 
     @Test
     fun testLotsOfData() {
-        // about 3.5 seconds for 1000000
-        // about 35 seconds for 10000000
+        // about 3.5 seconds for 1000000 (on big one 0.5)
+        // about 35 seconds for 10000000 (on big one 17 seconds)
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }
 
