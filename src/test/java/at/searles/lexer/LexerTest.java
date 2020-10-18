@@ -23,7 +23,7 @@ public class LexerTest {
     private void testIfIsAccepted(String string, String expected) {
         TokenStream stream = TokenStream.Companion.fromString(string);
 
-        IntSet tokIds = stream.current(lexer);
+        IntSet tokIds = stream.getAcceptedTokens(lexer);
 
         Assert.assertEquals(expected != null, tokIds != null);
         Assert.assertEquals(expected != null, tokIds != null && tokIds.contains(token));

@@ -22,17 +22,18 @@ import at.searles.lexer.utils.IntSet
  */
 class TokenStream(private val stream: FrameStream) {
 
+    var listener: Listener? = null
+
+    val frame: Frame get() {
+        return stream.frame
+    }
+
     /**
      * Values to determine current match
      */
     private var lexer: Lexer? = null
     private var acceptedTokens: IntSet? = null
     private var isConsumed = true
-    private var listener: Listener? = null
-
-    fun setListener(listener: Listener?) {
-        this.listener = listener
-    }
 
     fun setPositionTo(ptr: Long) {
         stream.reset()
@@ -44,7 +45,7 @@ class TokenStream(private val stream: FrameStream) {
     /**
      * @return Returns the start position of the next token that will be parsed.
      */
-    fun offset(): Long {
+    val offset: Long get() {
         // if lexer == null, use endPosition because framestream still captures last match.
         // if lexer is set, use startPosition.
         return if (isConsumed) stream.frame.end else stream.frame.start
@@ -58,11 +59,11 @@ class TokenStream(private val stream: FrameStream) {
      * in the underlying frameStream.
      *
      * @return null if there is no accepted token. This
-     * is not equivalent to EOF, because EOF is just
+     * is not necessarily equivalent to EOF, because EOF is just
      * defined as '-1' and thus can be recognized by
      * a lexer.
      */
-    fun current(lexer: Lexer): IntSet? {
+    fun getAcceptedTokens(lexer: Lexer): IntSet? {
         // can we reuse the old result?
         if (!isConsumed && this.lexer == lexer) {
             return acceptedTokens
@@ -93,7 +94,7 @@ class TokenStream(private val stream: FrameStream) {
             // last was not consumed.
             // well, I guess a 'skip 3 tokens'
             // can be useful...
-            current(lexer!!)
+            getAcceptedTokens(lexer!!)
         }
         isConsumed = true
 
@@ -101,16 +102,12 @@ class TokenStream(private val stream: FrameStream) {
         notifyTokenConsumed(consumedTokenId, stream.frame)
     }
 
-    private fun notifyTokenConsumed(tokId: Int, frame: Frame) {
-        listener?.tokenConsumed(this, tokId, frame)
+    private fun notifyTokenConsumed(tokenId: Int, frame: Frame) {
+        listener?.tokenConsumed(this, tokenId, frame)
     }
 
     override fun toString(): String {
         return stream.toString()
-    }
-
-    val frame: Frame get() {
-        return stream.frame
     }
 
     interface Listener {

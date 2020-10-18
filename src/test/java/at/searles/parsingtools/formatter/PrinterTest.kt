@@ -167,7 +167,7 @@ class PrinterTest {
             }
         })
 
-        this.stream.tokStream().setListener(object: TokenStream.Listener {
+        this.stream.tokStream().listener = object: TokenStream.Listener {
             override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
                 // skip all white spaces
                 if(tokenId == whiteSpaceTokId) {
@@ -180,7 +180,7 @@ class PrinterTest {
                 // code.
                 stack.peek().add(LeafConcreteSyntaxTree(frame.toString()))
             }
-        })
+        }
 
         if(!parser.recognize(stream)) {
             output = null

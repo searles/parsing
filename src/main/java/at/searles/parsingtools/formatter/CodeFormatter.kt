@@ -20,7 +20,7 @@ open class CodeFormatter(private val whiteSpaceTokenId: Int, private val parser:
         val formatterInstance = FormatterInstance(editableText)
         val stream = ParserStream.create(editableText)
 
-        stream.tokStream().setListener(formatterInstance)
+        stream.tokStream().listener = formatterInstance
         stream.listener = formatterInstance
 
         try {

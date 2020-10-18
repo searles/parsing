@@ -9,12 +9,12 @@ class ParserStream(private val stream: TokenStream) {
     /**
      * Marks the start of the current parsed element.
      */
-    var start: Long = stream.offset()
+    var start: Long = stream.offset
 
     /**
      * Marks the end of the current parsed element.
      */
-    var end: Long = stream.offset()
+    var end: Long = stream.offset
 
     var listener: Listener? = null
 
@@ -72,7 +72,7 @@ class ParserStream(private val stream: TokenStream) {
      * Returns the position from which the next token will be consumed
      */
     val offset: Long
-        get() = stream.offset()
+        get() = stream.offset
 
     override fun toString(): String {
         return "$stream: [$start, $end]"

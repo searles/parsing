@@ -24,13 +24,15 @@ class TokenStreamListenerTest {
         tokenizer.addSkipped(bId)
         val stream = TokenStream.fromString("abaababb")
         val counter = Counter()
-        stream.setListener(object: TokenStream.Listener {
+
+        stream.listener = object: TokenStream.Listener {
             override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
                 Assert.assertEquals(lastEnd, frame.start)
                 lastEnd = frame.end
                 counter.incr()
             }
-        })
+        }
+
         for (i in 0..3) {
             Assert.assertNotNull(tokenizer.matchToken(stream, aId))
         }
