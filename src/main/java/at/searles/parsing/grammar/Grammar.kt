@@ -4,6 +4,7 @@ import at.searles.buf.Frame
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Mapping
 import at.searles.parsing.Parser
+import at.searles.parsing.Recognizer
 import at.searles.parsing.tokens.TokenParser
 import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.regexp.CharSet
@@ -24,13 +25,18 @@ open class Grammar<T: Tokenizer>(val tokenizer: T) {
         return TokenParser(tokenId, tokenizer) + mapping
     }
 
-    fun text(text: String): TokenRecognizer {
+    private fun textInternal(text: String): TokenRecognizer {
         val regex = Text(text)
         val tokenId = tokenizer.add(regex)
         return TokenRecognizer(tokenId, tokenizer, text)
     }
 
-    fun itext(text: String): TokenRecognizer {
+    fun text(vararg texts: String): Recognizer {
+        require(texts.isNotEmpty())
+        return texts.map { textInternal(it) as Recognizer }.reduce { rec0, rec1 -> rec0 + rec1 }
+    }
+
+    private fun itextInternal(text: String): TokenRecognizer {
         require(text.isNotEmpty())
 
         val regexps = text.codePoints().mapToObj { convertToCaseInsensitiveRegexp(it) }.toList()
@@ -42,6 +48,11 @@ open class Grammar<T: Tokenizer>(val tokenizer: T) {
 
         val tokenId = tokenizer.add(regexp)
         return TokenRecognizer(tokenId, tokenizer, text)
+    }
+
+    fun itext(vararg texts: String): Recognizer {
+        require(texts.isNotEmpty())
+        return texts.map { itextInternal(it) as Recognizer }.reduce { rec0, rec1 -> rec0 + rec1 }
     }
 
     private fun convertToCaseInsensitiveRegexp(codePoint: Int): Regexp {
