@@ -54,6 +54,10 @@ interface Recognizer : Recognizable {
         return RecognizerOptAlwaysPrint(this)
     }
 
+    fun <T> init(value: T): Parser<T> {
+        return this + ValueInitializer(value)
+    }
+
     /**
      * Creates a reducer for a possibly empty csv-alike structure
      */

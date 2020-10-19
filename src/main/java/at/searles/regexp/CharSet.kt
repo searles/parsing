@@ -5,7 +5,7 @@ import at.searles.lexer.utils.IntervalSet
 import java.util.*
 
 class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterable<Interval> {
-    fun union(that: CharSet): CharSet {
+    infix fun or(that: CharSet): CharSet {
         return CharSet(set.copy().apply { add(that.set) })
     }
 

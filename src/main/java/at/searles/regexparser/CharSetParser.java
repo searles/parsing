@@ -39,7 +39,7 @@ public class CharSetParser {
             }
 
             Interval interval = interval(stream);
-            set = set.union(CharSet.Companion.interval(interval.getStart(), interval.getEnd() - 1));
+            set = set.or(CharSet.Companion.interval(interval.getStart(), interval.getEnd() - 1));
         }
     }
 
