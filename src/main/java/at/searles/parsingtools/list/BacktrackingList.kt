@@ -15,11 +15,6 @@ internal class BacktrackingList<E> : AbstractList<E> {
     private val list: MutableList<E>
     override val size: Int
 
-    constructor() {
-        list = ArrayList()
-        size = 0
-    }
-
     private constructor(list: ArrayList<E>) {
         this.list = list
         this.size = list.size
@@ -34,20 +29,16 @@ internal class BacktrackingList<E> : AbstractList<E> {
         assert(this.list.size == this.size)
     }
 
-    fun pushBack(element: E?): BacktrackingList<E> {
-        if (element == null) {
-            throw NullPointerException()
-        }
-
+    fun pushBack(element: E): BacktrackingList<E> {
         // remove all elements behind size.
         this.list.subList(size, list.size).clear()
-
         return BacktrackingList(this, element)
     }
 
     private fun rangeCheck(index: Int) {
-        if (index >= size)
+        if (index >= size) {
             throw IndexOutOfBoundsException(String.format("Size is %d but index requested is %d", size, index))
+        }
     }
 
     override fun get(index: Int): E {
@@ -63,5 +54,4 @@ internal class BacktrackingList<E> : AbstractList<E> {
             } else BacktrackingList(ArrayList(list))
         }
     }
-
 }

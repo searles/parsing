@@ -56,9 +56,9 @@ open class Grammar<T: Tokenizer>(val tokenizer: T) {
     }
 
     private fun convertToCaseInsensitiveRegexp(codePoint: Int): Regexp {
-        return when {
-            codePoint in upperCaseRange -> CharSet.chars(codePoint, codePoint + caseAddend)
-            codePoint in lowerCaseRange -> CharSet.chars(codePoint - caseAddend, codePoint)
+        return when (codePoint) {
+            in upperCaseRange -> CharSet.chars(codePoint, codePoint + caseAddend)
+            in lowerCaseRange -> CharSet.chars(codePoint - caseAddend, codePoint)
             else -> CharSet.chars(codePoint)
         }
     }
