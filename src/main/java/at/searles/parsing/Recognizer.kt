@@ -5,7 +5,7 @@ import at.searles.parsing.combinators.*
 import at.searles.parsing.label.RecognizerRef
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.tokens.TokenRecognizer
-import at.searles.parsingtools.common.ValueInitializer
+import at.searles.parsingtools.common.Init
 import at.searles.regexp.CharSet
 import at.searles.regexp.Text
 
@@ -47,7 +47,7 @@ interface Recognizer : Recognizable {
     }
 
     fun flag(): Parser<Boolean> {
-        return this + ValueInitializer(true) or ValueInitializer(false)
+        return this + Init(true) or Init(false)
     }
 
     fun optAlwaysPrint(): Recognizer {
@@ -55,7 +55,7 @@ interface Recognizer : Recognizable {
     }
 
     fun <T> init(value: T): Parser<T> {
-        return this + ValueInitializer(value)
+        return this + Init(value)
     }
 
     /**

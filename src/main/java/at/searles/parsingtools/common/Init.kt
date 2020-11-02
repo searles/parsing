@@ -3,7 +3,7 @@ package at.searles.parsingtools.common
 import at.searles.parsing.Initializer
 import at.searles.parsing.ParserStream
 
-class ValueInitializer<T>(private val value: T) : Initializer<T> {
+class Init<T>(private val value: T) : Initializer<T> {
 
     override fun parse(stream: ParserStream): T {
         return value

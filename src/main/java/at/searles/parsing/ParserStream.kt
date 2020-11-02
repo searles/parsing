@@ -20,7 +20,7 @@ class ParserStream(private val stream: TokenStream) {
 
     var isBacktrackAllowed: Boolean = true
 
-    var lastBacktrackingTrace: BacktrackingTrace? = null
+    var maxStatus: BacktrackingStatus? = null
 
     fun tokStream(): TokenStream {
         return stream
@@ -55,14 +55,14 @@ class ParserStream(private val stream: TokenStream) {
             return
         }
 
-        val trace = BacktrackingTrace(failedParser, offset, this)
+        val trace = BacktrackingStatus(failedParser, offset, this)
 
         if(!isBacktrackAllowed) {
             throw BacktrackNotAllowedException(trace)
         }
 
-        if(lastBacktrackingTrace == null || lastBacktrackingTrace!!.requestedOffset > offset) {
-            lastBacktrackingTrace = trace
+        if(maxStatus == null || maxStatus!!.requestedOffset < offset) {
+            maxStatus = trace
         }
 
         stream.setPositionTo(offset)
