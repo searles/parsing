@@ -4,21 +4,21 @@ package at.searles.parsing.printing
  * A printwriter for concrete syntax trees. Extend this class for
  * more complex formattings.
  */
-open class CstPrinter(private val outStream: OutStream) {
+open class CstPrinter(private val outStream: OutStream): CstVisitor {
 
     /**
      * Prints a CST that is marked with a certain annotation. Override this
-     * method for custom formattings. The default implementation
+     * method for custom formats. The default implementation
      * ignores them.
      *
-     * @param tree       The cst that is wrapped inside the annotation
+     * @param tree The cst that is wrapped inside the annotation
      * @param label The object that is used in the annotation parser. Useful
      * elements here can be enums that indicate that the wrapped cst
      * is a block or an infix symbol.
      * @return this for chaining
      */
-    open fun print(tree: ConcreteSyntaxTree, label: String): CstPrinter {
-        return print(tree)
+    override fun visitRef(label: String, tree: ConcreteSyntaxTree) {
+        tree.accept(this)
     }
 
     /**
@@ -27,34 +27,21 @@ open class CstPrinter(private val outStream: OutStream) {
      * if the beginning of a line should be indented, this method should check
      * whether it is at the beginning of a line.
      */
-    open fun print(seq: CharSequence): CstPrinter {
+    override fun visitToken(seq: CharSequence) {
         append(seq)
-        return this
-    }
-
-    /**
-     * Simple forward to ConcreteSyntaxTree.printTo(CstPrinter) that supports chaining.
-     * Normally, keep this method as is.
-     */
-    fun print(tree: ConcreteSyntaxTree): CstPrinter {
-        tree.printTo(this)
-        return this
     }
 
     /**
      * Raw-print into the underlying outStream.
      */
-    fun append(sequence: CharSequence): CstPrinter {
+    protected fun append(sequence: CharSequence) {
         outStream.append(sequence)
-        return this
     }
 
     /**
      * Raw-print into the underlying outStream.
      */
-    fun append(codePoint: Int): CstPrinter {
+    protected fun append(codePoint: Int) {
         outStream.append(codePoint)
-        return this
     }
-
 }

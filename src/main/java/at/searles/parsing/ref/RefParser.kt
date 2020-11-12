@@ -38,7 +38,7 @@ class Ref<T>(private val label: String) : Parser<T> {
     }
 
     override fun print(item: T): ConcreteSyntaxTree? {
-        return ref.print(item)?.annotate(label)
+        return ref.print(item)?.ref(label)
     }
 
     override fun toString(): String {

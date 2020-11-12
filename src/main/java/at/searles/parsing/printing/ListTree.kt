@@ -9,10 +9,11 @@ class ListConcreteSyntaxTree(private val list: List<ConcreteSyntaxTree?>) : Conc
 
     override fun toString(): String {
         val stringBuilder = StringBuilder()
+        
         for (cst in list) {
             stringBuilder.append(cst)
         }
+
         return stringBuilder.toString()
     }
-
 }

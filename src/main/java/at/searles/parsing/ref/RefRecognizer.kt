@@ -23,7 +23,7 @@ class RecognizerRef(private val label: String) : Recognizer {
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return ref.print().annotate(label)
+        return ref.print().ref(label)
     }
 
     override fun toString(): String {
