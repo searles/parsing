@@ -4,7 +4,9 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.ref.Ref
+import at.searles.parsing.format.FormatRules
+import at.searles.parsing.format.Mark
+import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
@@ -35,15 +37,13 @@ class FormatterTest {
         Assert.assertEquals("a (\n" +
                 "    b\n" +
                 ")\n" +
-                "c", source.toString())
+                "c\n", source.toString())
     }
 
     @Test
     fun appFormatStabilityTest() {
         initParser()
         withInput("(a)")
-        actFormat()
-        actFormat()
         actFormat()
 
         Assert.assertEquals("(\n" +
@@ -68,6 +68,17 @@ class FormatterTest {
 
         Assert.assertEquals("a (\n" +
                 "    b\n" +
+                "    c\n" +
+                ")\n", source.toString())
+    }
+
+    @Test
+    fun appInSingleAppFormatTest() {
+        initParser()
+        withInput("a(c )")
+        actFormat()
+
+        Assert.assertEquals("a (\n" +
                 "    c\n" +
                 ")\n", source.toString())
     }
@@ -101,41 +112,41 @@ class FormatterTest {
                 "            )\n" +
                 "        )\n" +
                 "    )\n" +
-                ")\n" +
-                "\n", source.toString())
+                ")\n\n", source.toString())
     }
 
     private fun withInput(input: String) {
-        this.source = StringBuilder(input)
+        this.source = input
     }
 
     private fun actFormat() {
-        val formatter = CodeFormatter(whiteSpaceTokId, parser)
+        val rules = FormatRules().apply {
+            addRule(Markers.Indent) { it.indent() }
+            addRule(Markers.Unindent) { it.unindent() }
+            addRule(Markers.Newline) { it.insertNewLine() }
+            addRule(Markers.Space) { it.insertSpace() }
+        }
 
-        formatter.addIndentLabel(Markers.Block)
-        formatter.addForceSpaceLabel(Markers.SpaceAfter)
-        formatter.addForceNewlineLabel(Markers.NewlineAfter)
-
-        formatter.format(EditableStringBuilder(source))
+        val formatter = CodeFormatter(rules, parser, whiteSpaceTokId)
+        formatter.format(EditableString(source))
     }
 
     private var whiteSpaceTokId: Int = Integer.MIN_VALUE // invalid default value.
-    private lateinit var source: StringBuilder
+    private lateinit var source: String
     private lateinit var parser: Parser<Node>
 
     private fun initParser() {
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
 
-        whiteSpaceTokId = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
-        tokenizer.addSkipped(whiteSpaceTokId)
+        whiteSpaceTokId = tokenizer.addSkipped(RegexpParser.parse("[ \n\r\t]+"))
 
         val openPar = Recognizer.fromString("(", tokenizer)
         val closePar = Recognizer.fromString(")", tokenizer)
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                IdNode(stream.toTrace(), input.toString())
+                IdNode(stream.createTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -144,7 +155,7 @@ class FormatterTest {
         val numMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
                 NumNode(
-                    stream.toTrace(),
+                    stream.createTrace(),
                     Integer.parseInt(input.toString())
                 )
 
@@ -155,15 +166,20 @@ class FormatterTest {
         val id = Parser.fromToken(lexer.add(RegexpParser.parse("[a-z]+")), tokenizer, idMapping).ref("id")
         val num = Parser.fromToken(lexer.add(RegexpParser.parse("[0-9]+")), tokenizer, numMapping).ref("num")
 
-        val expr = Ref<Node>("expr")
+        val expr = RefParser<Node>("expr")
 
         // term = id | num | '(' expr ')'
-        val term = (id or num or (openPar.ref(Markers.NewlineAfter) + expr.ref(Markers.Block).ref(Markers.NewlineAfter)) + closePar.ref(Markers.NewlineAfter)).ref(Markers.SpaceAfter)
+        val term = (
+                id or
+                num or (
+                        openPar + Mark(Markers.Newline) + Mark(Markers.Indent) + expr + Mark(Markers.Unindent) + Mark(Markers.Newline) + closePar + Mark(Markers.Newline)
+                )
+        ) + Mark(Markers.Space)
 
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
             override fun apply(stream: ParserStream, left: Node, right: Node): Node {
-                return AppNode(stream.toTrace(), left, right)
+                return AppNode(stream.createTrace(), left, right)
             }
 
             override fun leftInverse(result: Node): Node? {
@@ -175,7 +191,7 @@ class FormatterTest {
             }
         }
 
-        val app = term.plus(term.plus(appFold).rep()).ref("app")
+        val app = (term + (term + appFold).rep()).ref("app")
 
         expr.ref = app
 
@@ -189,8 +205,7 @@ class FormatterTest {
 
     class AppNode(trace: Trace, val left: Node, val right: Node) : Node(trace)
 
-    object Markers {
-        const val Block = "block"
-        const val SpaceAfter = "space after"
-        const val NewlineAfter = "newline after" }
+    enum class  Markers {
+        Indent, Unindent, Space, Newline
+    }
 }

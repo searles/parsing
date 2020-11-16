@@ -15,10 +15,10 @@ interface Tokenizer {
      * to the next element.
      * @return null if the tokenizer does not recognize this element.
      */
-    fun matchToken(stream: TokenStream, tokId: Int): Frame? {
+    fun matchToken(stream: TokenStream, tokenId: Int): Frame? {
         val currentTokenIds = currentTokenIds(stream)
-        if (currentTokenIds != null && currentTokenIds.contains(tokId)) {
-            stream.advance(tokId)
+        if (currentTokenIds != null && currentTokenIds.contains(tokenId)) {
+            stream.advance(tokenId)
             return stream.frame
         }
         return null

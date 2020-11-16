@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep1
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.EmptyConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
@@ -20,7 +20,7 @@ class CombinatorTest {
         }
 
         override fun print(item: String): ConcreteSyntaxTree? {
-            return if (item.isEmpty()) EmptyConcreteSyntaxTree() else null
+            return if (item.isEmpty()) EmptyTree() else null
         }
     }
     private val appendSingleChar: Fold<String, String, String> = object : Fold<String, String, String> {

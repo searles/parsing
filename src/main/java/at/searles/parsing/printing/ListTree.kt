@@ -1,19 +1,13 @@
 package at.searles.parsing.printing
 
-class ListConcreteSyntaxTree(private val list: List<ConcreteSyntaxTree?>) : ConcreteSyntaxTree {
-    override fun printTo(printer: CstPrinter) {
-        for (tree in list) {
-            tree!!.printTo(printer)
+class ListTree(private val list: List<ConcreteSyntaxTree>) : ConcreteSyntaxTree {
+    override fun accept(visitor: CstVisitor) {
+        list.forEach {
+            it.accept(visitor)
         }
     }
 
     override fun toString(): String {
-        val stringBuilder = StringBuilder()
-        
-        for (cst in list) {
-            stringBuilder.append(cst)
-        }
-
-        return stringBuilder.toString()
+        return list.joinToString("")
     }
 }

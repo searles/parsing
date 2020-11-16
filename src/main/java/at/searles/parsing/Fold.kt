@@ -39,7 +39,7 @@ interface Fold<T, U, V> {
         fun <T, U, V> create(leftFn: (V) -> T?, rightFn: (V) -> U?, fn: (Trace, T, U) -> V): Fold<T, U, V> {
             return object: Fold<T, U, V> {
                 override fun apply(stream: ParserStream, left: T, right: U): V {
-                    return fn(stream.toTrace(), left, right)
+                    return fn(stream.createTrace(), left, right)
                 }
 
                 override fun leftInverse(result: V): T? {

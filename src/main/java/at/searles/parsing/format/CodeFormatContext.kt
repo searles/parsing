@@ -1,27 +1,11 @@
 package at.searles.parsing.format
 
-import at.searles.parsing.printing.CodePrinter
-
-class CodeFormatter() {
+class CodeFormatContext(val rules: FormatRules, val printer: Printer) {
     private var atBeginningOfFile = true
     private var mustInsertEmptyLine = false
     private var mustInsertNewLine = false
     private var mustInsertSpace = false
     private var indentLevel = 0
-
-    var indentation = "    "
-    var newline = "\n"
-
-    private val preRules = HashMap<Any, (printer: Printer) -> Unit>()
-    private val postRules = HashMap<Any, (printer: Printer) -> Unit>()
-
-    fun addPreRule(marker: Any, rule: (printer: Printer) -> Unit) {
-        preRules[marker] = rule
-    }
-
-    fun addPostRule(marker: Any, rule: (printer: Printer) -> Unit) {
-        postRules[marker] = rule
-    }
 
     fun insertSpace() {
         mustInsertSpace = true
@@ -43,7 +27,7 @@ class CodeFormatter() {
         indentLevel--
     }
 
-    fun insertSpaces() {
+    fun applyFormatting() {
         if(atBeginningOfFile) {
             mustInsertEmptyLine = false
             mustInsertNewLine = false
@@ -52,37 +36,45 @@ class CodeFormatter() {
             atBeginningOfFile = false
         }
 
-        if(mustInsertEmptyLine) {
-            print(newline)
-            print(newline)
+        if(mustInsertEmptyLine || mustInsertNewLine) {
+            if(mustInsertEmptyLine) {
+                printer.print(rules.newline)
+            }
+
+            printer.print(rules.newline)
 
             mustInsertEmptyLine = false
             mustInsertNewLine = false
             mustInsertSpace = false
 
-            print(indentation.repeat(indentLevel))
-        }
-
-        if(mustInsertNewLine) {
-            print(newline)
-
-            mustInsertNewLine = false
-            mustInsertSpace = false
-
-            print(indentation.repeat(indentLevel))
+            if(indentLevel > 0) {
+                printer.print(rules.indentation.repeat(indentLevel))
+            }
         }
 
         if(mustInsertSpace) {
-            print(" ")
+            printer.print(" ")
             mustInsertSpace = false
         }
     }
 
-    fun preFormat(marker: Any, printer: Printer) {
-        preRules[marker]?.invoke(printer)
+    fun format(marker: Any) {
+        rules.invokePreRule(marker, this)
     }
 
-    fun postFormat(marker: Any, printer: Printer) {
-        postRules[marker]?.invoke(printer)
+    fun fork(): CodeFormatContext {
+        return CodeFormatContext(rules, printer).also {
+            it.atBeginningOfFile = atBeginningOfFile
+            it.mustInsertEmptyLine = mustInsertEmptyLine
+            it.mustInsertNewLine = mustInsertNewLine
+            it.mustInsertSpace = mustInsertSpace
+            it.indentLevel = indentLevel
+        }
     }
+
+    override fun toString(): String {
+        return "CodeFormatContext(rules=$rules, printer=$printer, atBeginningOfFile=$atBeginningOfFile, mustInsertEmptyLine=$mustInsertEmptyLine, mustInsertNewLine=$mustInsertNewLine, mustInsertSpace=$mustInsertSpace, indentLevel=$indentLevel)"
+    }
+
+
 }

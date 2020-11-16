@@ -4,7 +4,7 @@ import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class Ref<T>(private val label: String) : Parser<T> {
+class RefParser<T>(private val label: String) : Parser<T> {
 
     var ref: Parser<T>
         get() = internalRef ?: error("$label is not initialized")
@@ -16,33 +16,18 @@ class Ref<T>(private val label: String) : Parser<T> {
     private var internalRef: Parser<T>? = null
 
     override fun parse(stream: ParserStream): T? {
-        stream.fireRefStart(label)
-        return ref.parse(stream).also {
-            if(it != null) {
-                stream.fireRefSuccess(label)
-            } else {
-                stream.fireRefFail(label)
-            }
-        }
+        return ref.parse(stream)
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        stream.fireRefStart(label)
-        return if(ref.recognize(stream)) {
-            stream.fireRefSuccess(label)
-            true
-        } else {
-            stream.fireRefFail(label)
-            false
-        }
+        return ref.recognize(stream)
     }
 
     override fun print(item: T): ConcreteSyntaxTree? {
-        return ref.print(item)?.ref(label)
+        return ref.print(item)
     }
 
     override fun toString(): String {
         return label
     }
-
 }

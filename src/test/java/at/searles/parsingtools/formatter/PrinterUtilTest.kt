@@ -3,7 +3,7 @@ package at.searles.parsingtools.formatter
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
-import at.searles.parsing.printing.CstPrinter
+import at.searles.parsing.printing.SimplePrinter
 import at.searles.parsing.printing.StringOutStream
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
@@ -128,7 +128,7 @@ class PrinterUtilTest {
 
     private fun actPrint() {
         val cst = parser.print(ast!!)
-        cst?.printTo(cstPrinter)
+        cst?.accept(simplePrinter)
         output = outStream.toString()
     }
 
@@ -139,17 +139,16 @@ class PrinterUtilTest {
     private var ast: Node? = null
     private var output: String? = null
 
-    private lateinit var cstPrinter: CstPrinter
+    private lateinit var simplePrinter: SimplePrinter
 
     private fun initParserUtilList(mayBeEmpty: Boolean, hasSeparator: Boolean) {
         val tokenizer = SkipTokenizer(Lexer())
 
-        whiteSpaceTokId = tokenizer.add(RegexpParser.parse("[ \n\r\t]+"))
-        tokenizer.addSkipped(whiteSpaceTokId)
+        whiteSpaceTokId = tokenizer.addSkipped(RegexpParser.parse("[ \n\r\t]+"))
 
         val idMapping = object : Mapping<CharSequence, Node> {
             override fun parse(stream: ParserStream, input: CharSequence): Node =
-                    IdNode(stream.toTrace(), input.toString())
+                    IdNode(stream.createTrace(), input.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
@@ -157,7 +156,7 @@ class PrinterUtilTest {
 
         val vecMapping = object: Mapping<List<Node>, Node> {
             override fun parse(stream: ParserStream, input: List<Node>): Node {
-                return VecNode(stream.toTrace(), input)
+                return VecNode(stream.createTrace(), input)
             }
 
             override fun left(result: Node): List<Node>? {
@@ -181,7 +180,7 @@ class PrinterUtilTest {
 
     private fun initCstPrinter() {
         this.outStream = StringOutStream()
-        this.cstPrinter = CstPrinter(outStream)
+        this.simplePrinter = SimplePrinter(outStream)
     }
 
     abstract class Node(val trace: Trace)

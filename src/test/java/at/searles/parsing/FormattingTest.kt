@@ -6,7 +6,7 @@ import at.searles.lexer.SkipTokenizer
 import at.searles.lexer.TokenStream
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.ref.Ref
+import at.searles.parsing.ref.RefParser
 import at.searles.regexp.Text
 import at.searles.regexparser.RegexpParser
 import org.junit.Test
@@ -22,16 +22,15 @@ class FormattingTest {
         // XXX this test currently only checks whether everything works without problems
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
-        val ws = lexer.add(RegexpParser.parse("[ \n\r\t]+"))
-        tokenizer.addSkipped(ws)
+        val ws = tokenizer.addSkipped(RegexpParser.parse("[ \n\r\t]+"))
         val a = fromRegex(Text("a"), tokenizer, ToString)
         val open = Recognizer.fromString("(", tokenizer)
         val close = Recognizer.fromString(")", tokenizer)
-        val expr = Ref<String>("expr")
+        val expr = RefParser<String>("expr")
         val term = a.or(open.plus(expr).ref(Annotation.BLOCK).plus(close))
         expr.ref = term + term.ref(Annotation.ARGUMENT).plus(Fold.create<String, String, String> { left, right -> left + right }).rep()
         val stream: ParserStream = ParserStream.create("a(aa((aaa)a)a)")
-        stream.tokStream().listener = object: TokenStream.Listener {
+        stream.tokenStream.listener = object: TokenStream.Listener {
             override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {}
         }
     }

@@ -4,7 +4,7 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable.Opt
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 class ReducerOpt<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Opt {
 
@@ -15,9 +15,9 @@ class ReducerOpt<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Opt {
         return nonOptResult ?: input
     }
 
-    override fun print(item: T): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: T): PartialTree<T>? {
         val output = parent.print(item)
-        return output ?: PartialConcreteSyntaxTree(item, ConcreteSyntaxTree.empty())
+        return output ?: PartialTree(item, ConcreteSyntaxTree.empty())
     }
 
     override fun toString(): String {

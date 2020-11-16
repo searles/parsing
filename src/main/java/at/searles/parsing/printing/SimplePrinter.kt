@@ -1,10 +1,9 @@
 package at.searles.parsing.printing
 
 /**
- * A printwriter for concrete syntax trees. Extend this class for
- * more complex formattings.
+ * A print writer for concrete syntax trees.
  */
-open class CstPrinter(private val outStream: OutStream): CstVisitor {
+class SimplePrinter(private val outStream: OutStream): CstVisitor {
 
     /**
      * Prints a CST that is marked with a certain annotation. Override this
@@ -12,13 +11,12 @@ open class CstPrinter(private val outStream: OutStream): CstVisitor {
      * ignores them.
      *
      * @param tree The cst that is wrapped inside the annotation
-     * @param label The object that is used in the annotation parser. Useful
+     * @param marker The object that is used in the annotation parser. Useful
      * elements here can be enums that indicate that the wrapped cst
      * is a block or an infix symbol.
      * @return this for chaining
      */
-    override fun visitRef(label: String, tree: ConcreteSyntaxTree) {
-        tree.accept(this)
+    override fun visitFormat(marker: Any) {
     }
 
     /**
@@ -34,14 +32,7 @@ open class CstPrinter(private val outStream: OutStream): CstVisitor {
     /**
      * Raw-print into the underlying outStream.
      */
-    protected fun append(sequence: CharSequence) {
+    private fun append(sequence: CharSequence) {
         outStream.append(sequence)
-    }
-
-    /**
-     * Raw-print into the underlying outStream.
-     */
-    protected fun append(codePoint: Int) {
-        outStream.append(codePoint)
     }
 }

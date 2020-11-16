@@ -2,9 +2,9 @@ package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.ref.Ref
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.ref.RefParser
 import at.searles.parsing.tokens.TokenParser
 import at.searles.parsingtools.common.PairCreator
 import at.searles.parsingtools.list.EmptyListCreator
@@ -31,6 +31,11 @@ interface Parser<T> : Recognizable {
     /**
      * Returns the parsed value.
      *
+     * Contract: If the parser is successful, stream's interval is set to the position of the
+     * successful parse.
+     *
+     *
+     *
      * @param stream The parser stream from which items are read.
      * @return An instance of T or null if this parser cannot be used.
      */
@@ -45,7 +50,7 @@ interface Parser<T> : Recognizable {
     }
 
     operator fun plus(right: Recognizer): Parser<T> {
-        return ParserThenRecognizer(this, right)
+        return this + right.toReducer()
     }
 
     operator fun <U> plus(right: Parser<U>): Parser<Pair<T, U>> {
@@ -98,7 +103,7 @@ interface Parser<T> : Recognizable {
      * created for each rule.
      */
     fun ref(label: String): Parser<T> {
-        return Ref<T>(label).apply {
+        return RefParser<T>(label).apply {
             ref = this@Parser
         }
     }

@@ -30,7 +30,7 @@ interface Consumer<T> {
         fun <T>create(inverted: () -> T?, consumer: (Trace, T) -> Boolean): Consumer<T> {
             return object: Consumer<T> {
                 override fun consume(stream: ParserStream, t: T): Boolean {
-                    return consumer(stream.toTrace(), t)
+                    return consumer(stream.createTrace(), t)
                 }
 
                 override fun inverse(): T? {

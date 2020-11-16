@@ -3,7 +3,7 @@ package at.searles.parsingtools.common
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.EmptyConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 
 class BreakPoint<T>(val fn: () -> Unit): Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
@@ -13,6 +13,6 @@ class BreakPoint<T>(val fn: () -> Unit): Recognizer {
 
     override fun print(): ConcreteSyntaxTree {
         fn()
-        return EmptyConcreteSyntaxTree()
+        return EmptyTree()
     }
 }

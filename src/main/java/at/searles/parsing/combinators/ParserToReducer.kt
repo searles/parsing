@@ -4,7 +4,7 @@ import at.searles.parsing.Fold
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Reducer
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 /**
  * Creates a reducer out of a parser.
@@ -18,11 +18,11 @@ class ParserToReducer<T, U, V>(private val parent: Parser<U>, private val fold: 
         return fold.apply(stream, input, right)
     }
 
-    override fun print(item: V): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: V): PartialTree<T>? {
         val right = fold.rightInverse(item) ?: return null
         val left = fold.leftInverse(item) ?: return null
         val rightOutput = parent.print(right) ?: return null
-        return PartialConcreteSyntaxTree(left, rightOutput)
+        return PartialTree(left, rightOutput)
     }
 
     override fun recognize(stream: ParserStream): Boolean {

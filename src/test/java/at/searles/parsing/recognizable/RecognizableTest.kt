@@ -14,8 +14,7 @@ class RecognizableTest {
     private lateinit var inputString: String
 
     private val lexer = SkipTokenizer(Lexer()).also {
-        val ws = it.add(RegexpParser.parse("[ \n]+"))
-        it.addSkipped(ws)
+        val ws = it.addSkipped(RegexpParser.parse("[ \n]+"))
     }
 
     private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, object: Mapping<CharSequence, String> {

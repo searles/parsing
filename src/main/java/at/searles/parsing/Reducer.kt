@@ -1,8 +1,8 @@
 package at.searles.parsing
 
-import at.searles.parsing.ref.ReducerRef
+import at.searles.parsing.ref.RefReducer
 import at.searles.parsing.combinators.*
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 interface Reducer<T, U> : Recognizable {
     /**
@@ -22,7 +22,7 @@ interface Reducer<T, U> : Recognizable {
      * @param item   The argument
      * @return null if fail
      */
-    fun print(item: U): PartialConcreteSyntaxTree<T>? {
+    fun print(item: U): PartialTree<T>? {
         throw UnsupportedOperationException("printing not supported")
     }
 
@@ -31,7 +31,7 @@ interface Reducer<T, U> : Recognizable {
     }
 
     operator fun plus(right: Recognizer): Reducer<T, U> {
-        return ReducerThenRecognizer(this, right)
+        return this + right.toReducer()
     }
 
     infix fun or(other: Reducer<T, U>): Reducer<T, U> {
@@ -43,7 +43,7 @@ interface Reducer<T, U> : Recognizable {
     }
 
     fun ref(label: String): Reducer<T, U> {
-        return ReducerRef<T, U>(label).apply {
+        return RefReducer<T, U>(label).apply {
             ref = this@Reducer
         }
     }

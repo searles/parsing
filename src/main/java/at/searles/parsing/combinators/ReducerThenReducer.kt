@@ -3,7 +3,7 @@ package at.searles.parsing.combinators
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable.Then
 import at.searles.parsing.Reducer
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 /**
  * Reducer followed by a reducer
@@ -16,16 +16,9 @@ class ReducerThenReducer<T, U, V>(override val left: Reducer<T, U>, override val
         val preStart = stream.start
         val preEnd = stream.end
 
-        val leftOut = this.left.parse(stream, input)
-
-        assert(stream.start == preStart)
-
-        if (leftOut == null) {
-            return null
-        }
+        val leftOut = this.left.parse(stream, input) ?: return null
 
         val rightOut = right.parse(stream, leftOut)
-        assert(stream.start == preStart)
 
         if (rightOut == null) {
             stream.requestBacktrackToOffset(this, offset)
@@ -47,10 +40,10 @@ class ReducerThenReducer<T, U, V>(override val left: Reducer<T, U>, override val
         return status
     }
 
-    override fun print(item: V): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: V): PartialTree<T>? {
         val midTree = right.print(item) ?: return null
         val leftTree = left.print(midTree.left) ?: return null
-        return PartialConcreteSyntaxTree(leftTree.left, leftTree.right.consRight(midTree.right))
+        return PartialTree(leftTree.left, leftTree.right.consRight(midTree.right))
     }
 
     override fun toString(): String {

@@ -4,7 +4,7 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable.Rep
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 import java.util.*
 
 /**
@@ -24,7 +24,7 @@ class ReducerRep<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Rep {
         }
     }
 
-    override fun print(item: T): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: T): PartialTree<T>? {
         var left: T = item
         val trees = ArrayList<ConcreteSyntaxTree>()
 
@@ -36,7 +36,7 @@ class ReducerRep<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Rep {
 
         trees.reverse()
 
-        return PartialConcreteSyntaxTree(left, ConcreteSyntaxTree.fromList(trees))
+        return PartialTree(left, ConcreteSyntaxTree.fromList(trees))
     }
 
     override fun toString(): String {

@@ -8,7 +8,7 @@ import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.ref.Ref
+import at.searles.parsing.ref.RefParser
 import at.searles.regexp.CharSet
 import org.junit.Assert
 import org.junit.Test
@@ -251,7 +251,7 @@ class ParserAndPrinterTest {
                 return false
             }
 
-            val exprParser = Ref<Expr>("expr")
+            val exprParser = RefParser<Expr>("expr")
             val term = term(exprParser)
             val exprReducer: Reducer<Expr, Expr> = exprParser.plus(
                     object : Fold<Expr, Expr, Expr> {
@@ -287,7 +287,7 @@ class ParserAndPrinterTest {
                 return false
             }
 
-            val exprParser = Ref<Expr>("expr")
+            val exprParser = RefParser<Expr>("expr")
             val term = term(exprParser)
             val appReducer: Reducer<Expr, Expr> = term.plus(
                     object : Fold<Expr, Expr, Expr> {
@@ -317,7 +317,7 @@ class ParserAndPrinterTest {
             }
         };
 
-        fun term(exprParser: Ref<Expr>): Parser<Expr> {
+        fun term(exprParser: RefParser<Expr>): Parser<Expr> {
             val tokenizer = Lexer()
 
             val idParser: Parser<Expr> = fromRegex(CharSet.interval('a'.toInt(), 'z'.toInt()), tokenizer, object : Mapping<CharSequence, Expr> {

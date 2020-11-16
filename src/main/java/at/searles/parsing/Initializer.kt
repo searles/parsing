@@ -39,7 +39,7 @@ interface Initializer<T> : Parser<T> {
         fun <T> create(consumer: (T) -> Boolean, initializer: (Trace) -> T): Initializer<T> {
             return object: Initializer<T> {
                 override fun parse(stream: ParserStream): T {
-                    return initializer(stream.toTrace())
+                    return initializer(stream.createTrace())
                 }
 
                 override fun consume(t: T): Boolean {

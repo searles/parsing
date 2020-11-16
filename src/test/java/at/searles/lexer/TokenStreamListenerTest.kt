@@ -2,6 +2,7 @@ package at.searles.lexer
 
 import at.searles.buf.Frame
 import at.searles.lexer.utils.Counter
+import at.searles.regexp.Text
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -20,8 +21,8 @@ class TokenStreamListenerTest {
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
         val aId = lexer.add("a")
-        val bId = lexer.add("b")
-        tokenizer.addSkipped(bId)
+        val bId = tokenizer.addSkipped(Text("b"))
+
         val stream = TokenStream.fromString("abaababb")
         val counter = Counter()
 

@@ -4,10 +4,10 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.printing.ConcreteSyntaxTree
-import at.searles.parsing.printing.CstPrinter
+import at.searles.parsing.format.FormatRules
+import at.searles.parsing.printing.CodePrinter
 import at.searles.parsing.printing.StringOutStream
-import at.searles.parsing.ref.Ref
+import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
 
 /**
@@ -24,8 +24,7 @@ fun main() {
     val lexer = SkipTokenizer(Lexer())
             
     // ignore white spaces
-    val wsTokenId = lexer.add(RegexpParser.parse("[\n\r\t ]+"))
-    lexer.addSkipped(wsTokenId)
+    val wsTokenId = lexer.addSkipped(RegexpParser.parse("[\n\r\t ]+"))
 
     // num: [0-9]* ;
     val numTokenId = lexer.add(RegexpParser.parse("[0-9]+"))
@@ -40,7 +39,7 @@ fun main() {
     val num = Parser.fromToken(numTokenId, lexer, numMapping).ref("num")
 
     // term: num | '(' sum ')'
-    val sum = Ref<AstNode>("sum")
+    val sum = RefParser<AstNode>("sum")
 
     val openPar = Recognizer.fromString("(", lexer)
     val closePar = Recognizer.fromString(")", lexer)
@@ -93,8 +92,8 @@ fun main() {
                 if (result is OpNode && result.op == Op.Div) result.args[1] else null
     }
 
-    val product = (literal + ((times.ref(FormatOp.Infix) + literal).plus(multiply) or
-            (slash.ref(FormatOp.Infix) + literal).plus(divide)).rep()).ref("product")
+    val product = (literal + ((times + literal).plus(multiply) or
+            (slash + literal).plus(divide)).rep()).ref("product")
 
     // sum: product ('+' product | '-' product)* ;
 
@@ -123,8 +122,8 @@ fun main() {
     }
 
     sum.ref = product + (
-                    plus.ref(FormatOp.Infix) + product.plus(add) or
-                    minus.ref(FormatOp.Infix) + product.plus(sub)
+                    plus + product.plus(add) or
+                    minus + product.plus(sub)
             ).rep()
 
 
@@ -159,23 +158,21 @@ fun main() {
     // now pretty-printTo the tree
     val sourceStream = StringOutStream()
 
-    val printer = object : CstPrinter(sourceStream) {
-        override fun print(tree: ConcreteSyntaxTree, label: String): CstPrinter =
-                when (label) {
-                    FormatOp.Infix -> append(" ").print(tree).append(" ")
-                    else -> print(tree)
-                }
+    val rules = FormatRules().apply {
+        this.addRule(Format.Blank) { it.insertSpace() }
     }
 
+    val printer = CodePrinter(rules, sourceStream)
+
     val outTree = sum.print(ast)!!
-    outTree.printTo(printer)
+    outTree.accept(printer)
     println("Pretty-Print: $sourceStream")
 }
 
 enum class Op { Add, Sub, Mul, Div, Neg }
 
-object FormatOp {
-    const val Infix = "infix"
+enum class Format {
+    Blank
 }
 
 interface AstNode
@@ -183,4 +180,3 @@ interface AstNode
 class NumNode(val value: Int) : AstNode
 
 class OpNode(val op: Op, vararg val args: AstNode) : AstNode
-

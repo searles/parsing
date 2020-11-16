@@ -4,7 +4,7 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.ref.Ref
+import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
 
 /**
@@ -22,8 +22,7 @@ fun main() {
     val lexer = SkipTokenizer(Lexer())
 
     // ignore white spaces
-    val wsTokenId = lexer.add(RegexpParser.parse("[\n\r\t ]+"))
-    lexer.addSkipped(wsTokenId)
+    val wsTokenId = lexer.addSkipped(RegexpParser.parse("[\n\r\t ]+"))
 
     // num: [0-9]* ;
     val numTokenId = lexer.add(RegexpParser.parse("[0-9]+"))
@@ -35,7 +34,7 @@ fun main() {
     val num = Parser.fromToken(numTokenId, lexer, numMapping).ref("num")
     
     // term: num | '(' sum ')'
-    val sum = Ref<Int>("sum")
+    val sum = RefParser<Int>("sum")
 
     val openPar = Recognizer.fromString("(", lexer)
     val closePar = Recognizer.fromString(")", lexer)

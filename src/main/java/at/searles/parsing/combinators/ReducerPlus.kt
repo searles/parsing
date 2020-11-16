@@ -3,7 +3,7 @@ package at.searles.parsing.combinators
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Reducer
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T, T> {
 
@@ -26,7 +26,7 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
         return parser.parse(stream, input)
     }
 
-    override fun print(item: T): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: T): PartialTree<T>? {
         return printer.print(item)
     }
 

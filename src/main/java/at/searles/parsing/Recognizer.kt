@@ -2,8 +2,8 @@ package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.combinators.*
-import at.searles.parsing.label.RecognizerRef
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.ref.RefRecognizer
 import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.parsingtools.common.Init
 import at.searles.regexp.CharSet
@@ -23,7 +23,7 @@ interface Recognizer : Recognizable {
 
     // corresponds to prefix.
     operator fun <T, U> plus(right: Reducer<T, U>): Reducer<T, U> {
-        return RecognizerThenReducer(this, right)
+        return this.toReducer<T>() + right
     }
 
     infix fun or(other: Recognizer): Recognizer {
@@ -70,9 +70,13 @@ interface Recognizer : Recognizable {
     }
 
     fun ref(label: String): Recognizer {
-        return RecognizerRef(label).apply {
+        return RefRecognizer(label).apply {
             this.ref = this@Recognizer
         }
+    }
+
+    fun <T> toReducer(): Reducer<T, T> {
+        return RecognizerToReducer<T>(this)
     }
 
     companion object {

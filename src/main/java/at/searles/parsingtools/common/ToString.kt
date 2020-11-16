@@ -11,4 +11,8 @@ object ToString : Mapping<CharSequence, String> {
     override fun left(result: String): CharSequence? {
         return result
     }
+
+    override fun toString(): String {
+        return "toString"
+    }
 }

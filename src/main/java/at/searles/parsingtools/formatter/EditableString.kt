@@ -2,7 +2,9 @@ package at.searles.parsingtools.formatter
 
 import java.lang.StringBuilder
 
-class EditableStringBuilder(private val sb: StringBuilder = StringBuilder()): EditableText {
+class EditableString(string: String): EditableText {
+
+    private val sb = StringBuilder(string)
 
     override val length: Int
         get() = sb.length
@@ -21,5 +23,9 @@ class EditableStringBuilder(private val sb: StringBuilder = StringBuilder()): Ed
 
     override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
         return sb.subSequence(startIndex, endIndex)
+    }
+
+    override fun toString(): String {
+        return sb.toString()
     }
 }

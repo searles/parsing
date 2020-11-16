@@ -1,24 +1,18 @@
 package at.searles.parsing.printing
 
+import at.searles.parsing.format.CodeFormatContext
+import at.searles.parsing.format.FormatRules
+import at.searles.parsing.format.Printer
+
 /**
  * A printwriter for concrete syntax trees. Extend this class for
  * more complex formattings.
  */
-open class SimplePrinter(private val outStream: OutStream): CstVisitor {
+class CodePrinter(rules: FormatRules, private val outStream: OutStream): CstVisitor, Printer {
+    private val codeFormatter = CodeFormatContext(rules, this)
 
-    /**
-     * Prints a CST that is marked with a certain annotation. Override this
-     * method for custom formats. The default implementation
-     * ignores them.
-     *
-     * @param tree The cst that is wrapped inside the annotation
-     * @param label The object that is used in the annotation parser. Useful
-     * elements here can be enums that indicate that the wrapped cst
-     * is a block or an infix symbol.
-     * @return this for chaining
-     */
-    override fun visitRef(label: String, tree: ConcreteSyntaxTree) {
-        tree.accept(this)
+    override fun visitFormat(marker: Any) {
+        codeFormatter.format(marker)
     }
 
     /**
@@ -28,20 +22,14 @@ open class SimplePrinter(private val outStream: OutStream): CstVisitor {
      * whether it is at the beginning of a line.
      */
     override fun visitToken(seq: CharSequence) {
-        append(seq)
+        codeFormatter.applyFormatting()
+        print(seq)
     }
 
     /**
      * Raw-print into the underlying outStream.
      */
-    protected fun append(sequence: CharSequence) {
-        outStream.append(sequence)
-    }
-
-    /**
-     * Raw-print into the underlying outStream.
-     */
-    protected fun append(codePoint: Int) {
-        outStream.append(codePoint)
+    override fun print(seq: CharSequence) {
+        outStream.append(seq)
     }
 }

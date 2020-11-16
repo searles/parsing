@@ -58,7 +58,7 @@ class EofTest {
         // Set up phase
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
-        tokenizer.addSkipped(lexer.add(CharSet.chars(' '.toInt())))
+        tokenizer.addSkipped(CharSet.chars(' '))
 
         this.parser = Recognizer.fromString("a", tokenizer).rep()
         eof = Recognizer.eof(tokenizer)
@@ -75,8 +75,7 @@ class EofTest {
         // Set up phase
         val lexer = Lexer()
         val tokenizer = SkipTokenizer(lexer)
-        val spaceId = lexer.add(CharSet.chars(' '.toInt()))
-        tokenizer.addSkipped(spaceId)
+        val spaceId = tokenizer.addSkipped(CharSet.chars(' '.toInt()))
         this.parser = Recognizer.fromString("a", tokenizer).rep()
         eof = Recognizer.eof(Lexer())
 

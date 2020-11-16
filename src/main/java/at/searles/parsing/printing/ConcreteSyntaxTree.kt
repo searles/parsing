@@ -4,30 +4,27 @@ interface ConcreteSyntaxTree {
     /**
      * Print this syntax tree using the provided printer.
      *
-     * @param printer The non-null printer.
+     * @param visitor The non-null printer.
      */
-    fun printTo(printer: CstPrinter)
+    fun accept(visitor: CstVisitor)
+
     fun consRight(right: ConcreteSyntaxTree): ConcreteSyntaxTree {
-        return ConsConcreteSyntaxTree(this, right)
+        return ConsTree(this, right)
     }
 
     fun consLeft(left: ConcreteSyntaxTree): ConcreteSyntaxTree {
-        return ConsConcreteSyntaxTree(left, this)
-    }
-
-    fun annotate(label: String): ConcreteSyntaxTree {
-        return LabelledConcreteSyntaxTree(label, this)
+        return ConsTree(left, this)
     }
 
     companion object {
-        private val EMPTY: ConcreteSyntaxTree = EmptyConcreteSyntaxTree()
+        private val EMPTY: ConcreteSyntaxTree = EmptyTree()
 
         fun empty(): ConcreteSyntaxTree {
             return EMPTY
         }
 
         fun fromCharSequence(seq: CharSequence): ConcreteSyntaxTree {
-            return LeafConcreteSyntaxTree(seq)
+            return TokenTree(seq)
         }
 
         fun fromList(list: List<ConcreteSyntaxTree>): ConcreteSyntaxTree {
@@ -35,7 +32,7 @@ interface ConcreteSyntaxTree {
                 list.isEmpty() -> empty()
                 list.size == 1 -> list[0]
                 list.size == 2 -> list[0].consRight(list[1])
-                else -> ListConcreteSyntaxTree(list)
+                else -> ListTree(list)
             }
         }
     }

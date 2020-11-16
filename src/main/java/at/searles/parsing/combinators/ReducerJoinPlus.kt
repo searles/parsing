@@ -4,7 +4,7 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.Reducer
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 class ReducerJoinPlus<T>(separator: Recognizer, reducer: Reducer<T, T>) : Reducer<T, T> {
 
@@ -15,7 +15,7 @@ class ReducerJoinPlus<T>(separator: Recognizer, reducer: Reducer<T, T>) : Reduce
         return parserReducer.parse(stream, input)
     }
 
-    override fun print(item: T): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: T): PartialTree<T>? {
         return printerReducer.print(item)
     }
 

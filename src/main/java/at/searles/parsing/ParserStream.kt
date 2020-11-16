@@ -4,34 +4,28 @@ import at.searles.buf.Frame
 import at.searles.lexer.TokenStream
 import at.searles.lexer.Tokenizer
 
-class ParserStream(private val stream: TokenStream) {
+class ParserStream(val tokenStream: TokenStream) {
 
     /**
      * Marks the start of the current parsed element.
      */
-    var start: Long = stream.offset
+    var start: Long = tokenStream.offset
 
     /**
      * Marks the end of the current parsed element.
      */
-    var end: Long = stream.offset
+    var end: Long = tokenStream.offset
 
     var listener: Listener? = null
-
     var isBacktrackAllowed: Boolean = true
-
     var maxStatus: BacktrackingStatus? = null
 
-    fun tokStream(): TokenStream {
-        return stream
-    }
-
-    fun toTrace(): Trace {
+    fun createTrace(): Trace {
         return ParserStreamTrace(this)
     }
 
-    fun parseToken(tokenizer: Tokenizer, tokId: Int): Frame? {
-        val frame = tokenizer.matchToken(stream, tokId)
+    fun parseToken(tokenizer: Tokenizer, tokenId: Int): Frame? {
+        val frame = tokenizer.matchToken(tokenStream, tokenId)
 
         if (frame != null) {
             start = frame.start
@@ -65,69 +59,34 @@ class ParserStream(private val stream: TokenStream) {
             maxStatus = trace
         }
 
-        stream.setPositionTo(offset)
+        tokenStream.setPositionTo(offset)
     }
 
     /**
      * Returns the position from which the next token will be consumed
      */
     val offset: Long
-        get() = stream.offset
+        get() = tokenStream.offset
 
     override fun toString(): String {
-        return "$stream: [$start, $end]"
+        return "$tokenStream: [$start, $end]"
     }
 
-    fun fireRefStart(label: String) {
-        if (listener != null) {
-            listener!!.onRefStart(this, label)
-        }
-    }
-
-    fun fireRefSuccess(label: String) {
-        if (listener != null) {
-            listener!!.onRefSuccess(this, label)
-        }
-    }
-
-    fun fireRefFail(label: String) {
-        if (listener != null) {
-            listener!!.onRefFail(this, label)
-        }
+    fun notifyFormat(marker: Any) {
+        listener?.onFormat(marker, this)
     }
 
     interface Listener {
-        /**
-         * If an annotation starts, the parser after it not necessarily succeeds
-         * even in an LL1-Grammar. Yet, all calls to this method are
-         * followed by a call to annotationEnd. Hence, all changes done
-         * in this method must be undone if the arguments to annotationEnd
-         * indicate that the annotation parser did not succeed.
-         */
-        fun onRefStart(parserStream: ParserStream, label: String)
-        fun onRefFail(parserStream: ParserStream, label: String)
-        fun onRefSuccess(parserStream: ParserStream, label: String)
-    }
-
-    interface SimpleListener : Listener {
-        override fun onRefStart(parserStream: ParserStream, label: String) {
-            // ignore
-        }
-
-        override fun onRefFail(parserStream: ParserStream, label: String) {
-            // ignore fails.
-        }
-
-        override fun onRefSuccess(parserStream: ParserStream, label: String) {
-            onRef(parserStream, label)
-        }
-
-        fun onRef(parserStream: ParserStream, label: String)
+        fun onFormat(marker: Any, parserStream: ParserStream)
     }
 
     class ParserStreamTrace(val stream: ParserStream) : Trace {
         override val start: Long = stream.start
         override val end: Long = stream.end
+
+        override fun toString(): String {
+            return "[$start : $end]"
+        }
     }
 
     companion object {

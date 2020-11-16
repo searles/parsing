@@ -2,7 +2,8 @@ package at.searles.parsing.printing
 
 class StringOutStream : OutStream {
     private val sb = StringBuilder()
-    override fun append(seq: CharSequence?) {
+
+    override fun append(seq: CharSequence) {
         sb.append(seq)
     }
 

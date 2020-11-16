@@ -1,4 +1,7 @@
 package at.searles.parsingtools.formatter
 
-interface FormatListener {
+import at.searles.lexer.TokenStream
+import at.searles.parsing.ParserStream
+
+interface FormatListener: ParserStream.Listener, TokenStream.Listener {
 }

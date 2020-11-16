@@ -1,6 +1,6 @@
 package at.searles.parsing.printing
 
-class EmptyConcreteSyntaxTree : ConcreteSyntaxTree {
+class EmptyTree : ConcreteSyntaxTree {
     override fun consRight(right: ConcreteSyntaxTree): ConcreteSyntaxTree {
         return right
     }
@@ -9,7 +9,8 @@ class EmptyConcreteSyntaxTree : ConcreteSyntaxTree {
         return left
     }
 
-    override fun printTo(printer: CstPrinter) {}
+    override fun accept(visitor: CstVisitor) {}
+
     override fun toString(): String {
         return ""
     }

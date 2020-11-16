@@ -17,6 +17,7 @@ class ParserThenReducer<T, U>(override val left: Parser<T>, override val right: 
         // to restore if backtracking
         val preStart = stream.start
         val preEnd = stream.end
+
         val t = left.parse(stream) ?: return null
 
         // reducer preserves start() in stream and only sets end().

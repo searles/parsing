@@ -5,7 +5,7 @@ import at.searles.parsing.Recognizer
 import at.searles.parsing.Reducer
 import at.searles.parsing.Reducer.Companion.opt
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.printing.PartialConcreteSyntaxTree
+import at.searles.parsing.printing.PartialTree
 
 class ReducerJoin<T>(separator: Recognizer, reducer: Reducer<T, T>) : Reducer<T, T> {
     private val parserReducer: Reducer<T, T> = (reducer + (separator + reducer).rep()).opt()
@@ -15,7 +15,7 @@ class ReducerJoin<T>(separator: Recognizer, reducer: Reducer<T, T>) : Reducer<T,
         return parserReducer.parse(stream, input)
     }
 
-    override fun print(item: T): PartialConcreteSyntaxTree<T>? {
+    override fun print(item: T): PartialTree<T>? {
         return printerReducer.print(item)
     }
 

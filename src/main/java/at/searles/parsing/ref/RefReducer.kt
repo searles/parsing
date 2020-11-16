@@ -4,35 +4,27 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
-class ReducerRef<T, U>(private val label: String) : Reducer<T, U> {
+class RefReducer<T, U>(private val label: String) : Reducer<T, U> {
 
-    lateinit var ref: Reducer<T, U>
+    var ref: Reducer<T, U>
+        get() = internalRef ?: error("$label is not initialized")
+
+        set(value) {
+            internalRef = value
+        }
+
+    private var internalRef: Reducer<T, U>? = null
 
     override fun parse(stream: ParserStream, input: T): U? {
-        stream.fireRefStart(label)
-        return ref.parse(stream, input).also {
-            if(it != null) {
-                stream.fireRefSuccess(label)
-            } else {
-                stream.fireRefFail(label)
-            }
-        }
+        return ref.parse(stream, input)
     }
 
     override fun print(item: U): PartialTree<T>? {
-        val tree = ref.print(item) ?: return null
-        return PartialTree(tree.left, tree.right.ref(label))
+        return ref.print(item)
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        stream.fireRefStart(label)
-        return ref.recognize(stream).also {
-            if(it) {
-                stream.fireRefSuccess(label)
-            } else {
-                stream.fireRefFail(label)
-            }
-        }
+        return ref.recognize(stream)
     }
 
     override fun toString(): String {
