@@ -2,17 +2,18 @@ package at.searles.parsingtools.formatter
 
 import java.lang.StringBuilder
 
-class EditableStringBuilder(private val sb: StringBuilder): EditableText {
-    override fun delete(start: Long, end: Long) {
-        sb.delete(start.toInt(), end.toInt())
+class EditableStringBuilder(private val sb: StringBuilder = StringBuilder()): EditableText {
+
+    override val length: Int
+        get() = sb.length
+
+    override fun delete(position: Long, length: Long) {
+        sb.delete(position.toInt(), (position + length).toInt())
     }
 
     override fun insert(position: Long, insertion: CharSequence) {
         sb.insert(position.toInt(), insertion.toString())
     }
-
-    override val length: Int
-        get() = sb.length
 
     override fun get(index: Int): Char {
         return sb[index]
