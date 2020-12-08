@@ -150,13 +150,29 @@ class PrinterTest {
         val list = ArrayList<ConcreteSyntaxTree>()
 
         this.stream.listener = (object: ParserStream.Listener {
-            override fun onMark(marker: Any, parserStream: ParserStream) {
+            override fun onMark(marker: Any, stream: ParserStream) {
                 list.add(FormatTree(marker))
+            }
+
+            override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onParserStart(stream: ParserStream) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onParserSuccess(stream: ParserStream) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onParserFail(stream: ParserStream) {
+                TODO("Not yet implemented")
             }
         })
 
-        this.stream.tokenStream.listener = object: TokenStream.Listener {
-            override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+        this.stream.listener = object: ParserStream.Listener {
+            override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
                 // skip all white spaces
                 if(tokenId == whiteSpaceTokId) {
                     return
@@ -168,6 +184,14 @@ class PrinterTest {
                 // code.
                 list.add(TokenTree(frame.toString()))
             }
+
+            override fun onMark(marker: Any, stream: ParserStream) {}
+
+            override fun onParserStart(stream: ParserStream) {}
+
+            override fun onParserSuccess(stream: ParserStream) {}
+
+            override fun onParserFail(stream: ParserStream) {}
         }
 
         if(!parser.recognize(stream)) {

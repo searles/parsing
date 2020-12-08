@@ -103,7 +103,7 @@ class TokenStream(private val stream: FrameStream) {
     }
 
     private fun notifyTokenConsumed(tokenId: Int, frame: Frame) {
-        listener?.tokenConsumed(this, tokenId, frame)
+        listener?.onToken(tokenId, frame, this)
     }
 
     override fun toString(): String {
@@ -111,7 +111,7 @@ class TokenStream(private val stream: FrameStream) {
     }
 
     interface Listener {
-        fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame)
+        fun onToken(tokenId: Int, frame: Frame, stream: TokenStream)
     }
 
     companion object {

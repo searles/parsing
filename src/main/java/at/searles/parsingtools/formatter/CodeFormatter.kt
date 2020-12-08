@@ -1,7 +1,6 @@
 package at.searles.parsingtools.formatter
 
 import at.searles.buf.Frame
-import at.searles.lexer.TokenStream
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
 import at.searles.parsing.format.CodeFormatContext
@@ -16,7 +15,7 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Parser<*>, 
         return FormatterInstance(editableText).format()
     }
 
-    private inner class FormatterInstance(val editableText: EditableText) : FormatListener, Printer {
+    private inner class FormatterInstance(val editableText: EditableText) : ParserStream.Listener, Printer {
 
         var context = CodeFormatContext(rules, this)
         val stash = Stack<CodeFormatContext>()
@@ -27,14 +26,11 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Parser<*>, 
         fun format(): Long {
             val stream = ParserStream.create(editableText).apply {
                 listener = this@FormatterInstance
-                tokenStream.listener = this@FormatterInstance
             }
 
             try {
                 parser.recognize(stream)
                 context.insertNewLine()
-//  TODO          } catch(e: BacktrackNotAllowedException) {
-//                // ignore
             } finally {
                 addCurrentFormattingCommands()
             }
@@ -46,11 +42,12 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Parser<*>, 
             return position
         }
 
-        override fun onMark(marker: Any, parserStream: ParserStream) {
+        override fun onMark(marker: Any, stream: ParserStream) {
             context.format(marker)
         }
 
-        override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+        override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
+            print("tokenConsumed: $tokenId\n")
             position = frame.start
 
             removeCommandsPastPosition(position)
@@ -63,6 +60,18 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Parser<*>, 
 
             replaceFormatting(frame)
             position = frame.end
+        }
+
+        override fun onParserStart(stream: ParserStream) {
+            // TODO
+        }
+
+        override fun onParserSuccess(stream: ParserStream) {
+            // TODO: confirm last items
+        }
+
+        override fun onParserFail(stream: ParserStream) {
+            // TODO: Remove last format items
         }
 
         private fun removeCommandsPastPosition(position: Long) {

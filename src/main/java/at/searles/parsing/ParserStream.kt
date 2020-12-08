@@ -1,12 +1,13 @@
 package at.searles.parsing
 
+import at.searles.buf.CharStream
 import at.searles.buf.Frame
 import at.searles.buf.ReaderCharStream
 import at.searles.lexer.TokenStream
 import at.searles.lexer.Tokenizer
 import java.io.Reader
 
-class ParserStream private constructor(val tokenStream: TokenStream) { // TODO set private
+class ParserStream private constructor(private val tokenStream: TokenStream) {
 
     /**
      * Marks the start of the current parsed element.
@@ -205,7 +206,7 @@ class ParserStream private constructor(val tokenStream: TokenStream) { // TODO s
         listener?.onMark(marker, this)
     }
 
-    interface Listener: TokenStream.Listener {
+    interface Listener {
         fun onMark(marker: Any, stream: ParserStream)
         fun onToken(tokenId: Int, frame: Frame, stream: ParserStream)
         fun onParserStart(stream: ParserStream)
@@ -226,7 +227,7 @@ class ParserStream private constructor(val tokenStream: TokenStream) { // TODO s
         fun create(seq: CharSequence): ParserStream {
             return ParserStream(TokenStream.fromString(seq)).also {
                 it.tokenStream.listener = object: TokenStream.Listener {
-                    override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+                    override fun onToken(tokenId: Int, frame: Frame, stream: TokenStream) {
                         it.listener?.onToken(tokenId, frame, it)
                     }
                 }
@@ -234,11 +235,13 @@ class ParserStream private constructor(val tokenStream: TokenStream) { // TODO s
         }
 
         fun create(reader: Reader): ParserStream {
-            val charStream = ReaderCharStream(reader)
+            return create(ReaderCharStream(reader))
+        }
 
-            return ParserStream(TokenStream.fromCharStream(charStream)).also {
+        fun create(stream: CharStream): ParserStream {
+            return ParserStream(TokenStream.fromCharStream(stream)).also {
                 it.tokenStream.listener = object: TokenStream.Listener {
-                    override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+                    override fun onToken(tokenId: Int, frame: Frame, stream: TokenStream) {
                         it.listener?.onToken(tokenId, frame, it)
                     }
                 }
