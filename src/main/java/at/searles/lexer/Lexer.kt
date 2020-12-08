@@ -25,7 +25,7 @@ class Lexer(val tokenIdProvider: Counter = Counter()) : Tokenizer {
 
     override val lexer: Lexer get() = this
 
-    override fun currentTokenIds(stream: TokenStream): IntSet? {
+    override fun getCurrentTokenIds(stream: TokenStream): IntSet? {
         return stream.getAcceptedTokens(this)
     }
 

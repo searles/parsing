@@ -7,11 +7,11 @@ import java.util.ArrayList
 
 class ListPermutator<T>(private vararg val order: Int) : Mapping<List<T>, List<T>> {
 
-    override fun parse(stream: ParserStream, input: List<T>): List<T> {
-        val list = ArrayList<T>(input.size)
+    override fun parse(left: List<T>, stream: ParserStream): List<T> {
+        val list = ArrayList<T>(left.size)
 
         for (index in order) {
-            list.add(input[index])
+            list.add(left[index])
         }
 
         return list

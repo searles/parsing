@@ -1,15 +1,19 @@
 package at.searles.parsing.combinators
 
-import at.searles.parsing.Recognizable
+import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class RecognizerOrRecognizer(override val choice0: Recognizer, override val choice1: Recognizer) : Recognizer, Recognizable.Or {
+class RecognizerOrRecognizer(private val choice0: Recognizer, private val choice1: Recognizer) : Recognizer {
+    override fun recognize(stream: ParserStream): Boolean {
+        return stream.recognize(choice0) || stream.recognize(choice1)
+    }
+
     override fun print(): ConcreteSyntaxTree {
         return choice0.print()
     }
 
     override fun toString(): String {
-        return createString()
+        return "$choice0.or($choice1)"
     }
 }

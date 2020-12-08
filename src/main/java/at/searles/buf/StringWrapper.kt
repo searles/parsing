@@ -10,6 +10,16 @@ class StringWrapper(private val charSequence: CharSequence) : FrameStream {
     private var frameStart = 0
     private var frameEnd = 0
 
+    override var position: Long
+        get() {
+            return ptr.toLong()
+        }
+        set(value) {
+            this.ptr = value.toInt()
+            frameEnd = this.ptr
+            frameStart = frameEnd
+        }
+
     private fun codePointAt(index: Int): Int {
         val c1 = charSequence[index]
 
@@ -31,16 +41,6 @@ class StringWrapper(private val charSequence: CharSequence) : FrameStream {
         val ch = codePointAt(ptr)
         ptr += Character.charCount(ch)
         return ch
-    }
-
-    override fun position(): Long {
-        return ptr.toLong()
-    }
-
-    override fun setPositionTo(ptr: Long) {
-        this.ptr = ptr.toInt()
-        frameEnd = this.ptr
-        frameStart = frameEnd
     }
 
     override fun mark() {

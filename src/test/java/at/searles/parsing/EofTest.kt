@@ -8,7 +8,7 @@ import org.junit.Test
 
 class EofTest {
 
-    private lateinit var parser: Recognizable
+    private lateinit var parser: Recognizer
     private lateinit var eof: Recognizer
     private lateinit var stream: ParserStream
 
@@ -82,7 +82,7 @@ class EofTest {
         withInput("a a a   ")
         actRecognize()
 
-        Assert.assertTrue(eof())
+        Assert.assertFalse(eof())
     }
 
     private fun eof(): Boolean {

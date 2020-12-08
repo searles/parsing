@@ -1,24 +1,57 @@
 package at.searles.parsing
 
 import at.searles.buf.Frame
+import at.searles.buf.ReaderCharStream
 import at.searles.lexer.TokenStream
 import at.searles.lexer.Tokenizer
+import java.io.Reader
 
-class ParserStream(val tokenStream: TokenStream) {
+class ParserStream private constructor(val tokenStream: TokenStream) { // TODO set private
 
     /**
      * Marks the start of the current parsed element.
      */
     var start: Long = tokenStream.offset
+        private set
 
     /**
      * Marks the end of the current parsed element.
      */
     var end: Long = tokenStream.offset
+        private set
+
+    var maxStatus: BacktrackingStatus? = null
+        private set
 
     var listener: Listener? = null
-    var isBacktrackAllowed: Boolean = true
-    var maxStatus: BacktrackingStatus? = null
+
+    /**
+     * Returns the position from which the next token will be consumed
+     */
+    val offset: Long
+        get() = tokenStream.offset
+
+
+    /**
+     * Sets the underlying stream to the given offset, ie,
+     * the next token matched will start at the given parameter.
+     * The caller must take care of start and end of the parsed
+     * unit.
+     *
+     * @param offset The new offset.
+     */
+    fun restoreOffsetIfNecessary(offset: Long, failedParser: Any) {
+        if(offset == this.offset) {
+            // some empty parser failed. We are generous with them.
+            return
+        }
+
+        if(maxStatus == null || maxStatus!!.requestedOffset < offset) {
+            maxStatus = BacktrackingStatus(failedParser, offset, this)
+        }
+
+        tokenStream.offset = offset
+    }
 
     fun createTrace(): Trace {
         return ParserStreamTrace(this)
@@ -35,49 +68,149 @@ class ParserStream(val tokenStream: TokenStream) {
         return frame
     }
 
-    /**
-     * Sets the underlying stream to the given offset, ie,
-     * the next token matched will start at the given parameter.
-     * The caller must take care of start and end of the parsed
-     * unit.
-     *
-     * @param offset The new offset.
-     */
-    fun requestBacktrackToOffset(failedParser: Recognizable.Then, offset: Long) {
-        if(offset == this.offset) {
-            // some empty parser failed. We are generous with them.
-            return
+    fun recognize(recognizer: Recognizer, isLeftMost: Boolean = true): Boolean {
+        listener?.onParserStart(this)
+
+        val offset0 = offset
+        val start0 = start
+        val end0 = end
+
+        if(recognizer.recognize(this)) {
+            if(!isLeftMost) {
+                start = start0
+            }
+
+            listener?.onParserSuccess(this)
+
+            return true
         }
 
-        val trace = BacktrackingStatus(failedParser, offset, this)
+        start = start0
+        end = end0
+        restoreOffsetIfNecessary(offset0, recognizer)
 
-        if(!isBacktrackAllowed) {
-            throw BacktrackNotAllowedException(trace)
-        }
+        listener?.onParserFail(this)
 
-        if(maxStatus == null || maxStatus!!.requestedOffset < offset) {
-            maxStatus = trace
-        }
-
-        tokenStream.setPositionTo(offset)
+        return false
     }
 
-    /**
-     * Returns the position from which the next token will be consumed
-     */
-    val offset: Long
-        get() = tokenStream.offset
+    fun recognize(recognizer: Parser<*>, isLeftMost: Boolean = true): Boolean {
+        listener?.onParserStart(this)
+
+        val offset0 = offset
+        val start0 = start
+        val end0 = end
+
+        if(recognizer.recognize(this)) {
+            if(!isLeftMost) {
+                start = start0
+            }
+
+            listener?.onParserSuccess(this)
+
+            return true
+        }
+
+        start = start0
+        end = end0
+        restoreOffsetIfNecessary(offset0, recognizer)
+
+        listener?.onParserFail(this)
+
+        return false
+    }
+
+    fun recognize(recognizer: Reducer<*, *>): Boolean {
+        listener?.onParserStart(this)
+
+        val offset0 = offset
+        val start0 = start
+        val end0 = end
+
+        val status = recognizer.recognize(this)
+
+        start = start0
+
+        if(status) {
+            listener?.onParserSuccess(this)
+            return true
+        }
+
+        end = end0
+        restoreOffsetIfNecessary(offset0, recognizer)
+
+        listener?.onParserFail(this)
+
+        return false
+    }
+
+    fun <T> parse(parser: Parser<T>, isLeftMost: Boolean= true): T? {
+        listener?.onParserStart(this)
+
+        val offset0 = offset
+        val start0 = start
+        val end0 = end
+
+        val value = parser.parse(this)
+
+        if(value != null) {
+            if(!isLeftMost) {
+                start = start0
+            }
+
+            listener?.onParserSuccess(this)
+
+            return value
+        }
+
+        start = start0
+        end = end0
+        restoreOffsetIfNecessary(offset0, parser)
+
+        listener?.onParserFail(this)
+
+        return value
+    }
+
+    fun <T, U> reduce(left: T, reducer: Reducer<T, U>): U? {
+        listener?.onParserStart(this)
+
+        val offset0 = offset
+        val start0 = start
+        val end0 = end
+
+        val value = reducer.parse(left, this)
+
+        start = start0 // position includes left
+
+        if(value != null) {
+            listener?.onParserSuccess(this)
+
+            return value
+        }
+
+        end = end0
+        restoreOffsetIfNecessary(offset0, reducer)
+
+        listener?.onParserFail(this)
+
+        return value
+    }
 
     override fun toString(): String {
         return "$tokenStream: [$start, $end]"
     }
 
-    fun notifyFormat(marker: Any) {
-        listener?.onFormat(marker, this)
+    fun notifyMark(marker: Any) {
+        listener?.onMark(marker, this)
     }
 
-    interface Listener {
-        fun onFormat(marker: Any, parserStream: ParserStream)
+    interface Listener: TokenStream.Listener {
+        fun onMark(marker: Any, stream: ParserStream)
+        fun onToken(tokenId: Int, frame: Frame, stream: ParserStream)
+        fun onParserStart(stream: ParserStream)
+        fun onParserSuccess(stream: ParserStream)
+        fun onParserFail(stream: ParserStream)
     }
 
     class ParserStreamTrace(val stream: ParserStream) : Trace {
@@ -91,7 +224,25 @@ class ParserStream(val tokenStream: TokenStream) {
 
     companion object {
         fun create(seq: CharSequence): ParserStream {
-            return ParserStream(TokenStream.fromString(seq))
+            return ParserStream(TokenStream.fromString(seq)).also {
+                it.tokenStream.listener = object: TokenStream.Listener {
+                    override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+                        it.listener?.onToken(tokenId, frame, it)
+                    }
+                }
+            }
+        }
+
+        fun create(reader: Reader): ParserStream {
+            val charStream = ReaderCharStream(reader)
+
+            return ParserStream(TokenStream.fromCharStream(charStream)).also {
+                it.tokenStream.listener = object: TokenStream.Listener {
+                    override fun tokenConsumed(src: TokenStream, tokenId: Int, frame: Frame) {
+                        it.listener?.onToken(tokenId, frame, it)
+                    }
+                }
+            }
         }
     }
 }

@@ -35,21 +35,21 @@ class TokenStream(private val stream: FrameStream) {
     private var acceptedTokens: IntSet? = null
     private var isConsumed = true
 
-    fun setPositionTo(ptr: Long) {
-        stream.reset()
-        acceptedTokens = null
-        lexer = null
-        stream.setPositionTo(ptr)
-    }
-
     /**
      * @return Returns the start position of the next token that will be parsed.
      */
-    val offset: Long get() {
-        // if lexer == null, use endPosition because framestream still captures last match.
-        // if lexer is set, use startPosition.
-        return if (isConsumed) stream.frame.end else stream.frame.start
-    }
+    var offset: Long
+        get() {
+            // if lexer == null, use endPosition because framestream still captures last match.
+            // if lexer is set, use startPosition.
+            return if (isConsumed) stream.frame.end else stream.frame.start
+        }
+        set(value) {
+            stream.reset()
+            acceptedTokens = null
+            lexer = null
+            stream.position = value
+        }
 
     /**
      * If the current token has not been consumed or a different lexer

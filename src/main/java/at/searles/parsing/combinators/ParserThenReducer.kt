@@ -2,39 +2,21 @@ package at.searles.parsing.combinators
 
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable.Then
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
 /**
  * Parser for chaining parsers. Eg for 5 + 6 where + 6 is the reducer.
  */
-class ParserThenReducer<T, U>(override val left: Parser<T>, override val right: Reducer<T, U>) : Parser<U>, Then {
+class ParserThenReducer<T, U>(private val left: Parser<T>, private val right: Reducer<T, U>) : Parser<U> {
 
     override fun parse(stream: ParserStream): U? {
-        val offset = stream.offset
-
-        // to restore if backtracking
-        val preStart = stream.start
-        val preEnd = stream.end
-
         val t = left.parse(stream) ?: return null
+        return right.parse(t, stream)
+    }
 
-        // reducer preserves start() in stream and only sets end().
-        val u = right.parse(stream, t)
-
-        if (u == null) {
-            if (offset != stream.offset) {
-                stream.requestBacktrackToOffset(this, offset)
-            }
-
-            stream.start = preStart
-            stream.end = preEnd
-
-            return null
-        }
-
-        return u
+    override fun recognize(stream: ParserStream): Boolean {
+        return stream.recognize(left, true) && stream.recognize(right)
     }
 
     override fun print(item: U): ConcreteSyntaxTree? {
@@ -44,6 +26,6 @@ class ParserThenReducer<T, U>(override val left: Parser<T>, override val right: 
     }
 
     override fun toString(): String {
-        return createString()
+        return "$left.then($right)"
     }
 }

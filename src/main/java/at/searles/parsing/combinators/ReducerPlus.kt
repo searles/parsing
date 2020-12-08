@@ -22,8 +22,8 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
         printer = reducer.rep() + sequence
     }
 
-    override fun parse(stream: ParserStream, input: T): T? {
-        return parser.parse(stream, input)
+    override fun parse(left: T, stream: ParserStream): T? {
+        return parser.parse(left, stream)
     }
 
     override fun print(item: T): PartialTree<T>? {
@@ -35,6 +35,6 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
     }
 
     override fun toString(): String {
-        return reducer.toString() + if (minCount == 1) "+" else "{$minCount,}"
+        return "$reducer.rep[$minCount]"
     }
 }

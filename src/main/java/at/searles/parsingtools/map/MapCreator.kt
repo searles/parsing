@@ -10,10 +10,10 @@ import java.util.LinkedHashMap
  */
 class MapCreator<K, V>(private val key: K) : Mapping<V, Map<K, V>> {
 
-    override fun parse(stream: ParserStream, input: V): Map<K, V> {
+    override fun parse(left: V, stream: ParserStream): Map<K, V> {
         val map = LinkedHashMap<K, V>()
-        map[key] = input
-        return mapOf(key to input)
+        map[key] = left
+        return mapOf(key to left)
     }
 
     override fun left(result: Map<K, V>): V? {

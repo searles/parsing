@@ -18,7 +18,7 @@ class RecognizableTest {
     }
 
     private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, object: Mapping<CharSequence, String> {
-        override fun parse(stream: ParserStream, input: CharSequence): String = input.toString()
+        override fun parse(left: CharSequence, stream: ParserStream): String = left.toString()
         override fun left(result: String): CharSequence? = result
     }) // TODO intervalset needed?
 

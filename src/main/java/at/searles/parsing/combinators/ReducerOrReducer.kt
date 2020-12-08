@@ -1,14 +1,17 @@
 package at.searles.parsing.combinators
 
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
-open class ReducerOrReducer<T, U>(override val choice0: Reducer<T, U>, override val choice1: Reducer<T, U>) : Reducer<T, U>, Recognizable.Or {
+open class ReducerOrReducer<T, U>(protected val choice0: Reducer<T, U>, protected val choice1: Reducer<T, U>) : Reducer<T,U> {
 
-    override fun parse(stream: ParserStream, input: T): U? {
-        return choice0.parse(stream, input) ?: choice1.parse(stream, input)
+    override fun parse(left: T, stream: ParserStream): U? {
+        return stream.reduce(left, choice0) ?: stream.reduce(left, choice1)
+    }
+
+    override fun recognize(stream: ParserStream): Boolean {
+        return stream.recognize(choice0) || stream.recognize(choice1)
     }
 
     override fun print(item: U): PartialTree<T>? {
@@ -16,6 +19,6 @@ open class ReducerOrReducer<T, U>(override val choice0: Reducer<T, U>, override 
     }
 
     override fun toString(): String {
-        return createString()
+        return "$choice0.or($choice1)"
     }
 }

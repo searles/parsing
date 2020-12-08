@@ -176,7 +176,7 @@ class ParserAndPrinterTest {
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }
 
-        input = ParserStream(TokenStream.fromCharStream(stream(1000000)))
+        input = ParserStream(TokenStream.fromCharStream(stream(10000000)))
         withParser(Parsers.ITERATIVE)
         parse()
         println("Parser successful: ${duration()}")
@@ -321,8 +321,8 @@ class ParserAndPrinterTest {
             val tokenizer = Lexer()
 
             val idParser: Parser<Expr> = fromRegex(CharSet.interval('a'.toInt(), 'z'.toInt()), tokenizer, object : Mapping<CharSequence, Expr> {
-                override fun parse(stream: ParserStream, input: CharSequence): Id {
-                    return Id(input.toString())
+                override fun parse(left: CharSequence, stream: ParserStream): Expr {
+                    return Id(left.toString())
                 }
 
                 override fun left(result: Expr): CharSequence? {

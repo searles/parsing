@@ -3,11 +3,9 @@ package at.searles.lexer
 import at.searles.lexer.utils.IntSet
 import at.searles.regexp.Regexp
 
-class SkipTokenizer(private val parent: Tokenizer) : Tokenizer {
+class SkipTokenizer(override val lexer: Lexer) : Tokenizer {
 
     private val skippedTokenIds: IntSet = IntSet()
-
-    override val lexer get() = parent.lexer
 
     fun addSkipped(regexp: Regexp): Int {
         val tokenId = add(regexp)
@@ -15,21 +13,24 @@ class SkipTokenizer(private val parent: Tokenizer) : Tokenizer {
         return tokenId
     }
 
-    override fun currentTokenIds(stream: TokenStream): IntSet? {
-        var currentTokenIds = parent.currentTokenIds(stream)
-        while (currentTokenIds != null) {
-            val index = currentTokenIds.indexOfFirstMatch(skippedTokenIds)
-            if (index == -1) {
-                // not a hidden symbol.
-                break
-            }
-            stream.advance(currentTokenIds[index])
-            currentTokenIds = parent.currentTokenIds(stream)
-        }
-        return currentTokenIds
+    override fun add(regexp: Regexp): Int {
+        return lexer.add(regexp)
     }
 
-    override fun add(regexp: Regexp): Int {
-        return parent.add(regexp)
+    override fun getCurrentTokenIds(stream: TokenStream): IntSet? {
+        var currentTokenIds = lexer.getCurrentTokenIds(stream)
+
+        while (currentTokenIds != null) {
+            val index = currentTokenIds.indexOfFirstMatch(skippedTokenIds)
+
+            if (index != -1) {
+                stream.advance(currentTokenIds[index])
+                currentTokenIds = lexer.getCurrentTokenIds(stream)
+            } else {
+                break
+            }
+        }
+
+        return currentTokenIds
     }
 }

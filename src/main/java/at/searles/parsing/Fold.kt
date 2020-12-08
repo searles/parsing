@@ -17,6 +17,10 @@ interface Fold<T, U, V> {
                 override fun apply(stream: ParserStream, left: T, right: U): V {
                     return fn(left, right)
                 }
+
+                override fun toString(): String {
+                    return "{t,u->v}"
+                }
             }
         }
 
@@ -33,6 +37,10 @@ interface Fold<T, U, V> {
                 override fun rightInverse(result: V): U? {
                     return rightFn(result)
                 }
+
+                override fun toString(): String {
+                    return "{t,u->v}"
+                }
             }
         }
 
@@ -48,6 +56,10 @@ interface Fold<T, U, V> {
 
                 override fun rightInverse(result: V): U? {
                     return rightFn(result)
+                }
+
+                override fun toString(): String {
+                    return "{t,u->v}"
                 }
             }
         }

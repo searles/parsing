@@ -7,7 +7,7 @@ import at.searles.regexp.Regexp
 interface Tokenizer {
     val lexer: Lexer
 
-    fun currentTokenIds(stream: TokenStream): IntSet?
+    fun getCurrentTokenIds(stream: TokenStream): IntSet?
 
     /**
      * Returns whether this tokenizer accepts the current element
@@ -16,7 +16,7 @@ interface Tokenizer {
      * @return null if the tokenizer does not recognize this element.
      */
     fun matchToken(stream: TokenStream, tokenId: Int): Frame? {
-        val currentTokenIds = currentTokenIds(stream)
+        val currentTokenIds = getCurrentTokenIds(stream)
         if (currentTokenIds != null && currentTokenIds.contains(tokenId)) {
             stream.advance(tokenId)
             return stream.frame

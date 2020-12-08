@@ -4,15 +4,17 @@ import at.searles.parsing.ref.RefReducer
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.PartialTree
 
-interface Reducer<T, U> : Recognizable {
+interface Reducer<T, U> {
     /**
      * Parses elements from TokStream
      *
      * @param stream The stream from which elements are read
-     * @param input   The element left of this reducer
+     * @param left   The element left of this reducer
      * @return The parsed element, null if parsing was not successful.
      */
-    fun parse(stream: ParserStream, input: T): U? // null = fail.
+    fun parse(left: T, stream: ParserStream): U? // null = fail.
+
+    fun recognize(stream: ParserStream): Boolean
 
     /**
      * Prints the argument that is split of u on its right. It is the

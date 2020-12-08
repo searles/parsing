@@ -7,22 +7,20 @@ interface BufferedStream : CharStream {
      * the index of the underlying code unit like index
      * of charAt() in a string.
      */
-    fun position(): Long
-
-    /**
-     * Sets the pointer position to the argument. The underlying
-     * implementation must specify the maximum difference between
-     * position() and the argument here.
-     *
-     * @param ptr The pointer is reverted
-     * to the corresponding position.
-     */
-    fun setPositionTo(ptr: Long)
+    var position: Long
 
     class Impl(private val stream: CharStream, bufSize: Int) : BufferedStream {
         private val buffer: IntArray = IntArray(bufSize)
+        private var bufferPtr: Int = 0
         private var ptr: Long = 0
-        private var offset: Int = 0
+
+        override var position: Long
+            get() = ptr
+            set(value) {
+                checkIfPtrInCache(value)
+                ptr = value
+            }
+
 
         fun bufSize(): Int {
             return buffer.size
@@ -34,32 +32,27 @@ interface BufferedStream : CharStream {
         }
 
         override fun next(): Int {
-            if (ptr % buffer.size == offset.toLong()) {
-                // next one is a new one.
-                val ch = stream.next()
-                if (ch == -1) {
-                    return -1
-                }
-                buffer[offset] = ch
-                offset = (offset + 1) % buffer.size
-                ptr++
-                return ch
+            if (ptr % buffer.size != bufferPtr.toLong()) {
+                return buffer[(ptr++ % buffer.size).toInt()]
             }
-            return buffer[(ptr++ % buffer.size).toInt()]
-        }
 
-        override fun position(): Long {
-            return ptr
+            // next one is a new one.
+            val ch = stream.next()
+
+            if (ch == -1) {
+                return -1
+            }
+
+            buffer[bufferPtr] = ch
+            bufferPtr = (bufferPtr + 1) % buffer.size
+            ptr++
+            return ch
         }
 
         private fun checkIfPtrInCache(ptr: Long) {
-            require(this.ptr >= ptr) { "cannot foresee future" }
-            require(this.ptr - ptr < buffer.size) { "buffer is too small" }
+            require(this.position >= ptr) { "cannot foresee future" }
+            require(this.position - ptr < buffer.size) { "buffer is too small, Maximum size is ${buffer.size}" }
         }
 
-        override fun setPositionTo(ptr: Long) {
-            checkIfPtrInCache(ptr)
-            this.ptr = ptr
-        }
     }
 }

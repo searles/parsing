@@ -1,18 +1,19 @@
 package at.searles.parsing.combinators
 
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable.Opt
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.PartialTree
 
-class ReducerOpt<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Opt {
+class ReducerOpt<T>(private val parent: Reducer<T, T>) : Reducer<T, T>/*, Opt*/ {
 
-    override fun parse(stream: ParserStream, input: T): T? {
-        val preStart = stream.start
-        val nonOptResult = parent.parse(stream, input)
-        assert(stream.start == preStart)
-        return nonOptResult ?: input
+    override fun parse(left: T, stream: ParserStream): T? {
+        return stream.reduce(left, parent) ?: left
+    }
+
+    override fun recognize(stream: ParserStream): Boolean {
+        stream.recognize(parent)
+        return true
     }
 
     override fun print(item: T): PartialTree<T>? {
@@ -21,7 +22,6 @@ class ReducerOpt<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Opt {
     }
 
     override fun toString(): String {
-        return createString()
+        return "$parent.opt"
     }
-
 }

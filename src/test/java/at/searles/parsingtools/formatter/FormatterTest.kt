@@ -145,18 +145,18 @@ class FormatterTest {
         val closePar = Recognizer.fromString(")", tokenizer)
 
         val idMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(stream: ParserStream, input: CharSequence): Node =
-                IdNode(stream.createTrace(), input.toString())
+            override fun parse(left: CharSequence, stream: ParserStream): Node =
+                IdNode(stream.createTrace(), left.toString())
 
             override fun left(result: Node): CharSequence? =
                     if (result is IdNode) result.value else null
         }
 
         val numMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(stream: ParserStream, input: CharSequence): Node =
+            override fun parse(left: CharSequence, stream: ParserStream): Node =
                 NumNode(
                     stream.createTrace(),
-                    Integer.parseInt(input.toString())
+                    Integer.parseInt(left.toString())
                 )
 
             override fun left(result: Node): CharSequence? =

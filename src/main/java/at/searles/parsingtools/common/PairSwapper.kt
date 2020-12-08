@@ -8,8 +8,8 @@ class PairSwapper<T, U> : Mapping<Pair<T, U>, Pair<U, T>> {
         return "{<x,y> -> <y,x>}"
     }
 
-    override fun parse(stream: ParserStream, input: Pair<T, U>): Pair<U, T> {
-        return Pair(input.second, input.first)
+    override fun parse(left: Pair<T, U>, stream: ParserStream): Pair<U, T> {
+        return Pair(left.second, left.first)
     }
 
     override fun left(result: Pair<U, T>): Pair<T, U>? {

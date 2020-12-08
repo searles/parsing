@@ -10,9 +10,9 @@ import java.util.ArrayList
  */
 class ListCreator<T> : Mapping<T, List<T>> {
 
-    override fun parse(stream: ParserStream, input: T): List<T> {
+    override fun parse(left: T, stream: ParserStream): List<T> {
         val l = ArrayList<T>()
-        l.add(input)
+        l.add(left)
         return l
     }
 

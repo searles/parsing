@@ -5,8 +5,8 @@ import at.searles.parsing.ParserStream
 
 class IntIncrementor(private val min: Int) : Mapping<Int, Int> {
 
-    override fun parse(stream: ParserStream, input: Int): Int {
-        return input + 1
+    override fun parse(left: Int, stream: ParserStream): Int {
+        return left + 1
     }
 
     override fun left(result: Int): Int? {

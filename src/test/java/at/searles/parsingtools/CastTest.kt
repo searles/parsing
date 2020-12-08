@@ -20,7 +20,7 @@ class CastTest {
 
         val m = cast<B, A>()
 
-        Assert.assertTrue(m.parse(emptyStream, b) == b)
+        Assert.assertTrue(m.parse(b, emptyStream) == b)
         Assert.assertTrue(m.left(b) == b)
         Assert.assertNull(m.left(c))
     }

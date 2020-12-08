@@ -12,32 +12,32 @@ class FrameStreamImpl(private val stream: BufferedStream.Impl) : FrameStream {
         return stream.next()
     }
 
-    override fun position(): Long {
-        return stream.position()
-    }
-
-    override fun setPositionTo(ptr: Long) {
-        invalid = true
-        stream.setPositionTo(ptr)
-        frameStart = ptr
-        frameEnd = ptr
-    }
+    override var position: Long
+        get() {
+            return stream.position
+        }
+        set(value) {
+            invalid = true
+            stream.position = value
+            frameStart = value
+            frameEnd = value
+        }
 
     override fun mark() {
         invalid = true
-        frameEnd = stream.position()
+        frameEnd = stream.position
     }
 
     override fun advance() {
         invalid = true
         frameStart = frameEnd
-        stream.setPositionTo(frameEnd)
+        stream.position = frameEnd
     }
 
     override fun reset() {
         invalid = true
         frameEnd = frameStart
-        stream.setPositionTo(frameStart)
+        stream.position = frameStart
     }
 
     private inner class CharSeq : Frame {

@@ -15,8 +15,8 @@ class ListTest {
     private val tokenizer = Lexer()
     private val id =
         Parser.fromRegex(RegexpParser.parse("[a-z]+"), tokenizer, object : Mapping<CharSequence, Any> {
-            override fun parse(stream: ParserStream, input: CharSequence): Any {
-                return input.toString()
+            override fun parse(left: CharSequence, stream: ParserStream): Any {
+                return left.toString()
             }
 
             override fun left(result: Any): CharSequence? {
@@ -26,8 +26,8 @@ class ListTest {
 
     private val num =
         Parser.fromRegex(RegexpParser.parse("[0-9]+"), tokenizer, object : Mapping<CharSequence, Any> {
-            override fun parse(stream: ParserStream, input: CharSequence): Any {
-                return Integer.parseInt(input.toString())
+            override fun parse(left: CharSequence, stream: ParserStream): Any {
+                return Integer.parseInt(left.toString())
             }
 
             override fun left(result: Any): CharSequence? {

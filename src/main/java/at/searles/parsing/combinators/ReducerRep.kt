@@ -1,7 +1,6 @@
 package at.searles.parsing.combinators
 
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable.Rep
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.PartialTree
@@ -10,18 +9,23 @@ import java.util.*
 /**
  * Parser for repetitions
  */
-class ReducerRep<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Rep {
+class ReducerRep<T>(private val parent: Reducer<T, T>) : Reducer<T, T>/*, Rep*/ {
 
-    override fun parse(stream: ParserStream, input: T): T {
-        var item = input
-        val preStart = stream.start
+    override fun parse(left: T, stream: ParserStream): T? {
+        var item = left
 
         while (true) {
-            val nextItem = parent.parse(stream, item)
-            assert(stream.start == preStart)
-            if (nextItem == null) return item
+            val nextItem = stream.reduce(item, parent) ?: return item
             item = nextItem
         }
+    }
+
+    override fun recognize(stream: ParserStream): Boolean {
+        while (stream.recognize(parent)) {
+            /* empty */
+        }
+
+        return true
     }
 
     override fun print(item: T): PartialTree<T>? {
@@ -40,6 +44,6 @@ class ReducerRep<T>(override val parent: Reducer<T, T>) : Reducer<T, T>, Rep {
     }
 
     override fun toString(): String {
-        return createString()
+        return "$parent.rep"
     }
 }

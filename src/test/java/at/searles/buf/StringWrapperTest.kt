@@ -9,7 +9,7 @@ class StringWrapperTest {
     @Test
     fun initialConditionTest() {
         withString("basic")
-        Assert.assertEquals(0, str.position())
+        Assert.assertEquals(0, str.position)
         Assert.assertEquals(0, str.frame.length.toLong())
     }
 
@@ -49,7 +49,7 @@ class StringWrapperTest {
         str.next()
         str.mark()
         str.next()
-        str.setPositionTo(0)
+        str.position = 0
         str.next()
         str.next()
         str.mark()

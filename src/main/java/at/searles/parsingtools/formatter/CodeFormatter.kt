@@ -2,16 +2,15 @@ package at.searles.parsingtools.formatter
 
 import at.searles.buf.Frame
 import at.searles.lexer.TokenStream
-import at.searles.parsing.BacktrackNotAllowedException
+import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable
 import at.searles.parsing.format.CodeFormatContext
 import at.searles.parsing.format.FormatRules
 import at.searles.parsing.format.Printer
 import java.util.*
 import kotlin.collections.ArrayList
 
-open class CodeFormatter(val rules: FormatRules, private val parser: Recognizable, private val whiteSpaceTokenId: Int) {
+open class CodeFormatter(val rules: FormatRules, private val parser: Parser<*>, private val whiteSpaceTokenId: Int) {
 
     fun format(editableText: EditableText): Long {
         return FormatterInstance(editableText).format()
@@ -34,8 +33,8 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Recognizabl
             try {
                 parser.recognize(stream)
                 context.insertNewLine()
-            } catch(e: BacktrackNotAllowedException) {
-                // ignore
+//  TODO          } catch(e: BacktrackNotAllowedException) {
+//                // ignore
             } finally {
                 addCurrentFormattingCommands()
             }
@@ -47,7 +46,7 @@ open class CodeFormatter(val rules: FormatRules, private val parser: Recognizabl
             return position
         }
 
-        override fun onFormat(marker: Any, parserStream: ParserStream) {
+        override fun onMark(marker: Any, parserStream: ParserStream) {
             context.format(marker)
         }
 

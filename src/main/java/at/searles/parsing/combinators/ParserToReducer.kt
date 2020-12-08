@@ -10,12 +10,10 @@ import at.searles.parsing.printing.PartialTree
  * Creates a reducer out of a parser.
  */
 class ParserToReducer<T, U, V>(private val parent: Parser<U>, private val fold: Fold<T, U, V>) : Reducer<T, V> {
-    override fun parse(stream: ParserStream, input: T): V? {
-        // must preserve start position.
-        val leftStart = stream.start
-        val right = parent.parse(stream) ?: return null
-        stream.start = leftStart
-        return fold.apply(stream, input, right)
+
+    override fun parse(left: T, stream: ParserStream): V? {
+        val right = stream.parse(parent) ?: return null
+        return fold.apply(stream, left, right)
     }
 
     override fun print(item: V): PartialTree<T>? {
@@ -30,7 +28,6 @@ class ParserToReducer<T, U, V>(private val parent: Parser<U>, private val fold: 
     }
 
     override fun toString(): String {
-        return "$parent >> $fold"
+        return "$parent.fold($fold)"
     }
-
 }

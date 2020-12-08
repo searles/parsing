@@ -37,8 +37,8 @@ class FormattingTest {
 
     companion object {
         private val ToString: Mapping<CharSequence, String> = object : Mapping<CharSequence, String> {
-            override fun parse(stream: ParserStream, input: CharSequence): String {
-                return input.toString()
+            override fun parse(left: CharSequence, stream: ParserStream): String {
+                return left.toString()
             }
 
             override fun left(result: String): CharSequence? {

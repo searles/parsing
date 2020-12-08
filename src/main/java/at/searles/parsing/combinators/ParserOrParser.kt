@@ -2,16 +2,19 @@ package at.searles.parsing.combinators
 
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
-import at.searles.parsing.Recognizable
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
 /**
  * Parser for options. The order is important. First one to
  * succeed is the one that is used.
  */
-open class ParserOrParser<T>(override val choice0: Parser<T>, override val choice1: Parser<T>) : Parser<T>, Recognizable.Or {
+open class ParserOrParser<T>(open val choice0: Parser<T>, open val choice1: Parser<T>) : Parser<T> {
     override fun parse(stream: ParserStream): T? {
-        return choice0.parse(stream) ?: choice1.parse(stream)
+        return stream.parse(choice0) ?: stream.parse(choice1)
+    }
+
+    override fun recognize(stream: ParserStream): Boolean {
+        return stream.recognize(choice0) || stream.recognize(choice1)
     }
 
     override fun print(item: T): ConcreteSyntaxTree? {
@@ -19,6 +22,7 @@ open class ParserOrParser<T>(override val choice0: Parser<T>, override val choic
     }
 
     override fun toString(): String {
-        return createString()
+        return "$choice0.or($choice1)"
     }
+
 }

@@ -27,7 +27,7 @@ import java.util.*
  *
  * @param <T>
 </T> */
-interface Parser<T> : Recognizable {
+interface Parser<T> {
     /**
      * Returns the parsed value.
      *
@@ -40,6 +40,8 @@ interface Parser<T> : Recognizable {
      * @return An instance of T or null if this parser cannot be used.
      */
     fun parse(stream: ParserStream): T?
+
+    fun recognize(stream: ParserStream): Boolean
 
     fun print(item: T): ConcreteSyntaxTree? {
         throw UnsupportedOperationException("printing not supported")

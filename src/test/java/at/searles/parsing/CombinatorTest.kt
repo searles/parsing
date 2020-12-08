@@ -44,11 +44,9 @@ class CombinatorTest {
     private lateinit var input: ParserStream
     private var parseResult: String? = null
     private var printResult: ConcreteSyntaxTree? = null
-    private var isError = false
 
     @Before
     fun setUp() {
-        isError = false
     }
 
     // These tests run on a parser that simply parses single chars and
@@ -59,7 +57,6 @@ class CombinatorTest {
         withParser(emptyString.plus(chr.plus(appendSingleChar).rep1()))
         withInput("")
         actParse()
-        Assert.assertFalse(isError)
         Assert.assertNull(parseResult)
     }
 
@@ -70,18 +67,8 @@ class CombinatorTest {
         withInput("abc")
         actParse()
         actPrint()
-        Assert.assertFalse(isError)
         Assert.assertEquals("abc", parseResult)
         Assert.assertEquals("abc", printResult.toString())
-    }
-
-    @Test
-    fun joinFailTest() {
-        // chr+
-        withParser(emptyString.plus(comma.join(chr.plus(appendSingleChar))))
-        withInput("a,,")
-        actParse()
-        Assert.assertTrue(isError)
     }
 
     @Test
@@ -91,7 +78,6 @@ class CombinatorTest {
         withInput("a")
         actParse()
         actPrint()
-        Assert.assertFalse(isError)
         Assert.assertEquals("a", parseResult)
         Assert.assertEquals("a", printResult.toString())
     }
@@ -103,7 +89,6 @@ class CombinatorTest {
         withInput("a,b,c")
         actParse()
         actPrint()
-        Assert.assertFalse(isError)
         Assert.assertEquals("abc", parseResult)
         Assert.assertEquals("a,b,c", printResult.toString())
     }
@@ -113,17 +98,15 @@ class CombinatorTest {
     }
 
     private fun actParse() {
-        try {
+//        try {
             parseResult = parser.parse(input)
-        } catch (ignored: BacktrackNotAllowedException) {
-            isError = true
-        }
+//        } catch (ignored: BacktrackNotAllowedException) {
+//            isError = true
+//        }
     }
 
     private fun withInput(input: String) {
-        this.input = ParserStream.create(input).apply {
-            isBacktrackAllowed = false
-        }
+        this.input = ParserStream.create(input)
     }
 
     private fun withParser(parser: Parser<String>) {
@@ -132,8 +115,8 @@ class CombinatorTest {
 
     companion object {
         private val ToString: Mapping<CharSequence, String> = object : Mapping<CharSequence, String> {
-            override fun parse(stream: ParserStream, input: CharSequence): String {
-                return input.toString()
+            override fun parse(left: CharSequence, stream: ParserStream): String {
+                return left.toString()
             }
 
             override fun left(result: String): CharSequence? {

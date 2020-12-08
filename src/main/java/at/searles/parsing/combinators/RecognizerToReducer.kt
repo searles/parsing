@@ -6,26 +6,16 @@ import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
 class RecognizerToReducer<T>(private val recognizer: Recognizer) : Reducer<T, T> {
-    override fun parse(stream: ParserStream, input: T): T? {
-        val preStart = stream.start
-
-        if(recognizer.recognize(stream)) {
-            stream.start = preStart
-            return input
+    override fun parse(left: T, stream: ParserStream): T? {
+        if(!stream.recognize(recognizer)) {
+            return null
         }
 
-        return null
+        return left
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        val preStart = stream.start
-
-        if(recognizer.recognize(stream)) {
-            stream.start = preStart
-            return true
-        }
-
-        return false
+        return stream.recognize(recognizer)
     }
 
     override fun print(item: T): PartialTree<T>? {

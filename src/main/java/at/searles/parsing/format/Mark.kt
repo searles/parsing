@@ -11,7 +11,7 @@ import at.searles.parsing.printing.FormatTree
 class Mark(private val marker: Any) : Recognizer {
 
     override fun recognize(stream: ParserStream): Boolean {
-        stream.notifyFormat(marker)
+        stream.notifyMark(marker) // TODO I don't like this.
         return true
     }
 
@@ -20,7 +20,7 @@ class Mark(private val marker: Any) : Recognizer {
     }
 
     override fun toString(): String {
-        return "[${marker.toString()}]"
+        return "[format:$marker]"
     }
 
 }

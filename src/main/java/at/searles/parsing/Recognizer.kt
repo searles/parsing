@@ -9,7 +9,9 @@ import at.searles.parsingtools.common.Init
 import at.searles.regexp.CharSet
 import at.searles.regexp.Text
 
-interface Recognizer : Recognizable {
+interface Recognizer {
+    fun recognize(stream: ParserStream): Boolean
+
     fun print(): ConcreteSyntaxTree
 
     operator fun plus(right: Recognizer): Recognizer {
@@ -62,11 +64,11 @@ interface Recognizer : Recognizable {
      * Creates a reducer for a possibly empty csv-alike structure
      */
     fun <T> join(reducer: Reducer<T, T>): Reducer<T, T> {
-        return ReducerJoin(this, reducer)
+        return ReducerJoin(reducer, this)
     }
 
     fun <T> join1(reducer: Reducer<T, T>): Reducer<T, T> {
-        return ReducerJoinPlus(this, reducer)
+        return ReducerJoinPlus(reducer, this)
     }
 
     fun ref(label: String): Recognizer {
@@ -76,7 +78,7 @@ interface Recognizer : Recognizable {
     }
 
     fun <T> toReducer(): Reducer<T, T> {
-        return RecognizerToReducer<T>(this)
+        return RecognizerToReducer(this)
     }
 
     companion object {

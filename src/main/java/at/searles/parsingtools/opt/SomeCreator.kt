@@ -6,8 +6,8 @@ import at.searles.parsing.ParserStream
 import java.util.Optional
 
 class SomeCreator<T> : Mapping<T, Optional<T>> {
-    override fun parse(stream: ParserStream, input: T): Optional<T> {
-        return Optional.of(input)
+    override fun parse(left: T, stream: ParserStream): Optional<T> {
+        return Optional.of(left)
     }
 
     override fun left(result: Optional<T>): T? {

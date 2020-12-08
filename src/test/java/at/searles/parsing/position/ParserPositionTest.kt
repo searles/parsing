@@ -3,6 +3,7 @@ package at.searles.parsing.position
 import at.searles.lexer.Lexer
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
+import at.searles.parsingtools.common.ToString
 import at.searles.regexp.Text
 import org.junit.Assert
 import org.junit.Test
@@ -13,12 +14,16 @@ class ParserPositionTest {
     val b = fromRegex(Text("B"), tokenizer, ToString)
     val z = Recognizer.fromString("Z", tokenizer)
     val fail: Reducer<String, String> = object: Reducer<String, String> {
-        override fun parse(stream: ParserStream, input: String): String? {
+        override fun parse(left: String, stream: ParserStream): String? {
             return null
         }
 
         override fun recognize(stream: ParserStream): Boolean {
             return false
+        }
+
+        override fun toString(): String {
+            return "{fail}"
         }
     }
 
@@ -28,10 +33,10 @@ class ParserPositionTest {
 
     fun positionAssert(start: Int, end: Int): Mapping<String, String> {
         return object: Mapping <String, String> {
-            override fun parse(stream: ParserStream, input: String): String {
+            override fun parse(left: String, stream: ParserStream): String {
                 Assert.assertEquals(start.toLong(), stream.start)
                 Assert.assertEquals(end.toLong(), stream.end)
-                return input
+                return left
             }
         }
     }
@@ -62,9 +67,7 @@ class ParserPositionTest {
 
     @Test
     fun backtrackingParserResetTest() {
-        withParser(a.plus(
-                b.plus(joiner).plus(fail).or(positionAssert(0, 1))
-        ))
+        withParser(a + ((b + joiner + fail) or positionAssert(0, 1)))
         actParse("AB")
         Assert.assertEquals("A", output)
     }
@@ -96,17 +99,5 @@ class ParserPositionTest {
     private fun actParse(str: String) {
         val parserStream: ParserStream = ParserStream.create(str)
         output = parser!!.parse(parserStream)
-    }
-
-    companion object {
-        private val ToString: Mapping<CharSequence, String> = object : Mapping<CharSequence, String> {
-            override fun parse(stream: ParserStream, input: CharSequence): String {
-                return input.toString()
-            }
-
-            override fun left(result: String): CharSequence? {
-                return result
-            }
-        }
     }
 }
