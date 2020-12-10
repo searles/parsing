@@ -27,7 +27,7 @@ class FormatterTest {
         withInput("(a)")
         actFormat()
 
-        Assert.assertEquals("(\n    a\n)", source.toString())
+        Assert.assertEquals("(\n  a\n)", source.toString())
     }
 
     @Test
@@ -37,7 +37,7 @@ class FormatterTest {
         actFormat()
 
         Assert.assertEquals("a (\n" +
-                "    b\n" +
+                "  b\n" +
                 ")\n" +
                 "c", source.toString())
     }
@@ -49,7 +49,7 @@ class FormatterTest {
         actFormat()
 
         Assert.assertEquals("(\n" +
-                "    a\n" +
+                "  a\n" +
                 ")", source.toString())
     }
 
@@ -59,7 +59,7 @@ class FormatterTest {
         withInput("( a)")
         actFormat()
 
-        Assert.assertEquals("(\n    a\n)", source.toString())
+        Assert.assertEquals("(\n  a\n)", source.toString())
     }
 
     @Test
@@ -69,8 +69,8 @@ class FormatterTest {
         actFormat()
 
         Assert.assertEquals("a (\n" +
-                "    b\n" +
-                "    c\n" +
+                "  b\n" +
+                "  c\n" +
                 ")", source.toString())
     }
 
@@ -81,7 +81,7 @@ class FormatterTest {
         actFormat()
 
         Assert.assertEquals("a (\n" +
-                "    c\n" +
+                "  c\n" +
                 ")", source.toString())
     }
 
@@ -92,29 +92,30 @@ class FormatterTest {
         actFormat()
 
         Assert.assertEquals("a (\n" +
-                "    b (\n" +
-                "        c d\n" +
-                "        (\n" +
-                "            e (\n" +
-                "                f g h (\n" +
-                "                    i\n" +
+                "  b (\n" +
+                "    c d\n" +
+                "    (\n" +
+                "      e (\n" +
+                "        f g h (\n" +
+                "          i\n" +
                 "\n" +
-                "                    j\n" +
-                "                )\n" +
-                "                k (\n" +
-                "                    l\n" +
-                "                    m n\n" +
-                "                )\n" +
-                "            )\n" +
+                "          j\n" +
                 "        )\n" +
-                "        o\n" +
-                "        p (\n" +
-                "            q r (\n" +
-                "                s t\n" +
-                "            )\n" +
+                "        k (\n" +
+                "          l\n" +
+                "          m n\n" +
                 "        )\n" +
+                "      )\n" +
                 "    )\n" +
-                ")\n\n", source.toString())
+                "    o\n" +
+                "    p (\n" +
+                "      q r (\n" +
+                "        s t\n" +
+                "      )\n" +
+                "    )\n" +
+                "  )\n" +
+                ")\n" +
+                "\n", source.toString())
     }
 
     private fun withInput(input: String) {
@@ -140,7 +141,7 @@ class FormatterTest {
         val closePar = Recognizer.fromString(")", tokenizer)
 
         val idMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(left: CharSequence, stream: ParserStream): Node =
+            override fun reduce(left: CharSequence, stream: ParserStream): Node =
                 IdNode(stream.createTrace(), left.toString())
 
             override fun left(result: Node): CharSequence? =
@@ -148,7 +149,7 @@ class FormatterTest {
         }
 
         val numMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(left: CharSequence, stream: ParserStream): Node =
+            override fun reduce(left: CharSequence, stream: ParserStream): Node =
                 NumNode(
                     stream.createTrace(),
                     Integer.parseInt(left.toString())

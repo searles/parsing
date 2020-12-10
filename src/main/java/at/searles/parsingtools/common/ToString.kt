@@ -4,11 +4,11 @@ import at.searles.parsing.Mapping
 import at.searles.parsing.ParserStream
 
 object ToString : Mapping<CharSequence, String> {
-    override fun parse(left: CharSequence, stream: ParserStream): String {
+    override fun reduce(left: CharSequence, stream: ParserStream): String {
         return left.toString()
     }
 
-    override fun left(result: String): CharSequence? {
+    override fun left(result: String): CharSequence {
         return result
     }
 

@@ -2,15 +2,14 @@ package at.searles.parsingtools.list
 
 import at.searles.parsing.Mapping
 import at.searles.parsing.ParserStream
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by searles on 31.03.19.
  */
 class ListCreator<T> : Mapping<T, List<T>> {
 
-    override fun parse(left: T, stream: ParserStream): List<T> {
+    override fun reduce(left: T, stream: ParserStream): List<T> {
         val l = ArrayList<T>()
         l.add(left)
         return l

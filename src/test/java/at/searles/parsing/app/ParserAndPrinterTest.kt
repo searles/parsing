@@ -2,7 +2,6 @@ package at.searles.parsing.app
 
 import at.searles.buf.CharStream
 import at.searles.lexer.Lexer
-import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.opt
@@ -176,7 +175,7 @@ class ParserAndPrinterTest {
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }
 
-        input = ParserStream.create(stream(1000000))
+        input = ParserStream.create(stream(3000000))
         withParser(Parsers.ITERATIVE)
         parse()
         println("Parser successful: ${duration()}")
@@ -321,7 +320,7 @@ class ParserAndPrinterTest {
             val tokenizer = Lexer()
 
             val idParser: Parser<Expr> = fromRegex(CharSet.interval('a'.toInt(), 'z'.toInt()), tokenizer, object : Mapping<CharSequence, Expr> {
-                override fun parse(left: CharSequence, stream: ParserStream): Expr {
+                override fun reduce(left: CharSequence, stream: ParserStream): Expr {
                     return Id(left.toString())
                 }
 

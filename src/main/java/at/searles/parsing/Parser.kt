@@ -3,6 +3,7 @@ package at.searles.parsing
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.combinators.*
+import at.searles.parsing.combinators.ext.ParserOrParserWithReversedPrintOrder
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.ref.RefParser
 import at.searles.parsing.tokens.TokenParser

@@ -7,7 +7,7 @@ import at.searles.parsing.ParserStream
 class ListExtender<A, C>(private val mapping: Mapping<A, C>): Fold<List<C>, List<A>, List<C>> {
     override fun apply(stream: ParserStream, left: List<C>, right: List<A>): List<C> {
         return right.fold(BacktrackingList.create(left)) { leftList, it ->
-            leftList.pushBack(mapping.parse(it, stream))
+            leftList.pushBack(mapping.reduce(it, stream))
         }
     }
 

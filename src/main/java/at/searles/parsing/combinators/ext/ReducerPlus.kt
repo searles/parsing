@@ -1,11 +1,11 @@
-package at.searles.parsing.combinators
+package at.searles.parsing.combinators.ext
 
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Reducer
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.printing.PartialTree
 
-class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T, T> {
+class ReducerPlus<T>(private val reducer: Reducer<T, T>, private val minCount: Int) : Reducer<T, T> {
 
     private val parser: Reducer<T, T>
     private val printer: Reducer<T, T>
@@ -22,8 +22,8 @@ class ReducerPlus<T>(val reducer: Reducer<T, T>, val minCount: Int) : Reducer<T,
         printer = reducer.rep() + sequence
     }
 
-    override fun parse(left: T, stream: ParserStream): T? {
-        return parser.parse(left, stream)
+    override fun reduce(left: T, stream: ParserStream): T? {
+        return parser.reduce(left, stream)
     }
 
     override fun print(item: T): PartialTree<T>? {

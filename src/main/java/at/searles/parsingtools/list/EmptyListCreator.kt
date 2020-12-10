@@ -7,13 +7,8 @@ import at.searles.parsing.ParserStream
  * Initializer that introduces an empty list
  */
 class EmptyListCreator<T> : Initializer<List<T>> {
-    private object Holder {
-        internal var instance: List<*> = emptyList<Any>()
-    }
-
     override fun parse(stream: ParserStream): List<T> {
-        @Suppress("UNCHECKED_CAST")
-        return Holder.instance as List<T>
+        return emptyList()
     }
 
     override fun consume(t: List<T>): Boolean {

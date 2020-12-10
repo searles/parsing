@@ -1,6 +1,7 @@
-package at.searles.parsing.combinators
+package at.searles.parsing.combinators.ext
 
 import at.searles.parsing.Recognizer
+import at.searles.parsing.combinators.RecognizerOpt
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
 /**

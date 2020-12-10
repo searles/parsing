@@ -2,7 +2,6 @@ package at.searles.parsing.ref
 
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
-import at.searles.parsing.Reducer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
 /**

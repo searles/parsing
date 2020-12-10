@@ -11,7 +11,7 @@ import at.searles.parsing.printing.MarkedTree
 class Mark(private val marker: Any) : Recognizer {
 
     override fun recognize(stream: ParserStream): Boolean {
-        stream.notifyMark(marker) // TODO I don't like this.
+        stream.notifyMark(marker)
         return true
     }
 

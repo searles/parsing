@@ -10,17 +10,16 @@ class CastTest {
     fun castTest() {
         val emptyStream = ParserStream.create("")
 
-        open class A {}
-        class B: A() {}
-        class C: A() {}
+        open class A
+        class B: A()
+        class C: A()
 
-        val a = A()
         val b = B()
         val c = C()
 
         val m = cast<B, A>()
 
-        Assert.assertTrue(m.parse(b, emptyStream) == b)
+        Assert.assertTrue(m.reduce(b, emptyStream) == b)
         Assert.assertTrue(m.left(b) == b)
         Assert.assertNull(m.left(c))
     }

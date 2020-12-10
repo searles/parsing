@@ -9,14 +9,14 @@ import at.searles.parsing.printing.ConcreteSyntaxTree
  * Parser for chaining parsers. Eg for 5 + 6 where + 6 is the reducer.
  */
 class ParserThenReducer<T, U>(private val left: Parser<T>, private val right: Reducer<T, U>) : Parser<U> {
-
     override fun parse(stream: ParserStream): U? {
-        val t = left.parse(stream) ?: return null
-        return right.parse(t, stream)
+        return stream.parse(left, true)?.let {
+            stream.reduce(it, right)
+        }
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(left, true) && stream.recognize(right)
+        return stream.recognize(left, true) && stream.recognize(right, false)
     }
 
     override fun print(item: U): ConcreteSyntaxTree? {

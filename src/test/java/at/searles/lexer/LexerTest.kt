@@ -53,10 +53,9 @@ class LexerTest {
         testIfIsAccepted("a", "a")
         testIfIsAccepted("aa", "aa")
         testIfIsAccepted("ab", "a")
-        testIfIsAccepted("aab", "aa") // TODO This is bad. There should be no match because in a rep, it matches again.
+        testIfIsAccepted("aab", "aa")
+        // XXX To avoid that aa matches, a token [a-z]+ should be added to the tokenizer
         testIfIsAccepted("aaca", "aaca")
-
-        // Possibility 1: Exclude on parser level
     }
 
     @Test

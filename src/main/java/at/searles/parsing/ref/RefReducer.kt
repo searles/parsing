@@ -15,8 +15,8 @@ class RefReducer<T, U>(private val label: String) : Reducer<T, U> {
 
     private var internalRef: Reducer<T, U>? = null
 
-    override fun parse(left: T, stream: ParserStream): U? {
-        return ref.parse(left, stream)
+    override fun reduce(left: T, stream: ParserStream): U? {
+        return ref.reduce(left, stream)
     }
 
     override fun print(item: U): PartialTree<T>? {

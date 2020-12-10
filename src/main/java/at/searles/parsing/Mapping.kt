@@ -1,11 +1,10 @@
 package at.searles.parsing
 
-import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.printing.EmptyTree
 import at.searles.parsing.printing.PartialTree
 
 interface Mapping<T, U> : Reducer<T, U> {
-    override fun parse(left: T, stream: ParserStream): U
+    override fun reduce(left: T, stream: ParserStream): U
 
     fun left(result: U): T? {
         return null
@@ -23,7 +22,7 @@ interface Mapping<T, U> : Reducer<T, U> {
     companion object {
         fun <T> identity(): Mapping<T, T> {
             return object: Mapping<T, T> {
-                override fun parse(left: T, stream: ParserStream): T = left
+                override fun reduce(left: T, stream: ParserStream): T = left
 
                 override fun left(result: T): T? = result
             }
@@ -31,7 +30,7 @@ interface Mapping<T, U> : Reducer<T, U> {
 
         fun <T, U>  create(mapping: (T) -> U): Mapping<T, U> {
             return object: Mapping<T, U> {
-                override fun parse(left: T, stream: ParserStream): U {
+                override fun reduce(left: T, stream: ParserStream): U {
                     return mapping(left)
                 }
             }
@@ -39,7 +38,7 @@ interface Mapping<T, U> : Reducer<T, U> {
 
         fun <T, U>  create(inverse: (U) -> T?, mapping: (T) -> U): Mapping<T, U> {
             return object: Mapping<T, U> {
-                override fun parse(left: T, stream: ParserStream): U {
+                override fun reduce(left: T, stream: ParserStream): U {
                     return mapping(left)
                 }
 
@@ -51,7 +50,7 @@ interface Mapping<T, U> : Reducer<T, U> {
 
         fun <T, U>  create(inverse: (U) -> T?, mapping: (Trace, T) -> U): Mapping<T, U> {
             return object: Mapping<T, U> {
-                override fun parse(left: T, stream: ParserStream): U {
+                override fun reduce(left: T, stream: ParserStream): U {
                     return mapping(stream.createTrace(), left)
                 }
 
@@ -63,7 +62,7 @@ interface Mapping<T, U> : Reducer<T, U> {
 
         inline fun <reified T: U, U> cast(): Mapping<T, U> {
             return object: Mapping<T, U> {
-                override fun parse(left: T, stream: ParserStream): U {
+                override fun reduce(left: T, stream: ParserStream): U {
                     return left
                 }
 

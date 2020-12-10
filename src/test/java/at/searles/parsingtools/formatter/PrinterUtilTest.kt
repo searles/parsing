@@ -29,7 +29,7 @@ class PrinterUtilTest {
 
     @Test
     fun sequenceTTTest() {
-        initParserUtilList(true, true)
+        initParserUtilList(mayBeEmpty = true, hasSeparator = true)
         withInput("a, b")
         actParse()
         actPrint()
@@ -147,7 +147,7 @@ class PrinterUtilTest {
         whiteSpaceTokId = tokenizer.addSkipped(RegexpParser.parse("[ \n\r\t]+"))
 
         val idMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(left: CharSequence, stream: ParserStream): Node =
+            override fun reduce(left: CharSequence, stream: ParserStream): Node =
                     IdNode(stream.createTrace(), left.toString())
 
             override fun left(result: Node): CharSequence? =
@@ -155,7 +155,7 @@ class PrinterUtilTest {
         }
 
         val vecMapping = object: Mapping<List<Node>, Node> {
-            override fun parse(left: List<Node>, stream: ParserStream): Node {
+            override fun reduce(left: List<Node>, stream: ParserStream): Node {
                 return VecNode(stream.createTrace(), left)
             }
 

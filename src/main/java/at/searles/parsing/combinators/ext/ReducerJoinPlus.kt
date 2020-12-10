@@ -1,4 +1,4 @@
-package at.searles.parsing.combinators
+package at.searles.parsing.combinators.ext
 
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
@@ -11,8 +11,8 @@ class ReducerJoinPlus<T>(private val reducer: Reducer<T, T>, private val separat
     private val parserReducer: Reducer<T, T> = reducer + (separator + reducer).rep()
     private val printerReducer: Reducer<T, T> = (reducer + separator).rep() + reducer
 
-    override fun parse(left: T, stream: ParserStream): T? {
-        return parserReducer.parse(left, stream)
+    override fun reduce(left: T, stream: ParserStream): T? {
+        return parserReducer.reduce(left, stream)
     }
 
     override fun print(item: T): PartialTree<T>? {

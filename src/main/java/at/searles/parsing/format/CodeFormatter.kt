@@ -29,13 +29,13 @@ open class CodeFormatter(private val parser: CanRecognize, private val whiteSpac
         fun applyTo(formatContext: EditableFormatContext)
     }
     
-    class Indent(): Cmd {
+    class Indent: Cmd {
         override fun applyTo(formatContext: EditableFormatContext) {
             formatContext.indent()
         }
     }
     
-    class Unindent(): Cmd {
+    class Unindent: Cmd {
         override fun applyTo(formatContext: EditableFormatContext) {
             formatContext.unindent()
         }
@@ -74,7 +74,7 @@ open class CodeFormatter(private val parser: CanRecognize, private val whiteSpac
         }
     }
 
-    inner class InnerFormatter(): Formatter<Cmd>() {
+    inner class InnerFormatter: Formatter<Cmd>() {
         override fun createMarkCommand(marker: Any, offset: Long): Cmd {
             return when(marker) {
                 Markers.Indent -> Indent()

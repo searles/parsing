@@ -28,7 +28,7 @@ fun main() {
     // num: [0-9]* ;
     val numTokenId = lexer.add(RegexpParser.parse("[0-9]+"))
     val numMapping = object : Mapping<CharSequence, AstNode> {
-        override fun parse(left: CharSequence, stream: ParserStream): AstNode =
+        override fun reduce(left: CharSequence, stream: ParserStream): AstNode =
                 NumNode(Integer.parseInt(left.toString()))
 
         override fun left(result: AstNode): CharSequence? =
@@ -53,7 +53,7 @@ fun main() {
     val minus = Recognizer.fromString("-", lexer)
 
     val negate = object : Mapping<AstNode, AstNode> {
-        override fun parse(left: AstNode, stream: ParserStream): AstNode =
+        override fun reduce(left: AstNode, stream: ParserStream): AstNode =
                 OpNode(Op.Neg, left)
 
         override fun left(result: AstNode): AstNode? =

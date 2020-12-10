@@ -1,7 +1,5 @@
 package at.searles.parsing.format
 
-import at.searles.parsing.printing.TokenTree
-
 class EditableFormatContext(private val editableText: EditableText) {
     private var indentLevel = 0
     private var positionDelta = 0
@@ -50,7 +48,7 @@ class EditableFormatContext(private val editableText: EditableText) {
             mustAddNewLine = false
             mustAddSpace = false
 
-            insert("\n\n", start)
+            insert(emptyLine, start)
             insertIndentation(start)
         }
 
@@ -58,20 +56,20 @@ class EditableFormatContext(private val editableText: EditableText) {
             mustAddNewLine = false
             mustAddSpace = false
 
-            insert("\n", start)
+            insert(newLine, start)
             insertIndentation(start)
         }
 
         if(mustAddSpace) {
             mustAddSpace = false
-            insert(" ", start)
+            insert(space, start)
         }
     }
 
     companion object {
-        const val indentation = "    "
         const val emptyLine = "\n\n"
         const val newLine = "\n"
         const val space = " "
+        val indentation = space.repeat(2)
     }
 }

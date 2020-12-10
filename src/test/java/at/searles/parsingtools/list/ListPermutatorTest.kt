@@ -10,7 +10,7 @@ class ListPermutatorTest {
     fun parse() {
         val mapping = ListPermutator<String>(1, 2, 0)
 
-        val result = mapping.parse(listOf("A", "B", "C"), ParserStream.create(""))
+        val result = mapping.reduce(listOf("A", "B", "C"), ParserStream.create(""))
 
         Assert.assertEquals(listOf("B", "C", "A"), result)
     }

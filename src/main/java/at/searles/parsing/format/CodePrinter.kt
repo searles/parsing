@@ -52,7 +52,7 @@ class CodePrinter(private val outStream: OutStream): CstVisitor, Printer {
     }
 
     companion object {
-        const val indentation = "    "
+        const val indentation = "  "
         const val emptyLine = "\n\n"
         const val newLine = "\n"
         const val space = " "

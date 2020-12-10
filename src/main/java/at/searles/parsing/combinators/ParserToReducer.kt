@@ -11,8 +11,8 @@ import at.searles.parsing.printing.PartialTree
  */
 class ParserToReducer<T, U, V>(private val parent: Parser<U>, private val fold: Fold<T, U, V>) : Reducer<T, V> {
 
-    override fun parse(left: T, stream: ParserStream): V? {
-        val right = stream.parse(parent) ?: return null
+    override fun reduce(left: T, stream: ParserStream): V? {
+        val right = stream.parse(parent, false) ?: return null
         return fold.apply(stream, left, right)
     }
 
@@ -24,7 +24,7 @@ class ParserToReducer<T, U, V>(private val parent: Parser<U>, private val fold: 
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return parent.recognize(stream)
+        return stream.recognize(parent, false)
     }
 
     override fun toString(): String {

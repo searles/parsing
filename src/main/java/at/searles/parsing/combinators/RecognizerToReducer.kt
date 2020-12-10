@@ -6,8 +6,8 @@ import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
 class RecognizerToReducer<T>(private val recognizer: Recognizer) : Reducer<T, T> {
-    override fun parse(left: T, stream: ParserStream): T? {
-        if(!stream.recognize(recognizer)) {
+    override fun reduce(left: T, stream: ParserStream): T? {
+        if(!stream.recognize(recognizer, false)) {
             return null
         }
 
@@ -15,10 +15,10 @@ class RecognizerToReducer<T>(private val recognizer: Recognizer) : Reducer<T, T>
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(recognizer)
+        return stream.recognize(recognizer, false)
     }
 
-    override fun print(item: T): PartialTree<T>? {
+    override fun print(item: T): PartialTree<T> {
         return PartialTree(item, recognizer.print())
     }
 

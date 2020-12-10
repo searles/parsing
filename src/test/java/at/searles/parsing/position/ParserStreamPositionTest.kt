@@ -38,7 +38,7 @@ class ParserStreamPositionTest {
         val ab = a + b
 
         val stream = ParserStream.create("ab")
-        val status = stream.recognize(ab)
+        val status = ab.recognize(stream)
 
         Assert.assertTrue(status)
 

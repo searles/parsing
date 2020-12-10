@@ -15,7 +15,6 @@ import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class PrinterTest {
 
@@ -81,7 +80,7 @@ class PrinterTest {
         actPrint()
 
         Assert.assertEquals("a (\n" +
-                "    b c\n" +
+                "  b c\n" +
                 ")", output)
     }
 
@@ -102,21 +101,21 @@ class PrinterTest {
         actPrint()
 
         Assert.assertEquals("a (\n" +
-                "    b (\n" +
-                "        c d (\n" +
-                "            e (\n" +
-                "                f g h (\n" +
-                "                    i j\n" +
-                "                ) k (\n" +
-                "                    l m n\n" +
-                "                )\n" +
-                "            )\n" +
-                "        ) o p (\n" +
-                "            q r (\n" +
-                "                s t\n" +
-                "            )\n" +
+                "  b (\n" +
+                "    c d (\n" +
+                "      e (\n" +
+                "        f g h (\n" +
+                "          i j\n" +
+                "        ) k (\n" +
+                "          l m n\n" +
                 "        )\n" +
+                "      )\n" +
+                "    ) o p (\n" +
+                "      q r (\n" +
+                "        s t\n" +
+                "      )\n" +
                 "    )\n" +
+                "  )\n" +
                 ")", output)
     }
 
@@ -237,7 +236,7 @@ class PrinterTest {
         val closePar = Recognizer.fromString(")", tokenizer)
 
         val idMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(left: CharSequence, stream: ParserStream): Node =
+            override fun reduce(left: CharSequence, stream: ParserStream): Node =
                     IdNode(stream.createTrace(), left.toString())
 
             override fun left(result: Node): CharSequence? =
@@ -245,7 +244,7 @@ class PrinterTest {
         }
 
         val numMapping = object : Mapping<CharSequence, Node> {
-            override fun parse(left: CharSequence, stream: ParserStream): Node =
+            override fun reduce(left: CharSequence, stream: ParserStream): Node =
                     NumNode(
                             stream.createTrace(),
                             Integer.parseInt(left.toString())

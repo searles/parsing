@@ -1,7 +1,6 @@
 package at.searles.parsingtools.list
 
-import java.util.AbstractList
-import java.util.ArrayList
+import java.util.*
 
 /**
  * To avoid side effects when backtracking but at the same time avoid excessive copying,

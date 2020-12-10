@@ -1,6 +1,7 @@
-package at.searles.parsing.combinators
+package at.searles.parsing.combinators.ext
 
 import at.searles.parsing.Reducer
+import at.searles.parsing.combinators.ReducerOrReducer
 import at.searles.parsing.printing.PartialTree
 
 open class ReducerOrReducerWithReversedPrintOrder<T, U>(choice0: Reducer<T, U>, choice1: Reducer<T, U>) : ReducerOrReducer<T, U>(choice0, choice1) {

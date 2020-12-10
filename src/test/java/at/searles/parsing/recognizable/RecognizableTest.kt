@@ -9,18 +9,19 @@ import at.searles.regexparser.RegexpParser
 import org.junit.Assert
 import org.junit.Test
 
+@Suppress("SameParameterValue")
 class RecognizableTest {
     private lateinit var parser: Parser<String>
     private lateinit var inputString: String
 
     private val lexer = SkipTokenizer(Lexer()).also {
-        val ws = it.addSkipped(RegexpParser.parse("[ \n]+"))
+        it.addSkipped(RegexpParser.parse("[ \n]+"))
     }
 
     private val id = Parser.fromRegex(RegexpParser.parse("[a-z]+"), lexer, object: Mapping<CharSequence, String> {
-        override fun parse(left: CharSequence, stream: ParserStream): String = left.toString()
-        override fun left(result: String): CharSequence? = result
-    }) // TODO intervalset needed?
+        override fun reduce(left: CharSequence, stream: ParserStream): String = left.toString()
+        override fun left(result: String): CharSequence = result
+    })
 
     private val append: Fold<String, String, String> = Fold.create { l: String, r: String -> l + r }
 

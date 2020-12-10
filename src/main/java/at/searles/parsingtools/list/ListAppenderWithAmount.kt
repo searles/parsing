@@ -9,13 +9,9 @@ class ListAppenderWithAmount<T>(private val minSize: Int = 0) : Fold<List<T>, Pa
     override fun apply(stream: ParserStream, left: List<T>, right: Pair<T, Int>): List<T> {
         require(right.second >= 0) { "Must be in range 0..${Int.MAX_VALUE}" }
 
-        return (0 until right.second.toInt()).fold(BacktrackingList.create(left)) { list, _ ->
+        return (0 until right.second).fold(BacktrackingList.create(left)) { list, _ ->
             list.pushBack(right.first)
         }
-    }
-
-    private fun cannotInvert(list: List<T>): Boolean {
-        return list.size <= minSize
     }
 
     private fun countSameAtEnd(l: List<T>): Int {

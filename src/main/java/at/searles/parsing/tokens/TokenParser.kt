@@ -15,7 +15,7 @@ class TokenParser(val tokenId: Int, val tokenizer: Tokenizer) : Parser<CharSeque
         return stream.parseToken(tokenizer, tokenId)
     }
 
-    override fun print(item: CharSequence): ConcreteSyntaxTree? {
+    override fun print(item: CharSequence): ConcreteSyntaxTree {
         return ConcreteSyntaxTree.fromCharSequence(item)
     }
 

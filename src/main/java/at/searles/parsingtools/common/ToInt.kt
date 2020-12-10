@@ -4,7 +4,7 @@ import at.searles.parsing.Mapping
 import at.searles.parsing.ParserStream
 
 object ToInt : Mapping<CharSequence, Int> {
-    override fun parse(left: CharSequence, stream: ParserStream): Int {
+    override fun reduce(left: CharSequence, stream: ParserStream): Int {
         try {
             return Integer.parseInt(left.toString())
         } catch (e: NumberFormatException) {

@@ -2,7 +2,7 @@ package at.searles.parsingtools.opt
 
 import at.searles.parsing.Initializer
 import at.searles.parsing.ParserStream
-import java.util.Optional
+import java.util.*
 
 class NoneCreator<T> : Initializer<Optional<T>> {
     override fun parse(stream: ParserStream): Optional<T> {

@@ -13,7 +13,7 @@ interface Frame : CharSequence {
      */
     val end: Long
 
-    fun toTrace(): Trace {
+    fun createTrace(): Trace {
         return FrameStreamTrace(this)
     }
 

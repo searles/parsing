@@ -11,7 +11,7 @@ import at.searles.parsing.printing.EmptyTree
  */
 open class RecognizerOpt(protected val parent: Recognizer) : Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
-        stream.recognize(parent)
+        stream.recognize(parent, true)
         return true
     }
 

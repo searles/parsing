@@ -11,7 +11,7 @@ import java.util.*
  */
 class ReducerRep<T>(private val parent: Reducer<T, T>) : Reducer<T, T>/*, Rep*/ {
 
-    override fun parse(left: T, stream: ParserStream): T? {
+    override fun reduce(left: T, stream: ParserStream): T? {
         var item = left
 
         while (true) {
@@ -21,14 +21,14 @@ class ReducerRep<T>(private val parent: Reducer<T, T>) : Reducer<T, T>/*, Rep*/ 
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        while (stream.recognize(parent)) {
+        while (stream.recognize(parent, false)) {
             /* empty */
         }
 
         return true
     }
 
-    override fun print(item: T): PartialTree<T>? {
+    override fun print(item: T): PartialTree<T> {
         var left: T = item
         val trees = ArrayList<ConcreteSyntaxTree>()
 

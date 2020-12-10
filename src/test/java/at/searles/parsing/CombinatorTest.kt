@@ -115,11 +115,11 @@ class CombinatorTest {
 
     companion object {
         private val ToString: Mapping<CharSequence, String> = object : Mapping<CharSequence, String> {
-            override fun parse(left: CharSequence, stream: ParserStream): String {
+            override fun reduce(left: CharSequence, stream: ParserStream): String {
                 return left.toString()
             }
 
-            override fun left(result: String): CharSequence? {
+            override fun left(result: String): CharSequence {
                 return result
             }
         }

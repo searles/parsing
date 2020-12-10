@@ -9,13 +9,14 @@ import at.searles.parsing.printing.PartialTree
  */
 class ReducerThenReducer<T, U, V>(private val left: Reducer<T, U>, private val right: Reducer<U, V>) : Reducer<T, V> {
 
-    override fun parse(left: T, stream: ParserStream): V? {
-        val m = stream.reduce(left, this.left) ?: return null
-        return stream.reduce(m, right)
+    override fun reduce(left: T, stream: ParserStream): V? {
+        return stream.reduce(left, this.left)?.let {
+            stream.reduce(it, this.right)
+        }
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(left) && stream.recognize(right)
+        return stream.recognize(this.left, false) && stream.recognize(this.right, false)
     }
 
     override fun print(item: V): PartialTree<T>? {

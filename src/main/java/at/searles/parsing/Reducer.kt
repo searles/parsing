@@ -1,8 +1,10 @@
 package at.searles.parsing
 
-import at.searles.parsing.ref.RefReducer
 import at.searles.parsing.combinators.*
+import at.searles.parsing.combinators.ext.ReducerOrReducerWithReversedPrintOrder
+import at.searles.parsing.combinators.ext.ReducerPlus
 import at.searles.parsing.printing.PartialTree
+import at.searles.parsing.ref.RefReducer
 
 interface Reducer<T, U>: CanRecognize {
     /**
@@ -12,7 +14,7 @@ interface Reducer<T, U>: CanRecognize {
      * @param left   The element left of this reducer
      * @return The parsed element, null if parsing was not successful.
      */
-    fun parse(left: T, stream: ParserStream): U? // null = fail.
+    fun reduce(left: T, stream: ParserStream): U?
 
     override fun recognize(stream: ParserStream): Boolean
 

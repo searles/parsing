@@ -1,9 +1,7 @@
 package at.searles.parsing
 
-import at.searles.buf.Frame
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
-import at.searles.lexer.TokenStream
 import at.searles.parsing.Parser.Companion.fromRegex
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.ref.RefParser
@@ -34,11 +32,11 @@ class FormattingTest {
 
     companion object {
         private val ToString: Mapping<CharSequence, String> = object : Mapping<CharSequence, String> {
-            override fun parse(left: CharSequence, stream: ParserStream): String {
+            override fun reduce(left: CharSequence, stream: ParserStream): String {
                 return left.toString()
             }
 
-            override fun left(result: String): CharSequence? {
+            override fun left(result: String): CharSequence {
                 return result
             }
         }

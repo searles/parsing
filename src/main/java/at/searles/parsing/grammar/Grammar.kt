@@ -33,7 +33,10 @@ open class Grammar<T: Tokenizer>(val tokenizer: T) {
 
     fun text(vararg texts: String): Recognizer {
         require(texts.isNotEmpty())
-        return texts.map { textInternal(it) as Recognizer }.reduce { rec0, rec1 -> rec0 + rec1 }
+        return texts.map {
+            @Suppress("USELESS_CAST") // XXX 2020-12-10: bug in kotlin, it is actually needed.
+            textInternal(it) as Recognizer
+        }.reduce { rec0, rec1 -> rec0 + rec1 }
     }
 
     private fun itextInternal(text: String): TokenRecognizer {
@@ -52,7 +55,10 @@ open class Grammar<T: Tokenizer>(val tokenizer: T) {
 
     fun itext(vararg texts: String): Recognizer {
         require(texts.isNotEmpty())
-        return texts.map { itextInternal(it) as Recognizer }.reduce { rec0, rec1 -> rec0 + rec1 }
+        return texts.map {
+            @Suppress("USELESS_CAST")
+            itextInternal(it) as Recognizer
+        }.reduce { rec0, rec1 -> rec0 + rec1 }
     }
 
     private fun convertToCaseInsensitiveRegexp(codePoint: Int): Regexp {

@@ -8,13 +8,13 @@ import at.searles.parsing.printing.ConcreteSyntaxTree
  * Parser for options. The order is important. First one to
  * succeed is the one that is used.
  */
-open class ParserOrParser<T>(open val choice0: Parser<T>, open val choice1: Parser<T>) : Parser<T> {
+open class ParserOrParser<T>(protected val choice0: Parser<T>, protected val choice1: Parser<T>) : Parser<T> {
     override fun parse(stream: ParserStream): T? {
         return stream.parse(choice0) ?: stream.parse(choice1)
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(choice0) || stream.recognize(choice1)
+        return stream.recognize(choice0, true) || stream.recognize(choice1, true)
     }
 
     override fun print(item: T): ConcreteSyntaxTree? {

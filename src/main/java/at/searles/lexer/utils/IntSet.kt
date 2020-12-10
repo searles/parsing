@@ -89,12 +89,16 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
         var i0 = 0
         var i1 = 0
         while (i0 < size && i1 < other.size) {
-            if (get(i0) < other[i1]) {
-                i0++
-            } else if (get(i0) > other[i1]) {
-                i1++
-            } else {
-                return true
+            when {
+                get(i0) < other[i1] -> {
+                    i0++
+                }
+                get(i0) > other[i1] -> {
+                    i1++
+                }
+                else -> {
+                    return true
+                }
             }
         }
         return false
@@ -104,12 +108,16 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
         var i0 = 0
         var i1 = 0
         while (i0 < size && i1 < other.size) {
-            if (get(i0) < other[i1]) {
-                i0++
-            } else if (get(i0) > other[i1]) {
-                i1++
-            } else {
-                return i0
+            when {
+                get(i0) < other[i1] -> {
+                    i0++
+                }
+                get(i0) > other[i1] -> {
+                    i1++
+                }
+                else -> {
+                    return i0
+                }
             }
         }
         return -1

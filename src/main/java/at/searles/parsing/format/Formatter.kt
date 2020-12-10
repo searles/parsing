@@ -21,8 +21,6 @@ abstract class Formatter<A>: ParserStream.Listener {
     }
 
     override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
-        // TODO
-        // This is called multiple times for hidden tokens
         commandList.add(createTokenCommand(tokenId, frame))
     }
 

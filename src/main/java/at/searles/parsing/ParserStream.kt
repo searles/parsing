@@ -69,7 +69,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         return frame
     }
 
-    fun recognize(recognizer: Recognizer, isLeftMost: Boolean = true): Boolean {
+    fun recognize(recognizer: CanRecognize, isLeftMost: Boolean): Boolean {
         listener?.onTry(recognizer, this)
 
         val offset0 = offset
@@ -87,57 +87,6 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         }
 
         start = start0
-        end = end0
-        restoreOffsetIfNecessary(offset0, recognizer)
-
-        listener?.onFail(recognizer, this)
-
-        return false
-    }
-
-    fun recognize(recognizer: Parser<*>, isLeftMost: Boolean = true): Boolean {
-        listener?.onTry(recognizer, this)
-
-        val offset0 = offset
-        val start0 = start
-        val end0 = end
-
-        if(recognizer.recognize(this)) {
-            if(!isLeftMost) {
-                start = start0
-            }
-
-            listener?.onSuccess(recognizer, this)
-
-            return true
-        }
-
-        start = start0
-        end = end0
-        restoreOffsetIfNecessary(offset0, recognizer)
-
-        listener?.onFail(recognizer, this)
-
-        return false
-    }
-
-    fun recognize(recognizer: Reducer<*, *>): Boolean {
-        // Handling of start is different for reducers.
-        listener?.onTry(recognizer, this)
-
-        val offset0 = offset
-        val start0 = start
-        val end0 = end
-
-        val status = recognizer.recognize(this)
-
-        start = start0
-
-        if(status) {
-            listener?.onSuccess(recognizer, this)
-            return true
-        }
-
         end = end0
         restoreOffsetIfNecessary(offset0, recognizer)
 
@@ -181,7 +130,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         val start0 = start
         val end0 = end
 
-        val value = reducer.parse(left, this)
+        val value = reducer.reduce(left, this)
 
         start = start0 // position includes left
 

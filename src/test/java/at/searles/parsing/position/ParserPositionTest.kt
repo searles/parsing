@@ -13,8 +13,8 @@ class ParserPositionTest {
     val a = fromRegex(Text("A"), tokenizer, ToString)
     val b = fromRegex(Text("B"), tokenizer, ToString)
     val z = Recognizer.fromString("Z", tokenizer)
-    val fail: Reducer<String, String> = object: Reducer<String, String> {
-        override fun parse(left: String, stream: ParserStream): String? {
+    private val fail: Reducer<String, String> = object: Reducer<String, String> {
+        override fun reduce(left: String, stream: ParserStream): String? {
             return null
         }
 
@@ -27,13 +27,13 @@ class ParserPositionTest {
         }
     }
 
-    val joiner: Fold<String, String, String> = Fold.create { left: String, right: String -> left + right }
+    private val joiner: Fold<String, String, String> = Fold.create { left: String, right: String -> left + right }
     private var parser: Parser<String>? = null
     private var output: String? = null
 
     fun positionAssert(start: Int, end: Int): Mapping<String, String> {
         return object: Mapping <String, String> {
-            override fun parse(left: String, stream: ParserStream): String {
+            override fun reduce(left: String, stream: ParserStream): String {
                 Assert.assertEquals(start.toLong(), stream.start)
                 Assert.assertEquals(end.toLong(), stream.end)
                 return left

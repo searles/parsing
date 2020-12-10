@@ -3,7 +3,6 @@ package at.searles.parsingtools.list
 import at.searles.parsing.ParserStream
 import org.junit.Assert
 import org.junit.Test
-import java.util.*
 
 class AddListTest {
     @Test

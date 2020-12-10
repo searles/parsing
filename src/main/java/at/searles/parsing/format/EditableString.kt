@@ -1,7 +1,5 @@
 package at.searles.parsing.format
 
-import java.lang.StringBuilder
-
 class EditableString(string: String): EditableText {
 
     private val sb = StringBuilder(string)

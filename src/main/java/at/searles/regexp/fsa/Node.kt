@@ -15,10 +15,6 @@ open class Node(var isFinal: Boolean = false, set: IntSet = IntSet()) {
         set.add(id)
     }
 
-    fun isId(id: Int): Boolean {
-        return set.contains(id)
-    }
-
     fun setPropertiesFromSet(nodes: Set<Node>) {
         isFinal = nodes.any {it.isFinal }
         nodes.forEach { set.addAll(it.set) }

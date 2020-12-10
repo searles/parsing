@@ -5,7 +5,7 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class TokenRecognizer(val tokenId: Int, private val tokenizer: Tokenizer, val printed: String) : Recognizer {
+class TokenRecognizer(val tokenId: Int, private val tokenizer: Tokenizer, private val printed: String) : Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
         return stream.parseToken(tokenizer, tokenId) != null
     }

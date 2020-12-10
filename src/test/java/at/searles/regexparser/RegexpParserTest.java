@@ -46,7 +46,7 @@ public class RegexpParserTest {
     public void testUnion() {
         CodePointStream stream = new CodePointStream("'a' | 'b'");
 
-        Regexp regexp = RegexpParser.union(stream);
+        RegexpParser.union(stream);
 
         Assert.assertTrue(stream.end());
     }
@@ -55,7 +55,7 @@ public class RegexpParserTest {
     public void testComment() {
         CodePointStream stream = new CodePointStream("'//' [^\\n]*");
 
-        Regexp regexp = RegexpParser.union(stream);
+        RegexpParser.union(stream);
 
         Assert.assertTrue(stream.end());
     }
