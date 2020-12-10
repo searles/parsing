@@ -16,7 +16,7 @@ class SimplePrinter(private val outStream: OutStream): CstVisitor {
      * is a block or an infix symbol.
      * @return this for chaining
      */
-    override fun visitFormat(marker: Any) {
+    override fun visitMarker(marker: Any) {
     }
 
     /**

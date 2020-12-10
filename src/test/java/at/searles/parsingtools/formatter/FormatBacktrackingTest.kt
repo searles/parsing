@@ -4,9 +4,11 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.Parser
 import at.searles.parsing.ParserStream
-import at.searles.parsing.format.FormatRules
+import at.searles.parsing.format.CodeFormatter
+import at.searles.parsing.format.EditableString
 import at.searles.parsing.format.Mark
-import at.searles.parsing.printing.CodePrinter
+import at.searles.parsing.format.Markers
+import at.searles.parsing.format.CodePrinter
 import at.searles.parsing.printing.StringOutStream
 import at.searles.parsing.tokens.TokenRecognizer
 import at.searles.parsingtools.common.Init
@@ -15,12 +17,10 @@ import at.searles.regexp.Text
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import java.lang.StringBuilder
 
 class FormatBacktrackingTest {
 
     private lateinit var parser: Parser<Pair<String, String>>
-    private lateinit var rules: FormatRules
     private var blankId: Int = -1
 
     @Before
@@ -32,18 +32,10 @@ class FormatBacktrackingTest {
         val a = TokenRecognizer(tokenizer.add(Text("a")), tokenizer, "a") + Init("A")
         val b = TokenRecognizer(tokenizer.add(Text("b")), tokenizer, "b") + Init("B")
 
-        val newline = "newline"
-        val indent = "indent"
-
         parser = a + (
-                Mark(indent) + Mark(newline) + b or
-                Mark(newline) + a
+                Mark(Markers.Indent) + Mark(Markers.NewLine) + b or
+                Mark(Markers.NewLine) + a
         )
-
-        rules = FormatRules().apply {
-            addRule(newline) { it.insertNewLine() }
-            addRule(indent) { it.indent() }
-        }
     }
 
     @Test
@@ -53,7 +45,7 @@ class FormatBacktrackingTest {
         val ast = parser.parse(parserStream)!!
 
         val outstream = StringOutStream()
-        val codePrinter = CodePrinter(rules, outstream)
+        val codePrinter = CodePrinter(outstream)
 
         parser.print(ast)!!.accept(codePrinter)
 
@@ -64,7 +56,7 @@ class FormatBacktrackingTest {
     @Test
     fun testSimpleBacktrackingWhenFormattingEditableText() {
         val text = EditableString("aa")
-        val formatter = CodeFormatter(rules, parser, blankId)
+        val formatter = CodeFormatter(parser, blankId)
         formatter.format(text)
 
         Assert.assertEquals("a\na", text.toString())

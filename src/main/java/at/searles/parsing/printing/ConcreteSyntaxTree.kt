@@ -17,19 +17,13 @@ interface ConcreteSyntaxTree {
     }
 
     companion object {
-        private val EMPTY: ConcreteSyntaxTree = EmptyTree()
-
-        fun empty(): ConcreteSyntaxTree {
-            return EMPTY
-        }
-
         fun fromCharSequence(seq: CharSequence): ConcreteSyntaxTree {
             return TokenTree(seq)
         }
 
         fun fromList(list: List<ConcreteSyntaxTree>): ConcreteSyntaxTree {
             return when {
-                list.isEmpty() -> empty()
+                list.isEmpty() -> EmptyTree
                 list.size == 1 -> list[0]
                 list.size == 2 -> list[0].consRight(list[1])
                 else -> ListTree(list)

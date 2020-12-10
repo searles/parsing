@@ -20,7 +20,7 @@ class CombinatorTest {
         }
 
         override fun print(item: String): ConcreteSyntaxTree? {
-            return if (item.isEmpty()) EmptyTree() else null
+            return if (item.isEmpty()) EmptyTree else null
         }
     }
     private val appendSingleChar: Fold<String, String, String> = object : Fold<String, String, String> {

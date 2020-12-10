@@ -4,7 +4,7 @@ import at.searles.parsing.ref.RefReducer
 import at.searles.parsing.combinators.*
 import at.searles.parsing.printing.PartialTree
 
-interface Reducer<T, U> {
+interface Reducer<T, U>: CanRecognize {
     /**
      * Parses elements from TokStream
      *
@@ -14,7 +14,7 @@ interface Reducer<T, U> {
      */
     fun parse(left: T, stream: ParserStream): U? // null = fail.
 
-    fun recognize(stream: ParserStream): Boolean
+    override fun recognize(stream: ParserStream): Boolean
 
     /**
      * Prints the argument that is split of u on its right. It is the

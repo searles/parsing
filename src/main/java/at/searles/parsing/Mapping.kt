@@ -1,6 +1,7 @@
 package at.searles.parsing
 
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 import at.searles.parsing.printing.PartialTree
 
 interface Mapping<T, U> : Reducer<T, U> {
@@ -12,7 +13,7 @@ interface Mapping<T, U> : Reducer<T, U> {
 
     override fun print(item: U): PartialTree<T>? {
         val left = left(item) ?: return null
-        return PartialTree(left, ConcreteSyntaxTree.empty())
+        return PartialTree(left, EmptyTree)
     }
 
     override fun recognize(stream: ParserStream): Boolean {

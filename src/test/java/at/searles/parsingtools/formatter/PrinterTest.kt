@@ -3,11 +3,12 @@ package at.searles.parsingtools.formatter
 import at.searles.buf.Frame
 import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
-import at.searles.lexer.TokenStream
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.format.FormatRules
+import at.searles.parsing.format.CodePrinter
+import at.searles.parsing.format.Formatter
 import at.searles.parsing.format.Mark
+import at.searles.parsing.format.Markers
 import at.searles.parsing.printing.*
 import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
@@ -149,27 +150,48 @@ class PrinterTest {
     private fun actFormat() {
         val list = ArrayList<ConcreteSyntaxTree>()
 
-        this.stream.listener = (object: ParserStream.Listener {
-            override fun onMark(marker: Any, stream: ParserStream) {
-                list.add(FormatTree(marker))
+        val formatter = object: Formatter<ConcreteSyntaxTree>() {
+            var indentLevel = 0
+            var mustAddNewLine = false
+            var mustAddEmptyLine = false
+            var mustAddSpace = false
+
+            override fun createMarkCommand(marker: Any, offset: Long): ConcreteSyntaxTree {
+                when(marker) {
+                    Markers.NewLine -> mustAddNewLine = true
+                    Markers.EmptyLine -> mustAddEmptyLine = true
+                    Markers.Space -> mustAddSpace = true
+                    Markers.Indent -> indentLevel ++
+                    Markers.Unindent -> indentLevel --
+                }
+
+                return EmptyTree
             }
 
-            override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
-                TODO("Not yet implemented")
-            }
+            override fun createTokenCommand(tokenId: Int, frame: Frame): ConcreteSyntaxTree {
+                if(mustAddEmptyLine) {
+                    mustAddEmptyLine = false
+                    mustAddNewLine = false
+                    mustAddSpace = false
 
-            override fun onParserStart(stream: ParserStream) {
-                TODO("Not yet implemented")
-            }
+                    return TokenTree("\n\n" + "    ".repeat(indentLevel) + frame)
+                }
 
-            override fun onParserSuccess(stream: ParserStream) {
-                TODO("Not yet implemented")
-            }
+                if(mustAddNewLine) {
+                    mustAddNewLine = false
+                    mustAddSpace = false
 
-            override fun onParserFail(stream: ParserStream) {
-                TODO("Not yet implemented")
+                    return TokenTree("\n" + "    ".repeat(indentLevel) + frame)
+                }
+
+                if(mustAddSpace) {
+                    mustAddSpace = false
+                    return TokenTree(" $frame")
+                }
+
+                return TokenTree(frame)
             }
-        })
+        }
 
         this.stream.listener = object: ParserStream.Listener {
             override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
@@ -180,18 +202,18 @@ class PrinterTest {
 
                 // add all other tokens to current top in stack.
                 // this also includes other hidden tokens like comments
-                // that we normally want to keep when formatting the source 
+                // that we normally want to keep when formatting the source
                 // code.
                 list.add(TokenTree(frame.toString()))
             }
 
             override fun onMark(marker: Any, stream: ParserStream) {}
 
-            override fun onParserStart(stream: ParserStream) {}
+            override fun onTry(parser: CanRecognize, stream: ParserStream) {}
 
-            override fun onParserSuccess(stream: ParserStream) {}
+            override fun onSuccess(parser: CanRecognize, stream: ParserStream) {}
 
-            override fun onParserFail(stream: ParserStream) {}
+            override fun onFail(parser: CanRecognize, stream: ParserStream) {}
         }
 
         if(!parser.recognize(stream)) {
@@ -275,7 +297,7 @@ class PrinterTest {
             }
         }
 
-        val app = term + (Mark(Markers.Separator) + term + appFold).rep()
+        val app = term + (Mark(Markers.Space) + term + appFold).rep()
 
         expr.ref = app
 
@@ -284,19 +306,7 @@ class PrinterTest {
 
     private fun initCstPrinter() {
         this.outStream = StringOutStream()
-
-        val rules = FormatRules().apply() {
-            indentation = " "
-
-            addRule(Markers.Indent) { it.insertNewLine() ; it.indent() }
-            addRule(Markers.Unindent) { it.insertNewLine() ; it.unindent() }
-            addRule(Markers.Separator) { it.insertSpace() }
-
-            indentation = " "
-
-        }
-
-        this.simplePrinter = CodePrinter(rules, outStream)
+        this.simplePrinter = CodePrinter(outStream)
     }
 
     abstract class Node(val trace: Trace)
@@ -305,8 +315,4 @@ class PrinterTest {
     class IdNode(trace: Trace, val value: String) : Node(trace)
 
     class AppNode(trace: Trace, val left: Node, val right: Node) : Node(trace)
-
-    enum class Markers {
-        Indent, Unindent, Separator
-    }
 }

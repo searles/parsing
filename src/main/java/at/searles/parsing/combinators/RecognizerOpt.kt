@@ -3,6 +3,7 @@ package at.searles.parsing.combinators
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 
 /**
  * Optional recognizer. This one is different from reducer and parser
@@ -15,7 +16,7 @@ open class RecognizerOpt(protected val parent: Recognizer) : Recognizer {
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return ConcreteSyntaxTree.empty()
+        return EmptyTree
     }
 
     override fun toString(): String {

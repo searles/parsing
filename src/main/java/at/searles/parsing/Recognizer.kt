@@ -9,8 +9,8 @@ import at.searles.parsingtools.common.Init
 import at.searles.regexp.CharSet
 import at.searles.regexp.Text
 
-interface Recognizer {
-    fun recognize(stream: ParserStream): Boolean
+interface Recognizer: CanRecognize {
+    override fun recognize(stream: ParserStream): Boolean
 
     fun print(): ConcreteSyntaxTree
 
@@ -40,7 +40,7 @@ interface Recognizer {
         return RecognizerRep(this)
     }
 
-    fun plus(): Recognizer {
+    fun rep1(): Recognizer {
         return this + rep()
     }
 

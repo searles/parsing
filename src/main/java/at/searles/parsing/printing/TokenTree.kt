@@ -1,12 +1,13 @@
 package at.searles.parsing.printing
 
-class TokenTree(private val seq: CharSequence) : ConcreteSyntaxTree {
+class TokenTree(seq: CharSequence) : ConcreteSyntaxTree {
+    private val token = seq.toString()
+
     override fun toString(): String {
-        return seq.toString()
+        return token
     }
 
     override fun accept(visitor: CstVisitor) {
-        visitor.visitToken(seq)
+        visitor.visitToken(token)
     }
-
 }

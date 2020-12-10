@@ -70,7 +70,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
     }
 
     fun recognize(recognizer: Recognizer, isLeftMost: Boolean = true): Boolean {
-        listener?.onParserStart(this)
+        listener?.onTry(recognizer, this)
 
         val offset0 = offset
         val start0 = start
@@ -81,7 +81,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
                 start = start0
             }
 
-            listener?.onParserSuccess(this)
+            listener?.onSuccess(recognizer, this)
 
             return true
         }
@@ -90,13 +90,13 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         end = end0
         restoreOffsetIfNecessary(offset0, recognizer)
 
-        listener?.onParserFail(this)
+        listener?.onFail(recognizer, this)
 
         return false
     }
 
     fun recognize(recognizer: Parser<*>, isLeftMost: Boolean = true): Boolean {
-        listener?.onParserStart(this)
+        listener?.onTry(recognizer, this)
 
         val offset0 = offset
         val start0 = start
@@ -107,7 +107,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
                 start = start0
             }
 
-            listener?.onParserSuccess(this)
+            listener?.onSuccess(recognizer, this)
 
             return true
         }
@@ -116,13 +116,14 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         end = end0
         restoreOffsetIfNecessary(offset0, recognizer)
 
-        listener?.onParserFail(this)
+        listener?.onFail(recognizer, this)
 
         return false
     }
 
     fun recognize(recognizer: Reducer<*, *>): Boolean {
-        listener?.onParserStart(this)
+        // Handling of start is different for reducers.
+        listener?.onTry(recognizer, this)
 
         val offset0 = offset
         val start0 = start
@@ -133,20 +134,20 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         start = start0
 
         if(status) {
-            listener?.onParserSuccess(this)
+            listener?.onSuccess(recognizer, this)
             return true
         }
 
         end = end0
         restoreOffsetIfNecessary(offset0, recognizer)
 
-        listener?.onParserFail(this)
+        listener?.onFail(recognizer, this)
 
         return false
     }
 
     fun <T> parse(parser: Parser<T>, isLeftMost: Boolean= true): T? {
-        listener?.onParserStart(this)
+        listener?.onTry(parser, this)
 
         val offset0 = offset
         val start0 = start
@@ -159,7 +160,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
                 start = start0
             }
 
-            listener?.onParserSuccess(this)
+            listener?.onSuccess(parser, this)
 
             return value
         }
@@ -168,13 +169,13 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         end = end0
         restoreOffsetIfNecessary(offset0, parser)
 
-        listener?.onParserFail(this)
+        listener?.onFail(parser, this)
 
         return value
     }
 
     fun <T, U> reduce(left: T, reducer: Reducer<T, U>): U? {
-        listener?.onParserStart(this)
+        listener?.onTry(reducer, this)
 
         val offset0 = offset
         val start0 = start
@@ -185,7 +186,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         start = start0 // position includes left
 
         if(value != null) {
-            listener?.onParserSuccess(this)
+            listener?.onSuccess(reducer, this)
 
             return value
         }
@@ -193,7 +194,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         end = end0
         restoreOffsetIfNecessary(offset0, reducer)
 
-        listener?.onParserFail(this)
+        listener?.onFail(reducer, this)
 
         return value
     }
@@ -209,9 +210,9 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
     interface Listener {
         fun onMark(marker: Any, stream: ParserStream)
         fun onToken(tokenId: Int, frame: Frame, stream: ParserStream)
-        fun onParserStart(stream: ParserStream)
-        fun onParserSuccess(stream: ParserStream)
-        fun onParserFail(stream: ParserStream)
+        fun onTry(parser: CanRecognize, stream: ParserStream)
+        fun onSuccess(parser: CanRecognize, stream: ParserStream)
+        fun onFail(parser: CanRecognize, stream: ParserStream)
     }
 
     class ParserStreamTrace(val stream: ParserStream) : Trace {

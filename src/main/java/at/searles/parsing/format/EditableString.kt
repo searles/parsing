@@ -1,4 +1,4 @@
-package at.searles.parsingtools.formatter
+package at.searles.parsing.format
 
 import java.lang.StringBuilder
 

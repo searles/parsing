@@ -13,6 +13,6 @@ class BreakPoint<T>(val fn: () -> Unit): Recognizer {
 
     override fun print(): ConcreteSyntaxTree {
         fn()
-        return EmptyTree()
+        return EmptyTree
     }
 }

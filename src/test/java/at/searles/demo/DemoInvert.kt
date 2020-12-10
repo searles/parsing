@@ -4,8 +4,7 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.format.FormatRules
-import at.searles.parsing.printing.CodePrinter
+import at.searles.parsing.format.CodePrinter
 import at.searles.parsing.printing.StringOutStream
 import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
@@ -158,11 +157,7 @@ fun main() {
     // now pretty-printTo the tree
     val sourceStream = StringOutStream()
 
-    val rules = FormatRules().apply {
-        this.addRule(Format.Blank) { it.insertSpace() }
-    }
-
-    val printer = CodePrinter(rules, sourceStream)
+    val printer = CodePrinter(sourceStream)
 
     val outTree = sum.print(ast)!!
     outTree.accept(printer)
@@ -170,10 +165,6 @@ fun main() {
 }
 
 enum class Op { Add, Sub, Mul, Div, Neg }
-
-enum class Format {
-    Blank
-}
 
 interface AstNode
 

@@ -4,8 +4,10 @@ import at.searles.lexer.Lexer
 import at.searles.lexer.SkipTokenizer
 import at.searles.parsing.*
 import at.searles.parsing.Reducer.Companion.rep
-import at.searles.parsing.format.FormatRules
+import at.searles.parsing.format.CodeFormatter
+import at.searles.parsing.format.EditableString
 import at.searles.parsing.format.Mark
+import at.searles.parsing.format.Markers
 import at.searles.parsing.ref.RefParser
 import at.searles.regexparser.RegexpParser
 import org.junit.Assert
@@ -25,7 +27,7 @@ class FormatterTest {
         withInput("(a)")
         actFormat()
 
-        Assert.assertEquals("(\n    a\n)\n", source.toString())
+        Assert.assertEquals("(\n    a\n)", source.toString())
     }
 
     @Test
@@ -37,7 +39,7 @@ class FormatterTest {
         Assert.assertEquals("a (\n" +
                 "    b\n" +
                 ")\n" +
-                "c\n", source.toString())
+                "c", source.toString())
     }
 
     @Test
@@ -48,7 +50,7 @@ class FormatterTest {
 
         Assert.assertEquals("(\n" +
                 "    a\n" +
-                ")\n", source.toString())
+                ")", source.toString())
     }
 
     @Test
@@ -57,7 +59,7 @@ class FormatterTest {
         withInput("( a)")
         actFormat()
 
-        Assert.assertEquals("(\n    a\n)\n", source.toString())
+        Assert.assertEquals("(\n    a\n)", source.toString())
     }
 
     @Test
@@ -69,7 +71,7 @@ class FormatterTest {
         Assert.assertEquals("a (\n" +
                 "    b\n" +
                 "    c\n" +
-                ")\n", source.toString())
+                ")", source.toString())
     }
 
     @Test
@@ -80,7 +82,7 @@ class FormatterTest {
 
         Assert.assertEquals("a (\n" +
                 "    c\n" +
-                ")\n", source.toString())
+                ")", source.toString())
     }
 
     @Test
@@ -116,23 +118,16 @@ class FormatterTest {
     }
 
     private fun withInput(input: String) {
-        this.source = input
+        this.source = EditableString(input)
     }
 
     private fun actFormat() {
-        val rules = FormatRules().apply {
-            addRule(Markers.Indent) { it.indent() }
-            addRule(Markers.Unindent) { it.unindent() }
-            addRule(Markers.Newline) { it.insertNewLine() }
-            addRule(Markers.Space) { it.insertSpace() }
-        }
-
-        val formatter = CodeFormatter(rules, parser, whiteSpaceTokId)
-        formatter.format(EditableString(source))
+        val formatter = CodeFormatter(parser, whiteSpaceTokId)
+        formatter.format(this.source)
     }
 
     private var whiteSpaceTokId: Int = Integer.MIN_VALUE // invalid default value.
-    private lateinit var source: String
+    private lateinit var source: EditableString
     private lateinit var parser: Parser<Node>
 
     private fun initParser() {
@@ -172,7 +167,7 @@ class FormatterTest {
         val term = (
                 id or
                 num or (
-                        openPar + Mark(Markers.Newline) + Mark(Markers.Indent) + expr + Mark(Markers.Unindent) + Mark(Markers.Newline) + closePar + Mark(Markers.Newline)
+                        openPar + Mark(Markers.NewLine) + Mark(Markers.Indent) + expr + Mark(Markers.Unindent) + Mark(Markers.NewLine) + closePar + Mark(Markers.NewLine)
                 )
         ) + Mark(Markers.Space)
 
@@ -204,8 +199,4 @@ class FormatterTest {
     class IdNode(trace: Trace, val value: String) : Node(trace)
 
     class AppNode(trace: Trace, val left: Node, val right: Node) : Node(trace)
-
-    enum class  Markers {
-        Indent, Unindent, Space, Newline
-    }
 }

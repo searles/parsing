@@ -1,6 +1,6 @@
 package at.searles.parsing.printing
 
-class EmptyTree : ConcreteSyntaxTree {
+object EmptyTree : ConcreteSyntaxTree {
     override fun consRight(right: ConcreteSyntaxTree): ConcreteSyntaxTree {
         return right
     }

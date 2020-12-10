@@ -1,6 +1,7 @@
 package at.searles.parsing
 
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 
 interface Initializer<T> : Parser<T> {
     override fun parse(stream: ParserStream): T
@@ -8,7 +9,7 @@ interface Initializer<T> : Parser<T> {
     fun consume(t: T): Boolean = false
 
     override fun print(item: T): ConcreteSyntaxTree? {
-        return if (consume(item)) ConcreteSyntaxTree.empty() else null
+        return if (consume(item)) EmptyTree else null
     }
 
     override fun recognize(stream: ParserStream): Boolean {

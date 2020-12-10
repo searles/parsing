@@ -3,6 +3,7 @@ package at.searles.parsing.combinators
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
+import at.searles.parsing.printing.EmptyTree
 
 /**
  * Possibly empty repetition
@@ -19,7 +20,7 @@ class RecognizerRep(private val parent: Recognizer) : Recognizer {
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return ConcreteSyntaxTree.empty()
+        return EmptyTree
     }
 
     override fun toString(): String {

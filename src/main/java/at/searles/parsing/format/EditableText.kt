@@ -1,4 +1,4 @@
-package at.searles.parsingtools.formatter
+package at.searles.parsing.format
 
 interface EditableText: CharSequence {
     fun insert(position: Long, insertion: CharSequence)
