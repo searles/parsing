@@ -80,7 +80,9 @@ class PrinterTest {
         actParse()
         actPrint()
 
-        Assert.assertEquals("a (\n b c\n)", output)
+        Assert.assertEquals("a (\n" +
+                "    b c\n" +
+                ")", output)
     }
 
     @Test
@@ -100,21 +102,21 @@ class PrinterTest {
         actPrint()
 
         Assert.assertEquals("a (\n" +
-                " b (\n" +
-                "  c d (\n" +
-                "   e (\n" +
-                "    f g h (\n" +
-                "     i j\n" +
-                "    ) k (\n" +
-                "     l m n\n" +
+                "    b (\n" +
+                "        c d (\n" +
+                "            e (\n" +
+                "                f g h (\n" +
+                "                    i j\n" +
+                "                ) k (\n" +
+                "                    l m n\n" +
+                "                )\n" +
+                "            )\n" +
+                "        ) o p (\n" +
+                "            q r (\n" +
+                "                s t\n" +
+                "            )\n" +
+                "        )\n" +
                 "    )\n" +
-                "   )\n" +
-                "  ) o p (\n" +
-                "   q r (\n" +
-                "    s t\n" +
-                "   )\n" +
-                "  )\n" +
-                " )\n" +
                 ")", output)
     }
 
@@ -148,8 +150,6 @@ class PrinterTest {
     }
 
     private fun actFormat() {
-        val list = ArrayList<ConcreteSyntaxTree>()
-
         val formatter = object: Formatter<ConcreteSyntaxTree>() {
             var indentLevel = 0
             var mustAddNewLine = false
@@ -169,19 +169,23 @@ class PrinterTest {
             }
 
             override fun createTokenCommand(tokenId: Int, frame: Frame): ConcreteSyntaxTree {
+                if(tokenId == whiteSpaceTokId) {
+                    return EmptyTree
+                }
+
                 if(mustAddEmptyLine) {
                     mustAddEmptyLine = false
                     mustAddNewLine = false
                     mustAddSpace = false
 
-                    return TokenTree("\n\n" + "    ".repeat(indentLevel) + frame)
+                    return TokenTree("\n\n" + " ".repeat(indentLevel) + frame)
                 }
 
                 if(mustAddNewLine) {
                     mustAddNewLine = false
                     mustAddSpace = false
 
-                    return TokenTree("\n" + "    ".repeat(indentLevel) + frame)
+                    return TokenTree("\n" + " ".repeat(indentLevel) + frame)
                 }
 
                 if(mustAddSpace) {
@@ -193,35 +197,14 @@ class PrinterTest {
             }
         }
 
-        this.stream.listener = object: ParserStream.Listener {
-            override fun onToken(tokenId: Int, frame: Frame, stream: ParserStream) {
-                // skip all white spaces
-                if(tokenId == whiteSpaceTokId) {
-                    return
-                }
-
-                // add all other tokens to current top in stack.
-                // this also includes other hidden tokens like comments
-                // that we normally want to keep when formatting the source
-                // code.
-                list.add(TokenTree(frame.toString()))
-            }
-
-            override fun onMark(marker: Any, stream: ParserStream) {}
-
-            override fun onTry(parser: CanRecognize, stream: ParserStream) {}
-
-            override fun onSuccess(parser: CanRecognize, stream: ParserStream) {}
-
-            override fun onFail(parser: CanRecognize, stream: ParserStream) {}
-        }
+        this.stream.listener = formatter
 
         if(!parser.recognize(stream)) {
             output = null
             return
         }
 
-        ListTree(list).accept(simplePrinter)
+        ListTree(formatter.commandList).accept(simplePrinter)
         output = outStream.toString()
     }
 
@@ -280,7 +263,7 @@ class PrinterTest {
         // term = id | num | '(' expr ')'
         val term = id or
                 num or
-                openPar + Mark(Markers.Indent) + expr + Mark(Markers.Unindent) + closePar
+                openPar + Mark(Markers.NewLine) + Mark(Markers.Indent) + expr + Mark(Markers.Unindent) + Mark(Markers.NewLine) + closePar
 
         // app = term+
         val appFold = object : Fold<Node, Node, Node> {
