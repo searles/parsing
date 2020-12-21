@@ -21,9 +21,6 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
     var end: Long = tokenStream.offset
         private set
 
-    var maxStatus: BacktrackingStatus? = null
-        private set
-
     var listener: Listener? = null
 
     /**
@@ -45,10 +42,6 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         if(offset == this.offset) {
             // some empty parser failed. We are generous with them.
             return
-        }
-
-        if(maxStatus == null || maxStatus!!.requestedOffset < offset) {
-            maxStatus = BacktrackingStatus(failedParser, offset, this)
         }
 
         tokenStream.offset = offset

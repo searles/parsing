@@ -4,21 +4,42 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
-open class ReducerOrReducer<T, U>(protected val choice0: Reducer<T, U>, protected val choice1: Reducer<T, U>) : Reducer<T,U> {
+open class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reducer<T,U> {
+    override fun or(other: Reducer<T, U>): Reducer<T, U> {
+        return ReducerOrReducer(*choices, other)
+    }
 
     override fun reduce(left: T, stream: ParserStream): U? {
-        return stream.reduce(left,choice0) ?: stream.reduce(left, choice1)
+        for(choice in choices) {
+            stream.reduce(left, choice)?.let {
+                return it
+            }
+        }
+
+        return null
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(choice0, false) || stream.recognize(choice1, false)
+        for(choice in choices) {
+            if(stream.recognize(choice, false)) {
+                return true
+            }
+        }
+
+        return false
     }
 
     override fun print(item: U): PartialTree<T>? {
-        return choice0.print(item) ?: choice1.print(item)
+        for(choice in choices) {
+            choice.print(item)?.let {
+                return it
+            }
+        }
+
+        return null
     }
 
     override fun toString(): String {
-        return "$choice0.or($choice1)"
+        return "${choices.first()}.or(${choices.drop(1).joinToString(", ")})"
     }
 }

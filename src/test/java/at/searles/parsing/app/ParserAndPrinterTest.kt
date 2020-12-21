@@ -175,7 +175,7 @@ class ParserAndPrinterTest {
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }
 
-        input = ParserStream.create(stream(3000000))
+        input = ParserStream.create(stream(2000000))
         withParser(Parsers.ITERATIVE)
         parse()
         println("Parser successful: ${duration()}")

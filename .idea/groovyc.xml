@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GroovyCompilerProjectConfiguration">
+    <option name="configScript" value="$USER_HOME$/.sdkman/candidates/groovy/3.0.7/conf/groovy-starter.conf" />
+  </component>
+</project>

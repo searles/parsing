@@ -4,16 +4,26 @@ import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
-class RecognizerOrRecognizer(private val choice0: Recognizer, private val choice1: Recognizer) : Recognizer {
+class RecognizerOrRecognizer(private vararg val choices: Recognizer) : Recognizer {
+    override fun or(other: Recognizer): Recognizer {
+        return RecognizerOrRecognizer(*choices, other)
+    }
+
     override fun recognize(stream: ParserStream): Boolean {
-        return stream.recognize(choice0, true) || stream.recognize(choice1, true)
+        for(choice in choices) {
+            if(stream.recognize(choice, true)) {
+                return true
+            }
+        }
+
+        return false
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return choice0.print()
+        return choices.first().print()
     }
 
     override fun toString(): String {
-        return "$choice0.or($choice1)"
+        return "${choices.first()}.or(${choices.drop(1).joinToString(", ")})"
     }
 }

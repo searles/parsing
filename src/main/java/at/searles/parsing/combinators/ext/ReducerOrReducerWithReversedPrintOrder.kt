@@ -4,8 +4,16 @@ import at.searles.parsing.Reducer
 import at.searles.parsing.combinators.ReducerOrReducer
 import at.searles.parsing.printing.PartialTree
 
-open class ReducerOrReducerWithReversedPrintOrder<T, U>(choice0: Reducer<T, U>, choice1: Reducer<T, U>) : ReducerOrReducer<T, U>(choice0, choice1) {
+open class ReducerOrReducerWithReversedPrintOrder<T, U>(vararg choices: Reducer<T, U>) : ReducerOrReducer<T, U>(*choices) {
+    private val reversedChoices by lazy { choices.reversed() }
+
     override fun print(item: U): PartialTree<T>? {
-        return choice1.print(item) ?: choice0.print(item)
+        for(choice in reversedChoices) {
+            choice.print(item)?.let {
+                return it
+            }
+        }
+
+        return null
     }
 }
