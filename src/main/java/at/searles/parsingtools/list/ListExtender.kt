@@ -33,4 +33,8 @@ class ListExtender<A, C>(private val mapping: Mapping<A, C>): Fold<List<C>, List
 
         return rightList
     }
+
+    override fun toString(): String {
+        return "{[x], [y] -> [x, $mapping(y)]}"
+    }
 }

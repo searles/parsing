@@ -20,6 +20,6 @@ class ListCreator<T> : Mapping<T, List<T>> {
     }
 
     override fun toString(): String {
-        return "{list(x)}"
+        return "{x -> [x]}"
     }
 }

@@ -20,18 +20,14 @@ interface Mapping<T, U> : Reducer<T, U> {
     }
 
     companion object {
-        fun <T> identity(): Mapping<T, T> {
-            return object: Mapping<T, T> {
-                override fun reduce(left: T, stream: ParserStream): T = left
-
-                override fun left(result: T): T? = result
-            }
-        }
-
         fun <T, U>  create(mapping: (T) -> U): Mapping<T, U> {
             return object: Mapping<T, U> {
                 override fun reduce(left: T, stream: ParserStream): U {
                     return mapping(left)
+                }
+
+                override fun toString(): String {
+                    return mapping.toString()
                 }
             }
         }
@@ -45,10 +41,14 @@ interface Mapping<T, U> : Reducer<T, U> {
                 override fun left(result: U): T? {
                     return inverse(result)
                 }
+
+                override fun toString(): String {
+                    return mapping.toString()
+                }
             }
         }
 
-        fun <T, U>  create(inverse: (U) -> T?, mapping: (Trace, T) -> U): Mapping<T, U> {
+        fun <T, U> create(inverse: (U) -> T?, mapping: (Trace, T) -> U): Mapping<T, U> {
             return object: Mapping<T, U> {
                 override fun reduce(left: T, stream: ParserStream): U {
                     return mapping(stream.createTrace(), left)
@@ -56,6 +56,22 @@ interface Mapping<T, U> : Reducer<T, U> {
 
                 override fun left(result: U): T? {
                     return inverse(result)
+                }
+
+                override fun toString(): String {
+                    return mapping.toString()
+                }
+            }
+        }
+
+        inline fun <reified T> identity(): Mapping<T, T> {
+            return object: Mapping<T, T> {
+                override fun reduce(left: T, stream: ParserStream): T = left
+
+                override fun left(result: T): T? = result
+
+                override fun toString(): String {
+                    return "{}"
                 }
             }
         }
@@ -68,6 +84,10 @@ interface Mapping<T, U> : Reducer<T, U> {
 
                 override fun left(result: U): T? {
                     return result as? T
+                }
+
+                override fun toString(): String {
+                    return "{cast<${T::class.java.simpleName}>}"
                 }
             }
         }

@@ -6,6 +6,10 @@ import java.util.*
 
 class ListPermutator<T>(private vararg val order: Int) : Mapping<List<T>, List<T>> {
 
+    init {
+        require(order.indices.any { order.contains(it) })
+    }
+
     override fun reduce(left: List<T>, stream: ParserStream): List<T> {
         val list = ArrayList<T>(left.size)
 
@@ -31,6 +35,6 @@ class ListPermutator<T>(private vararg val order: Int) : Mapping<List<T>, List<T
     }
 
     override fun toString(): String {
-        return "{permutate $order}"
+        return "{[] -> [${order.joinToString(", ")}]}"
     }
 }

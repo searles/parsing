@@ -38,7 +38,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
      *
      * @param offset The new offset.
      */
-    fun restoreOffsetIfNecessary(offset: Long, failedParser: Any) {
+    private fun restoreOffsetIfNecessary(offset: Long) {
         if(offset == this.offset) {
             // some empty parser failed. We are generous with them.
             return
@@ -81,7 +81,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
 
         start = start0
         end = end0
-        restoreOffsetIfNecessary(offset0, recognizer)
+        restoreOffsetIfNecessary(offset0)
 
         listener?.onFail(recognizer, this)
 
@@ -109,7 +109,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
 
         start = start0
         end = end0
-        restoreOffsetIfNecessary(offset0, parser)
+        restoreOffsetIfNecessary(offset0)
 
         listener?.onFail(parser, this)
 
@@ -134,7 +134,7 @@ class ParserStream private constructor(private val tokenStream: TokenStream) {
         }
 
         end = end0
-        restoreOffsetIfNecessary(offset0, reducer)
+        restoreOffsetIfNecessary(offset0)
 
         listener?.onFail(reducer, this)
 

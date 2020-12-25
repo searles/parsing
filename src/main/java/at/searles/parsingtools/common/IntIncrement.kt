@@ -3,8 +3,7 @@ package at.searles.parsingtools.common
 import at.searles.parsing.Mapping
 import at.searles.parsing.ParserStream
 
-class IntIncrementor(private val min: Int) : Mapping<Int, Int> {
-
+class IntIncrement(private val min: Int) : Mapping<Int, Int> {
     override fun reduce(left: Int, stream: ParserStream): Int {
         return left + 1
     }
@@ -14,6 +13,6 @@ class IntIncrementor(private val min: Int) : Mapping<Int, Int> {
     }
 
     override fun toString(): String {
-        return String.format("{%d<=x + 1}", min)
+        return "{x -> x + 1}"
     }
 }
