@@ -1,8 +1,6 @@
 package at.searles.parsing.combinators
 
-import at.searles.parsing.Parser
-import at.searles.parsing.ParserStream
-import at.searles.parsing.Reducer
+import at.searles.parsing.*
 import at.searles.parsing.printing.ConcreteSyntaxTree
 
 /**
@@ -42,6 +40,22 @@ open class ParserOrParser<T>(private vararg val choices: Parser<T>) : Parser<T> 
         }
 
         return null
+    }
+
+    override fun <L, V> plus(fold: Fold<L, T, V>): Reducer<L, V> {
+        return ReducerOrReducer(*choices.map { it + fold }.toTypedArray())
+    }
+
+    override fun <U> plus(right: Reducer<T, U>): Parser<U> {
+        return ParserOrParser(*choices.map { it + right }.toTypedArray())
+    }
+
+    override fun plus(right: Recognizer): Parser<T> {
+        return ParserOrParser(*choices.map { it + right }.toTypedArray())
+    }
+
+    override fun <U> plus(right: Parser<U>): Parser<Pair<T, U>> {
+        return ParserOrParser(*choices.map { it + right }.toTypedArray())
     }
 
     override fun toString(): String {

@@ -25,6 +25,10 @@ class ReducerThenReducer<T, U, V>(private val left: Reducer<T, U>, private val r
         return PartialTree(leftTree.left, leftTree.right.consRight(midTree.right))
     }
 
+    override fun <W> plus(right: Reducer<V, W>): Reducer<T, W> {
+        return ReducerThenReducer(left, this.right + right)
+    }
+
     override fun toString(): String {
         return "$left.plus($right)"
     }

@@ -13,6 +13,6 @@ object ToString : Mapping<CharSequence, String> {
     }
 
     override fun toString(): String {
-        return "{x -> x.toString}"
+        return "{toString}"
     }
 }

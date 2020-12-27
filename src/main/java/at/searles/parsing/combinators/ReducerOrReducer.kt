@@ -1,6 +1,7 @@
 package at.searles.parsing.combinators
 
 import at.searles.parsing.ParserStream
+import at.searles.parsing.Recognizer
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
@@ -37,6 +38,14 @@ open class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : R
         }
 
         return null
+    }
+
+    override fun <V> plus(right: Reducer<U, V>): Reducer<T, V> {
+        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
+    }
+
+    override fun plus(right: Recognizer): Reducer<T, U> {
+        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
     }
 
     override fun toString(): String {

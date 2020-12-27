@@ -35,8 +35,6 @@ interface Parser<T>: CanRecognize {
      * Contract: If the parser is successful, stream's interval is set to the position of the
      * successful parse.
      *
-     *
-     *
      * @param stream The parser stream from which items are read.
      * @return An instance of T or null if this parser cannot be used.
      */
@@ -46,18 +44,6 @@ interface Parser<T>: CanRecognize {
 
     fun print(item: T): ConcreteSyntaxTree? {
         throw UnsupportedOperationException("printing not supported")
-    }
-
-    operator fun <U> plus(right: Reducer<T, U>): Parser<U> {
-        return ParserThenReducer(this, right)
-    }
-
-    operator fun plus(right: Recognizer): Parser<T> {
-        return this + right.toReducer()
-    }
-
-    operator fun <U> plus(right: Parser<U>): Parser<Pair<T, U>> {
-        return this + right.plus(PairCreator())
     }
 
     fun rep1(separator: Recognizer): Parser<List<T>> {
@@ -80,25 +66,28 @@ interface Parser<T>: CanRecognize {
         return this + SomeCreator() or NoneCreator()
     }
 
-    /**
-     * A | B
-     */
     infix fun or(other: Parser<T>): Parser<T> {
         return ParserOrParser(this, other)
     }
 
-    /**
-     * A | B
-     */
     infix fun orSwapOnPrint(other: Parser<T>): Parser<T> {
         return ParserOrParserWithReversedPrintOrder(this, other)
     }
 
-    /**
-     * A > fold
-     */
     operator fun <L, V> plus(fold: Fold<L, T, V>): Reducer<L, V> {
         return ParserToReducer(this, fold)
+    }
+
+    operator fun <U> plus(right: Reducer<T, U>): Parser<U> {
+        return ParserThenReducer(this, right)
+    }
+
+    operator fun plus(right: Recognizer): Parser<T> {
+        return this + right.toReducer()
+    }
+
+    operator fun <U> plus(right: Parser<U>): Parser<Pair<T, U>> {
+        return this + right.plus(PairCreator())
     }
 
     /**
@@ -109,6 +98,10 @@ interface Parser<T>: CanRecognize {
         return RefParser<T>(label).apply {
             ref = this@Parser
         }
+    }
+
+    fun <L> toPair(): Reducer<L, Pair<L, T>> {
+        return this + PairCreator()
     }
 
     companion object {
