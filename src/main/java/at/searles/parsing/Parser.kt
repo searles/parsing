@@ -3,7 +3,6 @@ package at.searles.parsing
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.Reducer.Companion.rep
 import at.searles.parsing.combinators.*
-import at.searles.parsing.combinators.ext.ParserOrParserReversePrintOrder
 import at.searles.parsing.printing.ConcreteSyntaxTree
 import at.searles.parsing.ref.RefParser
 import at.searles.parsing.tokens.TokenParser
@@ -67,11 +66,11 @@ interface Parser<T>: CanRecognize {
     }
 
     infix fun or(other: Parser<T>): Parser<T> {
-        return ParserOrParser(this, other)
+        return ParserOrParser(listOf(this, other), listOf(this, other))
     }
 
     infix fun orSwapOnPrint(other: Parser<T>): Parser<T> {
-        return ParserOrParserReversePrintOrder(this, other)
+        return ParserOrParser(listOf(this, other), listOf(other, this))
     }
 
     operator fun <L, V> plus(fold: Fold<L, T, V>): Reducer<L, V> {

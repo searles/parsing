@@ -5,13 +5,17 @@ import at.searles.parsing.Recognizer
 import at.searles.parsing.Reducer
 import at.searles.parsing.printing.PartialTree
 
-class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reducer<T,U> {
+class ReducerOrReducer<T, U>(private val parseOrder: List<Reducer<T, U>>, private val printOrder: List<Reducer<T, U>>) : Reducer<T,U> {
     override fun or(other: Reducer<T, U>): Reducer<T, U> {
-        return ReducerOrReducer(*choices, other)
+        return ReducerOrReducer(parseOrder + other, printOrder + other)
+    }
+
+    override fun orSwapOnPrint(other: Reducer<T, U>): Reducer<T, U> {
+        return ReducerOrReducer(parseOrder + other, listOf(other) + printOrder)
     }
 
     override fun reduce(left: T, stream: ParserStream): U? {
-        for(choice in choices) {
+        for(choice in parseOrder) {
             stream.reduce(left, choice)?.let {
                 return it
             }
@@ -21,7 +25,7 @@ class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reduce
     }
 
     override fun recognize(stream: ParserStream): Boolean {
-        for(choice in choices) {
+        for(choice in parseOrder) {
             if(stream.recognize(choice, false)) {
                 return true
             }
@@ -31,7 +35,7 @@ class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reduce
     }
 
     override fun print(item: U): PartialTree<T>? {
-        for(choice in choices) {
+        for(choice in printOrder) {
             choice.print(item)?.let {
                 return it
             }
@@ -41,14 +45,20 @@ class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reduce
     }
 
     override fun <V> plus(right: Reducer<U, V>): Reducer<T, V> {
-        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
+        return ReducerOrReducer(
+            parseOrder.map { it + right },
+            printOrder.map { it + right }
+        )
     }
 
     override fun plus(right: Recognizer): Reducer<T, U> {
-        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
+        return ReducerOrReducer(
+            parseOrder.map { it + right },
+            printOrder.map { it + right }
+        )
     }
 
     override fun toString(): String {
-        return "${choices.first()}.or(${choices.drop(1).joinToString(", ")})"
+        return "${parseOrder.first()}.or(${parseOrder.drop(1).joinToString(", ")})"
     }
 }

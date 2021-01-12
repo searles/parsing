@@ -9,14 +9,14 @@ import at.searles.parsing.printing.EmptyTree
  * Optional recognizer. This one is different from reducer and parser
  * because its printer is not semantically equivalent to A | epsilon.
  */
-class RecognizerOpt(protected val parent: Recognizer) : Recognizer {
+class RecognizerOpt(private val parent: Recognizer, private val alwaysPrint: Boolean = false) : Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
         stream.recognize(parent, true)
         return true
     }
 
     override fun print(): ConcreteSyntaxTree {
-        return EmptyTree
+        return if(alwaysPrint) parent.print() else EmptyTree
     }
 
     override fun toString(): String {

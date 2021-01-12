@@ -23,11 +23,15 @@ class ReducerOpt<T>(private val parent: Reducer<T, T>) : Reducer<T, T> {
     }
 
     override fun <V> plus(right: Reducer<T, V>): Reducer<T, V> {
-        return ReducerOrReducer(parent + right, right)
+        return listOf(parent + right, right).let {
+            ReducerOrReducer(it, it)
+        }
     }
 
     override fun plus(right: Recognizer): Reducer<T, T> {
-        return ReducerOrReducer(parent + right, right.toReducer())
+        return listOf(parent + right, right.toReducer()).let {
+            ReducerOrReducer(it, it)
+        }
     }
 
     override fun toString(): String {

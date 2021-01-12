@@ -2,7 +2,6 @@ package at.searles.parsing
 
 import at.searles.lexer.Tokenizer
 import at.searles.parsing.combinators.*
-import at.searles.parsing.combinators.ext.RecognizerOptAlwaysPrint
 import at.searles.parsing.combinators.ext.ReducerJoin
 import at.searles.parsing.combinators.ext.ReducerJoinPlus
 import at.searles.parsing.printing.ConcreteSyntaxTree
@@ -56,7 +55,7 @@ interface Recognizer: CanRecognize {
     }
 
     fun optAlwaysPrint(): Recognizer {
-        return RecognizerOptAlwaysPrint(this)
+        return RecognizerOpt(this, alwaysPrint = true)
     }
 
     fun <T> init(value: T): Parser<T> {
