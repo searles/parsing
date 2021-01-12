@@ -66,6 +66,4 @@ class LazyParsingTest {
 
         Assert.assertNotNull(ast)
     }
-
-    // TODO LazyRep + LazyOpt + LazyRep1!
 }
