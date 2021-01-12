@@ -1,13 +1,22 @@
-package at.searles.parsing.combinators
+package at.searles.parsing.combinators.ext
 
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizer
 import at.searles.parsing.Reducer
+import at.searles.parsing.combinators.ReducerOrReducer
 import at.searles.parsing.printing.PartialTree
 
-class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reducer<T,U> {
-    override fun or(other: Reducer<T, U>): Reducer<T, U> {
-        return ReducerOrReducer(*choices, other)
+class ReducerOrReducerReversePrintOrder<T, U>(vararg val choices: Reducer<T, U>) : Reducer<T, U> {
+    private val reversedChoices by lazy { choices.reversed() }
+
+    override fun print(item: U): PartialTree<T>? {
+        for(choice in reversedChoices) {
+            choice.print(item)?.let {
+                return it
+            }
+        }
+
+        return null
     }
 
     override fun reduce(left: T, stream: ParserStream): U? {
@@ -30,25 +39,8 @@ class ReducerOrReducer<T, U>(private vararg val choices: Reducer<T, U>) : Reduce
         return false
     }
 
-    override fun print(item: U): PartialTree<T>? {
-        for(choice in choices) {
-            choice.print(item)?.let {
-                return it
-            }
-        }
-
-        return null
-    }
-
-    override fun <V> plus(right: Reducer<U, V>): Reducer<T, V> {
-        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
-    }
-
-    override fun plus(right: Recognizer): Reducer<T, U> {
-        return ReducerOrReducer(*choices.map { it + right }.toTypedArray())
-    }
-
     override fun toString(): String {
         return "${choices.first()}.or(${choices.drop(1).joinToString(", ")})"
     }
+
 }

@@ -7,7 +7,7 @@ import at.searles.parsing.printing.ConcreteSyntaxTree
  * Parser for options. The order is important. First one to
  * succeed is the one that is used.
  */
-open class ParserOrParser<T>(private vararg val choices: Parser<T>) : Parser<T> {
+class ParserOrParser<T>(private vararg val choices: Parser<T>) : Parser<T> {
     override fun or(other: Parser<T>): Parser<T> {
         return ParserOrParser(*choices, other)
     }

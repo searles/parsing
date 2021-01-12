@@ -1,7 +1,7 @@
 package at.searles.parsing
 
 import at.searles.parsing.combinators.*
-import at.searles.parsing.combinators.ext.ReducerOrReducerWithReversedPrintOrder
+import at.searles.parsing.combinators.ext.ReducerOrReducerReversePrintOrder
 import at.searles.parsing.combinators.ext.ReducerPlus
 import at.searles.parsing.printing.PartialTree
 import at.searles.parsing.ref.RefReducer
@@ -43,7 +43,7 @@ interface Reducer<T, U>: CanRecognize {
     }
 
     infix fun orSwapOnPrint(other: Reducer<T, U>): Reducer<T, U> {
-        return ReducerOrReducerWithReversedPrintOrder(this, other)
+        return ReducerOrReducerReversePrintOrder(this, other)
     }
 
     fun ref(label: String): Reducer<T, U> {

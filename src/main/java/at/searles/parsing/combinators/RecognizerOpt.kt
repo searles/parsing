@@ -9,7 +9,7 @@ import at.searles.parsing.printing.EmptyTree
  * Optional recognizer. This one is different from reducer and parser
  * because its printer is not semantically equivalent to A | epsilon.
  */
-open class RecognizerOpt(protected val parent: Recognizer) : Recognizer {
+class RecognizerOpt(protected val parent: Recognizer) : Recognizer {
     override fun recognize(stream: ParserStream): Boolean {
         stream.recognize(parent, true)
         return true
