@@ -1,29 +1,23 @@
 package at.searles.parsing.lexer.fsa
 
-data class Interval(val start: Int, val end: Int) : Comparable<Interval> {
-    constructor(ch: Int): this(ch, ch + 1)
+data class Interval(val range: IntRange) /*: Comparable<Interval>*/ {
+    constructor(ch: Int): this(ch .. ch)
+    constructor(start: Int, end: Int): this(start until end)
 
-    init {
-        require(start < end)
-    }
-
-    override fun compareTo(other: Interval): Int {
-        // Lexical order
-        val cmp = start.compareTo(other.start)
-        return if (cmp != 0) cmp else end.compareTo(other.end)
-    }
+    val first = range.first
+    val last = range.last
 
     operator fun contains(ch: Int): Boolean {
-        return ch in start until end
+        return ch in range
     }
 
     override fun toString(): String {
-        return "[$start, $end)"
+        return range.toString()
     }
 
     companion object {
         val all by lazy {
-            Interval(Int.MIN_VALUE, Int.MAX_VALUE)
+            Interval(Int.MIN_VALUE until Int.MAX_VALUE) // TODO
         }
     }
 }

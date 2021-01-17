@@ -18,8 +18,8 @@ class LexerTest {
 
     @Test
     fun testSimpleLexer() {
-        val zero = lexer.add(Text("0"))
-        val seven = lexer.add(Text("7"))
+        val zero = lexer.createToken(Text("0"))
+        val seven = lexer.createToken(Text("7"))
 
         val stream = FrameStream(StringCodePointStream("07"))
 
@@ -30,8 +30,8 @@ class LexerTest {
         val third = lexer.readNextToken(stream)
         Assert.assertEquals("", stream.frame.toString())
 
-        Assert.assertTrue(first.size == 1 && first.contains(zero))
-        Assert.assertTrue(second.size == 1 && second.contains(seven))
+        Assert.assertTrue(first.size == 1 && first.contains(zero.tokenId))
+        Assert.assertTrue(second.size == 1 && second.contains(seven.tokenId))
         Assert.assertNull(third)
     }
 }

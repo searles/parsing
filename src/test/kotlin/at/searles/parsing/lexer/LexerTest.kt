@@ -10,19 +10,19 @@ import org.junit.Test
 
 class LexerTest {
     private lateinit var lexer: Lexer
-    private var token = 0
+    private lateinit var token: Token
 
     private fun with(regexp: Regexp) {
         lexer = Lexer()
-        token = lexer.add(regexp)
+        token = lexer.createToken(regexp)
     }
 
     private fun testIfIsAccepted(string: String, expected: String?) {
         val stream = FrameStream(StringCodePointStream(string))
-        val tokIds = lexer.readNextToken(stream)
-        Assert.assertEquals(expected != null, tokIds != null)
-        Assert.assertEquals(expected != null, tokIds != null && tokIds.contains(token))
-        Assert.assertEquals(expected, if (tokIds != null) stream.frame.toString() else null)
+        val tokenIds = lexer.readNextToken(stream)
+        Assert.assertEquals(expected != null, tokenIds != null)
+        Assert.assertEquals(expected != null, tokenIds != null && tokenIds.contains(token.tokenId))
+        Assert.assertEquals(expected, if (tokenIds != null) stream.frame.toString() else null)
     }
 
     @Test
@@ -46,7 +46,7 @@ class LexerTest {
 
     @Test
     fun testMinusRex() {
-        with(CharSet.Companion.interval('a', 'z').rep1() - Text.imany("AAB", "AB"))
+        with(CharSet.Companion.interval('a' .. 'z').rep1() - Text.imany("AAB", "AB"))
         testIfIsAccepted("b", "b")
         testIfIsAccepted("a", "a")
         testIfIsAccepted("aa", "aa")

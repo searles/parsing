@@ -49,7 +49,7 @@ interface BufferedStream : CodePointStream {
 
         private fun checkIndexInBuffer(newIndex: Long) {
             if (streamIndex - newIndex !in 0..buffer.size) {
-                throw BufferTooSmallException("Cannot backtrack from $streamIndex to $index because buffer size is ${buffer.size}")
+                throw BufferTooSmallException("Cannot backtrack from $streamIndex to $newIndex because buffer size is ${buffer.size}")
             }
         }
 

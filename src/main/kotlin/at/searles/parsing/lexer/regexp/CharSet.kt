@@ -31,60 +31,55 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
 
     companion object {
         fun chars(vararg chars: Char): CharSet {
-            Arrays.sort(chars)
-            return chars(chars.asIterable())
+            return chars(*chars.map { it.toInt() }.toIntArray())
         }
 
-        fun chars(chars: Iterable<Char>): CharSet {
-            val set = IntervalSet()
-
-            chars.forEach {
-                set.add(Interval(it.toInt(), it.toInt() + 1))
-            }
-
-            return CharSet(set)
+        fun chars(vararg codePoints: Int): CharSet {
+            Arrays.sort(codePoints) // sort is not needed but speeds things up
+            return chars(codePoints.asIterable())
         }
 
         fun ichars(vararg chars: Char): CharSet {
-            val ichars = chars.fold(emptyList<Char>()) {
-                l, chr -> if(chr.toLowerCase() != chr.toUpperCase()) {
-                    l + chr.toUpperCase() + chr.toLowerCase()
-                } else {
-                    l + chr
-                }
-            }.sorted()
+            val list = ArrayList<Int>(chars.size * 2)
 
-            return chars(ichars)
+            for(ch in chars) {
+                list.add(ch.toInt())
+                when(Character.getType(ch)) {
+                    Character.LOWERCASE_LETTER.toInt() -> list.add(ch.toUpperCase().toInt())
+                    Character.UPPERCASE_LETTER.toInt() -> list.add(ch.toLowerCase().toInt())
+                }
+            }
+
+            list.sort()
+
+            return chars(list)
         }
 
-        fun chars(vararg ints: Int): CharSet {
-            Arrays.sort(ints)
+        fun chars(chars: Iterable<Int>): CharSet {
             val set = IntervalSet()
 
-            ints.forEach {
-                set.add(Interval(it, it + 1))
+            chars.forEach {
+                set.add(Interval(it))
             }
 
             return CharSet(set)
         }
 
-        fun interval(vararg intervals: Char): CharSet {
-            return interval(*intervals.map { it.toInt() }.toIntArray())
-        }
-
-        /**
-         * @param intervals [a, b], b is inclusive!
-         * @return The CharSet convaining the intervals provided
-         */
-        fun interval(vararg intervals: Int): CharSet {
-            require(intervals.size % 2 == 0) { "must have an even number of ranges" }
+        fun interval(vararg intervals: CharRange): CharSet {
             val set = IntervalSet()
 
-            var i = 0
+            for(interval in intervals) {
+                set.add(Interval(interval.first.toInt() .. interval.last.toInt()))
+            }
 
-            while (i < intervals.size) {
-                set.add(Interval(intervals[i], intervals[i + 1] + 1))
-                i += 2
+            return CharSet(set)
+        }
+
+        fun interval(vararg intervals: IntRange): CharSet {
+            val set = IntervalSet()
+
+            for(interval in intervals) {
+                set.add(Interval(interval))
             }
 
             return CharSet(set)

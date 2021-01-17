@@ -24,22 +24,22 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
 
     fun add(interval: Interval) {
         // -1 because touch is fine.
-        val pos = indexOfOverlapOrCeil(interval.start - 1)
+        val pos = indexOfOverlapOrCeil(interval.first - 1)
 
         if(pos == intervals.size) {
             intervals.add(interval)
             return
         }
 
-        val start = min(interval.start, intervals[pos].start)
-        var end = interval.end
+        val start = min(interval.first, intervals[pos].first)
+        var last = interval.last
 
-        while(pos < intervals.size && intervals[pos].start <= end) {
-            end = max(end, intervals[pos].end)
+        while(pos < intervals.size && intervals[pos].first - 1 <= last) {
+            last = max(last, intervals[pos].last)
             intervals.removeAt(pos)
         }
 
-        intervals.add(pos, Interval(start, end))
+        intervals.add(pos, Interval(start .. last))
     }
 
     private fun indexOfOverlapOrCeil(value: Int): Int {
@@ -51,8 +51,8 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
 
             // is interval left of intervals[m]
             when {
-                value < intervals[m].start -> r = m
-                intervals[m].end <= value -> l = m + 1
+                value < intervals[m].first -> r = m
+                intervals[m].last < value -> l = m + 1
                 else -> return m
             }
         }
@@ -75,9 +75,9 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         val invertedSet = IntervalSet()
 
         intervals.forEach {
-            if(start < it.start) {
-                invertedSet.add(Interval(start, it.start))
-                start = it.end
+            if(start < it.first) {
+                invertedSet.add(Interval(start, it.first))
+                start = it.last + 1
             }
         }
 
@@ -86,24 +86,6 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         }
 
         return invertedSet
-    }
-
-    fun containsAny(values: IntSet): Boolean {
-        var intervalIndex = 0
-        var valuesIndex = 0
-
-        while(intervalIndex < intervals.size && valuesIndex < values.size) {
-            val interval = intervals[intervalIndex]
-            val value = values[valuesIndex]
-
-            when {
-                interval.end <= value -> intervalIndex++
-                value < interval.start -> valuesIndex++
-                else -> return true
-            }
-        }
-
-        return false
     }
 
     fun contains(value: Int): Boolean {
@@ -116,8 +98,8 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         var i1 = 0
         while(i0 < this.size && i1 < other.size) {
             when {
-                intervals[i0].end <= other.intervals[i1].start -> i0++
-                other.intervals[i1].end <= intervals[i0].start -> i1++
+                intervals[i0].last < other.intervals[i1].first -> i0++
+                other.intervals[i1].last < intervals[i0].first -> i1++
                 else -> return true
             }
         }

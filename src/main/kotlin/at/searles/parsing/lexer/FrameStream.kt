@@ -1,17 +1,26 @@
 package at.searles.parsing.lexer
 
 import at.searles.parsing.codepoint.BufferedStream
+import at.searles.parsing.codepoint.ReaderCodePointStream
+import at.searles.parsing.codepoint.StringCodePointStream
+import java.io.Reader
 
 class FrameStream(private val stream: BufferedStream) {
+    constructor(string: String): this(StringCodePointStream(string))
+    constructor(reader: Reader): this(BufferedStream.Impl(ReaderCodePointStream(reader)))
 
-    private var frameStart = stream.index
-    private var frameEnd = stream.index
+    private var frameIndex = stream.index
+    private var frameLength = 0L
 
     val frame = object: Frame {
-        override val start: Long get() = frameStart
-        override val end: Long get() = frameEnd
+        override val index: Long get() = frameIndex
+        override val length: Long get() = frameLength
+        override val string: String get() {
+            return stream.substring(index, index + length)
+        }
+
         override fun toString(): String {
-            return stream.substring(start, end)
+            return string
         }
     }
 
@@ -20,16 +29,17 @@ class FrameStream(private val stream: BufferedStream) {
     }
 
     fun setFrameEnd() {
-        frameEnd = stream.index
+        frameLength = stream.index - frame.index
     }
 
     fun consumeFrame() {
-        frameStart = frameEnd
-        stream.backtrackToIndex(frameEnd)
+        frameIndex += frameLength
+        resetFrame()
     }
 
-    interface Frame {
-        val start: Long
-        val end: Long
+    fun resetFrame() {
+        frameLength = 0
+        stream.backtrackToIndex(frameIndex)
     }
+
 }

@@ -28,18 +28,20 @@ class Lexer {
      * been called prior to this call.
      * @return A set that should not be modified.
      */
-    fun readNextToken(stream: FrameStream): IntSet? {
+    fun readNextToken(stream: FrameStream): IntSet? { // TODO too much implementation detail!
         stream.consumeFrame()
         val node = automaton.accept(stream) ?: return null
         return node.acceptedIds
     }
 
-    fun add(regexp: Regexp): Int {
+    fun createToken(regexp: Regexp): Token {
         val regexpAutomaton = regexp.accept(RegexpToFsaVisitor)
         regexpAutomaton.setId(temporaryId)
         automaton = automaton.union(regexpAutomaton)
 
-        return replaceTemporaryIdByExistingOrNewId()
+        val tokenId = replaceTemporaryIdByExistingOrNewId()
+
+        return Token(tokenId, this)
     }
 
     private fun replaceTemporaryIdByExistingOrNewId(): Int {

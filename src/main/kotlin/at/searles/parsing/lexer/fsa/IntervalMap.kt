@@ -16,10 +16,10 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
 
     fun add(interval: Interval, value: A, mergeFn: (A, A) -> A = { _, _ -> error("intersect") }) {
         // Basic binary search
-        var pos = indexOfOverlapOrCeil(interval.start)
+        var pos = indexOfOverlapOrCeil(interval.first)
 
-        var start = interval.start
-        val end = interval.end
+        var start = interval.first
+        val end = interval.last + 1
 
         while(start < end) {
             if(pos == entries.size) {
@@ -29,26 +29,26 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
 
             val entry = entries[pos]
 
-            if (start < entry.interval.start) {
-                val nextEnd = min(end, entry.interval.start)
+            if (start < entry.interval.first) {
+                val nextEnd = min(end, entry.interval.first)
                 entries.add(pos, Entry(Interval(start, nextEnd), value))
 
                 start = nextEnd
                 pos++
-            } else if (start == entry.interval.start) {
-                if (end < entry.interval.end) {
+            } else if (start == entry.interval.first) {
+                if (end < entry.interval.last + 1) {
                     entries.add(pos, Entry(Interval(start, end), mergeFn(entry.value, value)))
-                    entries[pos + 1] = Entry(Interval(end, entry.interval.end), entry.value)
+                    entries[pos + 1] = Entry(Interval(end .. entry.interval.last), entry.value)
                     start = end
                 } else {
-                    entries[pos] = Entry(Interval(start, entry.interval.end), mergeFn(entry.value, value))
-                    start = entry.interval.end
+                    entries[pos] = Entry(Interval(start .. entry.interval.last), mergeFn(entry.value, value))
+                    start = entry.interval.last + 1
                     pos++
                 }
             } else {
-                require(start < entry.interval.end) { "bug in binary search: $start, ${entry.interval}" }
-                entries.add(pos, Entry(Interval(entry.interval.start, start), entry.value))
-                entries[pos + 1] = Entry(Interval(start, entry.interval.end), entry.value)
+                require(start < entry.interval.last + 1) { "bug in binary search: $start, ${entry.interval}" }
+                entries.add(pos, Entry(Interval(entry.interval.first, start), entry.value))
+                entries[pos + 1] = Entry(Interval(start .. entry.interval.last), entry.value)
                 pos++
             }
         }
@@ -62,8 +62,8 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
             val m = (l + r) / 2
 
             when {
-                value < entries[m].interval.start -> r = m
-                entries[m].interval.end <= value -> l = m + 1
+                value < entries[m].interval.first -> r = m
+                entries[m].interval.last + 1 <= value -> l = m + 1
                 else -> return m
             }
         }
