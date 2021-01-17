@@ -20,6 +20,7 @@ class Lexer {
      */
     private var automaton = Automaton()
     private var tokenIdCounter = 0
+    private val specialTokens = IntSet()
 
     /**
      * Fetches the next token from the token stream.
@@ -28,9 +29,10 @@ class Lexer {
      * been called prior to this call.
      * @return A set that should not be modified.
      */
-    fun readNextToken(stream: FrameStream): IntSet? { // TODO too much implementation detail!
+    fun readNextToken(stream: FrameStream): IntSet? {
         stream.consumeFrame()
         val node = automaton.accept(stream) ?: return null
+
         return node.acceptedIds
     }
 
@@ -44,6 +46,11 @@ class Lexer {
         return Token(tokenId, this)
     }
 
+    fun createSpecialToken(regexp: Regexp) {
+        val token = createToken(regexp)
+        specialTokens.add(token.tokenId)
+    }
+
     private fun replaceTemporaryIdByExistingOrNewId(): Int {
         val idsOfNonMatches = getIdsOfNodesWithoutTemporaryId()
 
@@ -53,9 +60,7 @@ class Lexer {
         }
 
         require(idsOfMatches.contains(temporaryId))
-
         idsOfMatches.remove(temporaryId)
-
         require(idsOfMatches.size <= 1)
 
         return if(idsOfMatches.isEmpty) {
@@ -111,6 +116,10 @@ class Lexer {
 
     private fun getNextTokenId(): Int {
         return tokenIdCounter++
+    }
+
+    fun isSpecialToken(tokenIds: IntSet): Boolean {
+        return specialTokens.indexOfFirstMatch(tokenIds) != -1
     }
 
     companion object {

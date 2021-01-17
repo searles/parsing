@@ -1,7 +1,6 @@
 package at.searles.parsing.lexer
 
-interface Frame {
+interface Frame: CharSequence {
     val index: Long
-    val length: Long
-    val string: String
+    override val length: Int
 }

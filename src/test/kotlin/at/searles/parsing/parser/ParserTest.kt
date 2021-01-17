@@ -4,7 +4,7 @@ import org.junit.Test
 
 class ParserTest {
     @Test
-    fun testSimpleParser() {
+    fun testParserPosition() {
 
     }
 }

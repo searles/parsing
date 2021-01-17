@@ -10,17 +10,22 @@ class FrameStream(private val stream: BufferedStream) {
     constructor(reader: Reader): this(BufferedStream.Impl(ReaderCodePointStream(reader)))
 
     private var frameIndex = stream.index
-    private var frameLength = 0L
+    private var frameLength = 0
 
-    val frame = object: Frame {
+    val frame = object: Frame { // TODO make internal class
         override val index: Long get() = frameIndex
-        override val length: Long get() = frameLength
-        override val string: String get() {
-            return stream.substring(index, index + length)
+        override val length: Int get() = frameLength
+
+        override fun get(index: Int): Char {
+            TODO("Not yet implemented")
+        }
+
+        override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+            TODO("Not yet implemented")
         }
 
         override fun toString(): String {
-            return string
+            return stream.substring(index, index + length)
         }
     }
 
@@ -29,7 +34,7 @@ class FrameStream(private val stream: BufferedStream) {
     }
 
     fun setFrameEnd() {
-        frameLength = stream.index - frame.index
+        frameLength = (stream.index - frame.index).toInt()
     }
 
     fun consumeFrame() {

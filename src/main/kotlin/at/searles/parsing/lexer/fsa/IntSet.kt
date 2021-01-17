@@ -74,11 +74,6 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
         }
     }
 
-    fun removeAt(index: Int) {
-        System.arraycopy(elements, index + 1, elements, index, size - 1 - index)
-        size--
-    }
-
     fun remove(item: Int): Boolean {
         val index = Arrays.binarySearch(elements, 0, size, item)
         if (index < 0) {
@@ -86,6 +81,11 @@ class IntSet(size: Int = 16): Iterable<Int>, Comparable<IntSet> {
         }
         removeAt(index)
         return true
+    }
+
+    private fun removeAt(index: Int) {
+        System.arraycopy(elements, index + 1, elements, index, size - 1 - index)
+        size--
     }
 
     fun containsAny(other: IntSet): Boolean {

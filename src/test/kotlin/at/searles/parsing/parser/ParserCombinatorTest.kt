@@ -1,9 +1,7 @@
 package at.searles.parsing.parser
 
-import at.searles.parsing.lexer.Frame
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.ParserPlusReducer
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
@@ -13,37 +11,50 @@ import org.junit.Test
 import java.lang.Exception
 
 class ParserCombinatorTest {
-
-    lateinit var lexer: Lexer
-    lateinit var number: Parser<Frame>
-    lateinit var toInt: Conversion<Frame, Int>
+    private lateinit var lexer: Lexer
+    private lateinit var number: Parser<CharSequence>
+    private lateinit var toInt: Conversion<CharSequence, Int>
+    private lateinit var plusSign: Recognizer
+    private lateinit var intParser: Parser<Int>
+    private lateinit var additionOp: Fold<Int, Int, Int>
+    private lateinit var addition: Parser<Int>
 
     @Before
     fun setUp() {
         lexer = Lexer()
         number = TokenParser(lexer.createToken(CharSet.interval('0'..'9').rep1()))
-        toInt = object: Conversion<Frame, Int> {
-            override fun convert(left: Frame): Int {
-                return left.string.toInt()
+        toInt = object: Conversion<CharSequence, Int> {
+            override fun convert(left: CharSequence): Int {
+                return left.toString().toInt()
             }
         }
+        plusSign = TokenRecognizer.text("+", lexer)
+        intParser = number + toInt
+
+        additionOp = object: Fold<Int, Int, Int> {
+            override fun fold(left: Int, right: Int): Int {
+                return left + right
+            }
+        }
+
+        addition = intParser + (plusSign + intParser + additionOp)
     }
 
     @Test
     fun testSuccessParserWithMapping() {
-        val parserResult = ParserPlusReducer(number, toInt).parse(ParserStream(("32")))
+        val result = ParserPlusReducer(number, toInt).parse(ParserStream(("32")))
 
-        Assert.assertTrue(parserResult.isSuccess)
-        Assert.assertEquals(32, parserResult.value)
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(32, result.value)
     }
 
     @Test
     fun testFailParserWithMapping() {
-        val parserResult = ParserPlusReducer(number, toInt).parse(ParserStream(("A")))
+        val result = ParserPlusReducer(number, toInt).parse(ParserStream(("A")))
 
-        Assert.assertFalse(parserResult.isSuccess)
+        Assert.assertFalse(result.isSuccess)
         try {
-            parserResult.value
+            result.value
             Assert.fail()
         } catch(e: Exception) {
             e.printStackTrace()
@@ -52,21 +63,29 @@ class ParserCombinatorTest {
 
     @Test
     fun testAddition() {
-        val plusSign = TokenRecognizer(lexer.createToken(Text("+")))
-        val intParser = number + toInt
+        val result = addition.parse(ParserStream(("32+16")))
 
-        val additionOp = object: Fold<Int, Int, Int> {
-            override fun fold(left: Int, right: Int): Int {
-                return left + right
-            }
-        }
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(32+16, result.value)
+    }
 
-        val addition = intParser + (plusSign + intParser + additionOp)
+    @Test
+    fun testAdditionWithSpaces() {
+        lexer.createSpecialToken(CharSet.chars(' ', '\n', '\r', '\t').rep1())
 
+        val result = addition.parse(ParserStream(("32 + 16")))
 
-        val parserResult = addition.parse(ParserStream(("32+16")))
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(32+16, result.value)
+    }
 
-        Assert.assertTrue(parserResult.isSuccess)
-        Assert.assertEquals(32+16, parserResult.value)
+    @Test
+    fun testAdditionWithSpacesPosition() {
+        lexer.createSpecialToken(CharSet.chars(' ', '\n', '\r', '\t').rep1())
+
+        val result = addition.parse(ParserStream((" 32 + 16 ")))
+
+        Assert.assertEquals(1, result.index)
+        Assert.assertEquals(7, result.length)
     }
 }
