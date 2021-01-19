@@ -5,6 +5,28 @@ import at.searles.parsing.lexer.fsa.IntervalSet
 import java.util.*
 
 class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterable<Interval> {
+    constructor(vararg chars: Char): this(*chars.map { it.toInt() }.toIntArray())
+
+    constructor(vararg codePoints: Int): this(codePoints.asIterable())
+
+    constructor(chars: Iterable<Int>): this(IntervalSet().apply {
+        chars.forEach {
+            add(Interval(it))
+        }
+    })
+
+    constructor(vararg intervals: CharRange): this(IntervalSet().apply {
+        for (interval in intervals) {
+            add(Interval(interval.first.toInt()..interval.last.toInt()))
+        }
+    })
+
+    constructor(vararg intervals: IntRange): this(IntervalSet().apply {
+        for (interval in intervals) {
+            add(Interval(interval))
+        }
+    })
+
     infix fun or(that: CharSet): CharSet {
         return CharSet(set.copy().apply { add(that.set) })
     }
@@ -30,15 +52,6 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
     }
 
     companion object {
-        fun chars(vararg chars: Char): CharSet {
-            return chars(*chars.map { it.toInt() }.toIntArray())
-        }
-
-        fun chars(vararg codePoints: Int): CharSet {
-            Arrays.sort(codePoints) // sort is not needed but speeds things up
-            return chars(codePoints.asIterable())
-        }
-
         fun ichars(vararg chars: Char): CharSet {
             val list = ArrayList<Int>(chars.size * 2)
 
@@ -52,37 +65,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
 
             list.sort()
 
-            return chars(list)
-        }
-
-        fun chars(chars: Iterable<Int>): CharSet {
-            val set = IntervalSet()
-
-            chars.forEach {
-                set.add(Interval(it))
-            }
-
-            return CharSet(set)
-        }
-
-        fun interval(vararg intervals: CharRange): CharSet {
-            val set = IntervalSet()
-
-            for(interval in intervals) {
-                set.add(Interval(interval.first.toInt() .. interval.last.toInt()))
-            }
-
-            return CharSet(set)
-        }
-
-        fun interval(vararg intervals: IntRange): CharSet {
-            val set = IntervalSet()
-
-            for(interval in intervals) {
-                set.add(Interval(interval))
-            }
-
-            return CharSet(set)
+            return CharSet(list)
         }
 
         fun empty(): CharSet {
@@ -94,7 +77,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
         }
 
         fun eof(): Regexp {
-            return chars(-1)
+            return CharSet(-1)
         }
     }
 }

@@ -6,12 +6,12 @@ import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.printer.PrintResult
 
-class TokenParser(private val token: Token): Parser<String> {
-    override fun parse(stream: ParserStream): ParserResult<String> {
+class TokenParser(private val token: Token): Parser<CharSequence> {
+    override fun parse(stream: ParserStream): ParserResult<CharSequence> {
         return stream.acceptToken(token)
     }
 
-    override fun print(value: String): PrintResult {
-        return PrintResult.success(value)
+    override fun print(value: CharSequence): PrintResult {
+        return PrintResult.success(value.toString())
     }
 }

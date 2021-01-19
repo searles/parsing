@@ -75,7 +75,7 @@ class IntervalMap<A>: MutableIterable<IntervalMap.Entry<A>> {
         val pos = indexOfOverlapOrCeil(value)
 
         return entries.getOrNull(pos)?.let {
-            return if(it.interval.contains(value)) {
+            return if(value in it.interval) {
                 it.value
             } else {
                 null

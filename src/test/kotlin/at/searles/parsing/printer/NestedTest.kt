@@ -10,7 +10,7 @@ import at.searles.parsing.parser.combinators.TokenRecognizer
 import org.junit.Assert
 import org.junit.Test
 
-class IndentTest {
+class NestedTest {
     interface Tree {}
 
     class Term(val id: String): Tree {
@@ -25,9 +25,9 @@ class IndentTest {
         }
     }
 
-    object TermCreate: Conversion<String, Tree> {
-        override fun convert(left: String): Tree {
-            return Term(left)
+    object TermCreate: Conversion<CharSequence, Tree> {
+        override fun convert(left: CharSequence): Tree {
+            return Term(left.toString())
         }
 
         override fun invert(value: Tree): FnResult<String> {
@@ -50,10 +50,10 @@ class IndentTest {
     }
 
     val lexer = Lexer().apply {
-        createSpecialToken(CharSet.chars(' ', '\n'))
+        createSpecialToken(CharSet(' ', '\n'))
     }
 
-    val term = TokenParser(lexer.createToken(CharSet.interval('a' .. 'z').rep1())) + TermCreate
+    val term = TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1())) + TermCreate
 
     val exprRef: Parser<Tree> = LazyParser { expr }
 

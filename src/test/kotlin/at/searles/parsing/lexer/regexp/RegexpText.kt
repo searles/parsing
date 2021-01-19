@@ -14,7 +14,7 @@ class RegexpText {
 
     @Test
     fun testCharSet() {
-        val regexp = CharSet.chars('a', 'c')
+        val regexp = CharSet('a', 'c')
         val automaton = regexp.accept(RegexpToFsaVisitor)
         Assert.assertEquals(
                 "q0 --97..97--> q1*, " +

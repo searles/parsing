@@ -23,7 +23,7 @@ class ParserStream(private val stream: FrameStream) {
         }
     }
 
-    fun acceptToken(token: Token): ParserResult<String> {
+    fun acceptToken(token: Token): ParserResult<CharSequence> {
         if(isTokenAccepted) {
             consumeToken()
         }

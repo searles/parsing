@@ -1,7 +1,7 @@
 package at.searles.parsing.parser
 
 class ParserResult<out A>
-    private constructor(private val mValue: Any?, private val mIndex: Long, private val mLength: Int) {
+    private constructor(private val mValue: Any?, private val mIndex: Long, private val mLength: Long) {
     val isSuccess: Boolean get() = mValue !is Failure
 
     @Suppress("UNCHECKED_CAST")
@@ -17,7 +17,7 @@ class ParserResult<out A>
             else -> error("failure")
         }
 
-    val length: Int get() =
+    val length: Long get() =
         when {
             isSuccess -> mLength
             else -> error("failure")
@@ -27,9 +27,9 @@ class ParserResult<out A>
     private object Failure
 
     companion object {
-        fun <T> success(value: T, index: Long, length: Int): ParserResult<T> = ParserResult(value, index, length)
+        fun <T> success(value: T, index: Long, length: Long): ParserResult<T> = ParserResult(value, index, length)
         @Suppress("UNCHECKED_CAST")
         fun <T> failure(): ParserResult<T> = internalFailure as ParserResult<T>
-        private val internalFailure = ParserResult<Any?>(Failure, Long.MIN_VALUE, Int.MIN_VALUE)
+        private val internalFailure = ParserResult<Any?>(Failure, Long.MIN_VALUE, Long.MIN_VALUE)
     }
 }

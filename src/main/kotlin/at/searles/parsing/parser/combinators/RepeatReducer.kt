@@ -17,7 +17,7 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
 
             if(!result.isSuccess) {
                 // TODO make it LONG
-                return ParserResult.success(value, startIndex, (endIndex - startIndex).toInt())
+                return ParserResult.success(value, startIndex, endIndex - startIndex)
             }
 
             endIndex = result.index + result.length

@@ -12,8 +12,8 @@ import org.junit.Test
 
 class PrinterTest {
     private lateinit var lexer: Lexer
-    private lateinit var number: Parser<String>
-    private lateinit var toIntNode: Conversion<String, Tree>
+    private lateinit var number: Parser<CharSequence>
+    private lateinit var toIntNode: Conversion<CharSequence, Tree>
     private lateinit var plusSign: Recognizer
     private lateinit var intParser: Parser<Tree>
     private lateinit var additionOp: Fold<Tree, Tree, Tree>
@@ -22,10 +22,10 @@ class PrinterTest {
     @Before
     fun setUp() {
         lexer = Lexer()
-        number = TokenParser(lexer.createToken(CharSet.interval('0'..'9').rep1()))
-        toIntNode = object: Conversion<String, Tree> {
-            override fun convert(left: String): Tree.IntNode {
-                return Tree.IntNode(left.toInt())
+        number = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()))
+        toIntNode = object: Conversion<CharSequence, Tree> {
+            override fun convert(left: CharSequence): Tree.IntNode {
+                return Tree.IntNode(left.toString().toInt())
             }
 
             override fun invert(value: Tree): FnResult<String> {

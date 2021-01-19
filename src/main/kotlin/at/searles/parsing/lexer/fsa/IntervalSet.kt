@@ -90,7 +90,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
 
     fun contains(value: Int): Boolean {
         val pos = indexOfOverlapOrCeil(value)
-        return pos < intervals.size && intervals[pos].contains(value)
+        return pos < intervals.size && value in intervals[pos]
     }
 
     fun containsAny(other: IntervalSet): Boolean {

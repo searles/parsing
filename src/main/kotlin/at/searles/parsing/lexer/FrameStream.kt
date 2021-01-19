@@ -7,23 +7,23 @@ import java.io.Reader
 
 class FrameStream(private val stream: BufferedStream) {
     constructor(string: String): this(StringCodePointStream(string))
-    constructor(reader: Reader): this(BufferedStream.Impl(ReaderCodePointStream(reader)))
+    constructor(reader: Reader): this(BufferedStream.of(ReaderCodePointStream(reader)))
 
-    var frameIndex = stream.index
+    var frameIndex: Long = stream.index
         private set
-    var frameLength = 0
+    var frameLength: Long = 0L
         private set
 
     fun read(): Int {
         return stream.read()
     }
 
-    fun getFrame(): String {
-        return stream.getString(frameIndex, frameLength)
+    fun getFrame(): CharSequence {
+        return stream.getCharSequence(frameIndex, frameLength.toInt())
     }
 
     fun setFrameEnd() {
-        frameLength = (stream.index - frameIndex).toInt()
+        frameLength = stream.index - frameIndex
     }
 
     fun consumeFrame() {

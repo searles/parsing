@@ -1,7 +1,5 @@
 package at.searles.parsing.codepoint
 
-import java.lang.StringBuilder
-
 interface BufferedStream : CodePointStream {
     /**
      * Contract: with every call to read(), index increases.
@@ -14,77 +12,22 @@ interface BufferedStream : CodePointStream {
      */
     fun backtrackToIndex(newIndex: Long)
 
+    /**
+     * This method is way faster (speed-up of 40%) compared to getString().
+     */
+    fun getCharSequence(index: Long, length: Int): CharSequence
+
     fun getString(index: Long, length: Int): String
 
-    class Impl(private val stream: CodePointStream, bufferSize: Int = 65535) : BufferedStream {
-        init {
-            require(bufferSize > 0)
-        }
+    /**
+     * For variable char size encodings, this method returns -1 if at the given position
+     * there is no valid codepoint.
+     */
+    fun getCodePointAt(index: Long): Int
 
-        override var index = 0L
-
-        private val buffer: IntArray = IntArray(bufferSize)
-        private var streamIndex = 0L
-
-        override fun backtrackToIndex(newIndex: Long) {
-            checkIndexInBuffer(newIndex)
-            index = newIndex
-        }
-
-        override fun getString(index: Long, length: Int): String {
-            checkIndexInBuffer(index)
-            checkIndexInBuffer(index + length - 1)
-
-            val sb = StringBuilder()
-
-            for(i in 0 until length) {
-                sb.appendCodePoint(getCodePointAt(index + i))
-            }
-
-            return sb.toString()
-        }
-
-        private fun getCodePointAt(index: Long) = buffer[(index % buffer.size).toInt()]
-
-        private fun checkIndexInBuffer(newIndex: Long) {
-            if (streamIndex - newIndex !in 0..buffer.size) {
-                throw BufferTooSmallException("Cannot backtrack from $streamIndex to $newIndex because buffer size is ${buffer.size}")
-            }
-        }
-
-        private val bufferIndex get() = (index % buffer.size).toInt()
-
-        override fun read(): Int {
-            if(index < streamIndex) {
-                return readFromBuffer()
-            }
-
-            require(index == streamIndex)
-
-            return readFromStream()
-        }
-
-        private fun readFromBuffer(): Int {
-            val codePoint = buffer[bufferIndex]
-            index ++
-            return codePoint
-        }
-
-        private fun readFromStream(): Int {
-            val codePoint = stream.read()
-
-            if(codePoint == -1) return -1
-
-            buffer[bufferIndex] = codePoint
-
-            streamIndex ++
-            index ++
-
-            return codePoint
-        }
-
-        override fun toString(): String {
-            return "$stream[$index]"
+    companion object {
+        fun of(stream: CodePointStream, bufferSize: Int = 65536): BufferedStream {
+            return BufferedStreamImpl(stream, bufferSize)
         }
     }
 }

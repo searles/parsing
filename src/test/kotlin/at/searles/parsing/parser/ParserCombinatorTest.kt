@@ -12,8 +12,8 @@ import java.lang.Exception
 
 class ParserCombinatorTest {
     private lateinit var lexer: Lexer
-    private lateinit var number: Parser<String>
-    private lateinit var toInt: Conversion<String, Int>
+    private lateinit var number: Parser<CharSequence>
+    private lateinit var toInt: Conversion<CharSequence, Int>
     private lateinit var plusSign: Recognizer
     private lateinit var intParser: Parser<Int>
     private lateinit var additionOp: Fold<Int, Int, Int>
@@ -22,10 +22,10 @@ class ParserCombinatorTest {
     @Before
     fun setUp() {
         lexer = Lexer()
-        number = TokenParser(lexer.createToken(CharSet.interval('0'..'9').rep1()))
-        toInt = object: Conversion<String, Int> {
-            override fun convert(left: String): Int {
-                return left.toInt()
+        number = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()))
+        toInt = object: Conversion<CharSequence, Int> {
+            override fun convert(left: CharSequence): Int {
+                return left.toString().toInt()
             }
         }
         plusSign = TokenRecognizer.text("+", lexer)
@@ -71,7 +71,7 @@ class ParserCombinatorTest {
 
     @Test
     fun testAdditionWithSpaces() {
-        lexer.createSpecialToken(CharSet.chars(' ', '\n', '\r', '\t').rep1())
+        lexer.createSpecialToken(CharSet(' ', '\n', '\r', '\t').rep1())
 
         val result = addition.parse(ParserStream(("32 + 16")))
 
@@ -81,7 +81,7 @@ class ParserCombinatorTest {
 
     @Test
     fun testAdditionWithSpacesPosition() {
-        lexer.createSpecialToken(CharSet.chars(' ', '\n', '\r', '\t').rep1())
+        lexer.createSpecialToken(CharSet(' ', '\n', '\r', '\t').rep1())
 
         val result = addition.parse(ParserStream((" 32 + 16 ")))
 

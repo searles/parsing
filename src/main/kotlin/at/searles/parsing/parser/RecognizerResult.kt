@@ -1,7 +1,7 @@
 package at.searles.parsing.parser
 
 class RecognizerResult
-    private constructor(private val mIndex: Long, private val mLength: Int) {
+    private constructor(private val mIndex: Long, private val mLength: Long) {
     val isSuccess: Boolean get() = mIndex >= 0
 
     val index: Long get() =
@@ -10,15 +10,15 @@ class RecognizerResult
             else -> error("failure")
         }
 
-    val length: Int get() =
+    val length: Long get() =
         when {
             isSuccess -> mLength
             else -> error("failure")
         }
 
     companion object {
-        fun success(index: Long, length: Int): RecognizerResult = RecognizerResult(index, length)
+        fun success(index: Long, length: Long): RecognizerResult = RecognizerResult(index, length)
         fun failure(): RecognizerResult = internalFailure
-        private val internalFailure = RecognizerResult(Long.MIN_VALUE, Int.MIN_VALUE)
+        private val internalFailure = RecognizerResult(Long.MIN_VALUE, Long.MIN_VALUE)
     }
 }

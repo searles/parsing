@@ -41,7 +41,6 @@ class StringCodePointStreamTest {
         Assert.assertEquals('a'.toInt(), stream.read())
     }
 
-
     @Test
     fun testSubstring() {
         val stream = StringCodePointStream("abcd")
@@ -53,12 +52,23 @@ class StringCodePointStreamTest {
         Assert.assertEquals('b'.toInt(), stream.read())
         Assert.assertEquals('c'.toInt(), stream.read())
 
-        val length = (stream.index - startIndex).toInt()
+        val length = stream.index - startIndex
 
-        Assert.assertEquals("bc", stream.getString(startIndex, length))
+        Assert.assertEquals("bc", stream.getString(startIndex, length.toInt()))
 
         Assert.assertEquals('d'.toInt(), stream.read())
 
-        Assert.assertEquals("bc", stream.getString(startIndex, length))
+        Assert.assertEquals("bc", stream.getString(startIndex, length.toInt()))
+    }
+
+    @Test
+    fun testCodePointAt() {
+        val stream = StringCodePointStream("A\uD83C\uDF09B")
+
+        Assert.assertEquals('A'.toInt(), stream.getCodePointAt(0))
+
+        Assert.assertEquals(0x1F309, stream.getCodePointAt(1))
+        Assert.assertEquals(-1, stream.getCodePointAt(2))
+        Assert.assertEquals('B'.toInt(), stream.getCodePointAt(3))
     }
 }

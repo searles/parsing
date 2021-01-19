@@ -2,7 +2,6 @@ package at.searles.parsing.lexer
 
 import at.searles.parsing.codepoint.StringCodePointStream
 import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.lexer.regexp.CharSet.Companion.chars
 import at.searles.parsing.lexer.regexp.Regexp
 import at.searles.parsing.lexer.regexp.Text
 import org.junit.Assert
@@ -27,7 +26,7 @@ class LexerTest {
 
     @Test
     fun testRange02() {
-        with(chars('a').range(0, 2))
+        with(CharSet('a').range(0, 2))
         testIfIsAccepted("b", "")
         testIfIsAccepted("a", "a")
         testIfIsAccepted("aa", "aa")
@@ -36,7 +35,7 @@ class LexerTest {
 
     @Test
     fun testRange13() {
-        with(chars('a').range(1, 3))
+        with(CharSet('a').range(1, 3))
         testIfIsAccepted("b", null)
         testIfIsAccepted("a", "a")
         testIfIsAccepted("aa", "aa")
@@ -46,7 +45,7 @@ class LexerTest {
 
     @Test
     fun testMinusRex() {
-        with(CharSet.Companion.interval('a' .. 'z').rep1() - Text.imany("AAB", "AB"))
+        with(CharSet('a' .. 'z').rep1() - Text.imany("AAB", "AB"))
         testIfIsAccepted("b", "b")
         testIfIsAccepted("a", "a")
         testIfIsAccepted("aa", "aa")
@@ -58,7 +57,7 @@ class LexerTest {
 
     @Test
     fun testRange23() {
-        with(chars('a').range(2, 3))
+        with(CharSet('a').range(2, 3))
         testIfIsAccepted("b", null)
         testIfIsAccepted("a", null)
         testIfIsAccepted("aa", "aa")
@@ -68,7 +67,7 @@ class LexerTest {
 
     @Test
     fun testRange24() {
-        with(chars('a').range(2, 4))
+        with(CharSet('a').range(2, 4))
         testIfIsAccepted("b", null)
         testIfIsAccepted("a", null)
         testIfIsAccepted("aa", "aa")
