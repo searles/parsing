@@ -1,6 +1,5 @@
 package at.searles.parsing.parser
 
-import at.searles.parsing.lexer.Frame
 import at.searles.parsing.lexer.FrameStream
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.Token
@@ -18,13 +17,13 @@ class ParserStream(private val stream: FrameStream) {
     val index: Long get() {
         // TODO: This can be done better.
         return if(isTokenAccepted) {
-            stream.frame.index + stream.frame.length
+            stream.frameIndex + stream.frameLength
         } else {
-            stream.frame.index
+            stream.frameIndex
         }
     }
 
-    fun acceptToken(token: Token): ParserResult<Frame> {
+    fun acceptToken(token: Token): ParserResult<String> {
         if(isTokenAccepted) {
             consumeToken()
         }
@@ -39,7 +38,8 @@ class ParserStream(private val stream: FrameStream) {
         }
 
         isTokenAccepted = true
-        return ParserResult.success(stream.frame, stream.frame.index, stream.frame.length)
+
+        return ParserResult.success(stream.getFrame(), stream.frameIndex, stream.frameLength)
     }
 
 //    fun resetReadIndex(newIndex: Int) {

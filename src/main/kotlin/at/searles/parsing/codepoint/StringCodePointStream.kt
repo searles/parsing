@@ -11,8 +11,8 @@ class StringCodePointStream(private val string: String) : BufferedStream {
         index = newIndex
     }
 
-    override fun substring(start: Long, end: Long): String {
-        return string.substring(start.toInt(), end.toInt())
+    override fun getString(index: Long, length: Int): String {
+        return string.substring(index.toInt(), index.toInt() + length)
     }
 
     override fun read(): Int {

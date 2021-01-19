@@ -22,7 +22,7 @@ class LexerTest {
         val tokenIds = lexer.readNextToken(stream)
         Assert.assertEquals(expected != null, tokenIds != null)
         Assert.assertEquals(expected != null, tokenIds != null && tokenIds.contains(token.tokenId))
-        Assert.assertEquals(expected, if (tokenIds != null) stream.frame.toString() else null)
+        Assert.assertEquals(expected, if (tokenIds != null) stream.getFrame() else null)
     }
 
     @Test

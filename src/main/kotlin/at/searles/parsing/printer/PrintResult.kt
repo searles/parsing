@@ -1,6 +1,5 @@
 package at.searles.parsing.printer
 
-// TODO refactor.
 class PrintResult private constructor(private val mOutput: Any?) {
     val isSuccess: Boolean get() = mOutput !is Failure
 

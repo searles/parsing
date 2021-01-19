@@ -1,8 +1,5 @@
 package at.searles.parsing.codepoint
 
-import at.searles.parsing.codepoint.BufferTooSmallException
-import at.searles.parsing.codepoint.BufferedStream
-import at.searles.parsing.codepoint.StringCodePointStream
 import org.junit.Assert
 import org.junit.Test
 
@@ -70,17 +67,17 @@ class BufferedStreamTest {
 
         Assert.assertEquals('a'.toInt(), stream.read())
 
-        val start = stream.index
+        val startIndex = stream.index
 
         Assert.assertEquals('b'.toInt(), stream.read())
         Assert.assertEquals('c'.toInt(), stream.read())
 
-        val end = stream.index
+        val length = (stream.index - startIndex).toInt()
 
-        Assert.assertEquals("bc", stream.substring(start, end))
+        Assert.assertEquals("bc", stream.getString(startIndex, length))
 
         Assert.assertEquals('d'.toInt(), stream.read())
 
-        Assert.assertEquals("bc", stream.substring(start, end))
+        Assert.assertEquals("bc", stream.getString(startIndex, length))
     }
 }

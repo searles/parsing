@@ -12,8 +12,8 @@ import org.junit.Test
 
 class PrinterTest {
     private lateinit var lexer: Lexer
-    private lateinit var number: Parser<CharSequence>
-    private lateinit var toIntNode: Conversion<CharSequence, Tree>
+    private lateinit var number: Parser<String>
+    private lateinit var toIntNode: Conversion<String, Tree>
     private lateinit var plusSign: Recognizer
     private lateinit var intParser: Parser<Tree>
     private lateinit var additionOp: Fold<Tree, Tree, Tree>
@@ -23,12 +23,12 @@ class PrinterTest {
     fun setUp() {
         lexer = Lexer()
         number = TokenParser(lexer.createToken(CharSet.interval('0'..'9').rep1()))
-        toIntNode = object: Conversion<CharSequence, Tree> {
-            override fun convert(left: CharSequence): Tree.IntNode {
-                return Tree.IntNode(left.toString().toInt())
+        toIntNode = object: Conversion<String, Tree> {
+            override fun convert(left: String): Tree.IntNode {
+                return Tree.IntNode(left.toInt())
             }
 
-            override fun invert(value: Tree): FnResult<CharSequence> {
+            override fun invert(value: Tree): FnResult<String> {
                 return FnResult.ofNullable((value as? Tree.IntNode)?.value.toString())
             }
         }
@@ -61,5 +61,20 @@ class PrinterTest {
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
         Assert.assertEquals("16+32", printResult.output)
+    }
+
+    @Test
+    fun testPrinterWithMarks() {
+        val space = PrintInject { " " }
+
+        addition = intParser + ((space + plusSign) + space + intParser + additionOp)
+
+        val result = addition.parse(ParserStream("16+32"))
+
+        Assert.assertTrue(result.isSuccess)
+
+        val printResult = addition.print(result.value)
+        Assert.assertTrue(printResult.isSuccess)
+        Assert.assertEquals("16 + 32", printResult.output)
     }
 }

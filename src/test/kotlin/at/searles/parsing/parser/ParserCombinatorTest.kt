@@ -12,8 +12,8 @@ import java.lang.Exception
 
 class ParserCombinatorTest {
     private lateinit var lexer: Lexer
-    private lateinit var number: Parser<CharSequence>
-    private lateinit var toInt: Conversion<CharSequence, Int>
+    private lateinit var number: Parser<String>
+    private lateinit var toInt: Conversion<String, Int>
     private lateinit var plusSign: Recognizer
     private lateinit var intParser: Parser<Int>
     private lateinit var additionOp: Fold<Int, Int, Int>
@@ -23,9 +23,9 @@ class ParserCombinatorTest {
     fun setUp() {
         lexer = Lexer()
         number = TokenParser(lexer.createToken(CharSet.interval('0'..'9').rep1()))
-        toInt = object: Conversion<CharSequence, Int> {
-            override fun convert(left: CharSequence): Int {
-                return left.toString().toInt()
+        toInt = object: Conversion<String, Int> {
+            override fun convert(left: String): Int {
+                return left.toInt()
             }
         }
         plusSign = TokenRecognizer.text("+", lexer)

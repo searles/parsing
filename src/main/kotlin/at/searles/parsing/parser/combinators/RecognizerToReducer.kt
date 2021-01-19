@@ -18,8 +18,6 @@ class RecognizerToReducer<A>(private val recognizer: Recognizer) : Reducer<A, A>
     }
 
     override fun print(value: A): PartialPrintResult<A> {
-        TODO("Not yet implemented")
+        return PartialPrintResult.success(value, recognizer.output)
     }
-
-
 }

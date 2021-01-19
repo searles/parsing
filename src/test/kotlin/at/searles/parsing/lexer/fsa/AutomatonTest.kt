@@ -77,7 +77,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("aaab"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("aaa", stream.frame.toString())
+        Assert.assertEquals("aaa", stream.getFrame())
     }
 
     @Test
@@ -86,7 +86,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("(aa))"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa)", stream.frame.toString())
+        Assert.assertEquals("(aa)", stream.getFrame())
     }
 
     @Test
@@ -95,7 +95,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("(aa))"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa))", stream.frame.toString())
+        Assert.assertEquals("(aa))", stream.getFrame())
     }
 
     @Test

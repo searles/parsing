@@ -24,11 +24,11 @@ class LexerTest {
         val stream = FrameStream(StringCodePointStream("07"))
 
         val first = lexer.readNextToken(stream)!!
-        Assert.assertEquals("0", stream.frame.toString())
+        Assert.assertEquals("0", stream.getFrame())
         val second = lexer.readNextToken(stream)!!
-        Assert.assertEquals("7", stream.frame.toString())
+        Assert.assertEquals("7", stream.getFrame())
         val third = lexer.readNextToken(stream)
-        Assert.assertEquals("", stream.frame.toString())
+        Assert.assertEquals("", stream.getFrame())
 
         Assert.assertTrue(first.size == 1 && first.contains(zero.tokenId))
         Assert.assertTrue(second.size == 1 && second.contains(seven.tokenId))

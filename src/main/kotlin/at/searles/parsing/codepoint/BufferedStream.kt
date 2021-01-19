@@ -14,7 +14,7 @@ interface BufferedStream : CodePointStream {
      */
     fun backtrackToIndex(newIndex: Long)
 
-    fun substring(start: Long, end: Long): String
+    fun getString(index: Long, length: Int): String
 
     class Impl(private val stream: CodePointStream, bufferSize: Int = 65535) : BufferedStream {
         init {
@@ -31,15 +31,14 @@ interface BufferedStream : CodePointStream {
             index = newIndex
         }
 
-        override fun substring(start: Long, end: Long): String {
-            require(start <= end)
-            checkIndexInBuffer(start)
-            checkIndexInBuffer(end)
+        override fun getString(index: Long, length: Int): String {
+            checkIndexInBuffer(index)
+            checkIndexInBuffer(index + length - 1)
 
             val sb = StringBuilder()
 
-            for(i in start until end) {
-                sb.appendCodePoint(getCodePointAt(i))
+            for(i in 0 until length) {
+                sb.appendCodePoint(getCodePointAt(index + i))
             }
 
             return sb.toString()
