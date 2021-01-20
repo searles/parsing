@@ -3,7 +3,7 @@ package at.searles.parsing.parser.combinators
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 
 class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
     override fun parse(stream: ParserStream): ParserResult<A> {
@@ -17,7 +17,7 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
         return ParserResult.failure()
     }
 
-    override fun print(value: A): PrintResult {
+    override fun print(value: A): PrintTree {
         for(parser in parsers) {
             val result = parser.print(value)
 
@@ -26,7 +26,7 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
             }
         }
 
-        return PrintResult.failure()
+        return PrintTree.failure
     }
 
     override fun or(other: Parser<A>): Parser<A> {

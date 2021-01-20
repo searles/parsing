@@ -9,7 +9,7 @@ import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.LazyParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -20,7 +20,7 @@ class ParserAndPrinterTest {
     private lateinit var parser: Parser<Expr>
     private lateinit var input: ParserStream
     private lateinit var value: Expr
-    private lateinit var output: PrintResult
+    private lateinit var output: PrintTree
 
     @Test
     fun testIdIterativeParser() {
@@ -119,7 +119,7 @@ class ParserAndPrinterTest {
     fun testLotsOfData() {
         // about 3.5 seconds for 1000000 (on big one 0.5)
         // about 35 seconds for 10000000 (on big one 17 seconds)
-        input = ParserStream(stream(1000000))
+        input = ParserStream(stream(3000000))
 
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }

@@ -1,31 +1,27 @@
 package at.searles.parsing.printer
 
-class ComposedTree private constructor(private val trees: List<PrintTree>): PrintTree {
+class ComposedTree private constructor(private val leftTree: PrintTree, private val rightTree: PrintTree): PrintTree {
     override fun print(outStream: OutStream) {
-        for(tree in trees) {
-            tree.print(outStream)
+        leftTree.print(outStream)
+
+        var tree: PrintTree = rightTree
+
+        while(tree is ComposedTree) {
+            tree.leftTree.print(outStream)
+            tree = tree.rightTree
         }
+
+        tree.print(outStream)
     }
 
     override fun toString(): String {
-        return trees.joinToString("")
+        return asString()
     }
 
     companion object {
-        private fun PrintTree.toFlatList(): List<PrintTree> {
-            if(this == PrintTree.Empty) {
-                return emptyList()
-            }
-
-            if(this is ComposedTree) {
-                return trees
-            }
-
-            return listOf(this)
-        }
-
+//
         fun of(left: PrintTree, right: PrintTree): PrintTree {
-            val list = left.toFlatList() + right.toFlatList()
+  /*          val list = left.toFlatList() + right.toFlatList()
 
             if(list.isEmpty()) {
                 return PrintTree.Empty
@@ -34,8 +30,8 @@ class ComposedTree private constructor(private val trees: List<PrintTree>): Prin
             if(list.size == 1) {
                 return list.first()
             }
-
-            return ComposedTree(list)
+*/
+            return ComposedTree(left, right)
         }
     }
 }

@@ -4,7 +4,7 @@ import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Recognizer
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 
 class RecognizerPlusParser<A>(private val left: Recognizer, private val right: Parser<A>) : Parser<A> {
     override fun parse(stream: ParserStream): ParserResult<A> {
@@ -17,13 +17,13 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
         }
     }
 
-    override fun print(value: A): PrintResult {
+    override fun print(value: A): PrintTree {
         val rightResult = right.print(value)
 
         if(!rightResult.isSuccess) {
-            return PrintResult.failure()
+            return PrintTree.failure
         }
 
-        return PrintResult.success(left.print() + rightResult.output)
+        return left.print() + rightResult
     }
 }

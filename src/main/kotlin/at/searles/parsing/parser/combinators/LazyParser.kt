@@ -3,7 +3,7 @@ package at.searles.parsing.parser.combinators
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 
 class LazyParser<A> constructor(_parser: Parser<A>? = null): Parser<A> {
     lateinit var parser: Parser<A>
@@ -18,7 +18,7 @@ class LazyParser<A> constructor(_parser: Parser<A>? = null): Parser<A> {
         return parser.parse(stream)
     }
 
-    override fun print(value: A): PrintResult {
+    override fun print(value: A): PrintTree {
         return parser.print(value)
     }
 }

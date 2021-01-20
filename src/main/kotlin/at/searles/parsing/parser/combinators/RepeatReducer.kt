@@ -3,7 +3,7 @@ package at.searles.parsing.parser.combinators
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Reducer
-import at.searles.parsing.printer.PartialPrintResult
+import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
 class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
@@ -25,7 +25,7 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
         }
     }
 
-    override fun print(value: A): PartialPrintResult<A> {
+    override fun print(value: A): PartialPrintTree<A> {
         var leftValue = value
         var output: PrintTree = PrintTree.Empty
 
@@ -33,11 +33,11 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
             val result = reducer.print(leftValue)
 
             if(!result.isSuccess) {
-                return PartialPrintResult.success(leftValue, output)
+                return PartialPrintTree.of(leftValue, output)
             }
 
-            output = result.output + output
-            leftValue = result.value
+            output = result.rightTree + output
+            leftValue = result.leftValue
         }
     }
 }

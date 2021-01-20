@@ -1,7 +1,7 @@
 package at.searles.parsing.parser.combinators
 
 import at.searles.parsing.parser.*
-import at.searles.parsing.printer.PartialPrintResult
+import at.searles.parsing.printer.PartialPrintTree
 
 class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fold<B, A, C>) : Reducer<B, C> {
     override fun parse(stream: ParserStream, input: B): ParserResult<C> {
@@ -15,20 +15,20 @@ class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fol
         return ParserResult.success(rightValue, leftResult.index, leftResult.length)
     }
 
-    override fun print(value: C): PartialPrintResult<B> {
+    override fun print(value: C): PartialPrintTree<B> {
         val leftResult = right.invertLeft(value)
         val rightResult = right.invertRight(value)
 
         if(!leftResult.isSuccess || !rightResult.isSuccess) {
-            return PartialPrintResult.failure()
+            return PartialPrintTree.failure
         }
 
         val midResult = mid.print(rightResult.value)
 
         if(!midResult.isSuccess) {
-            return PartialPrintResult.failure()
+            return PartialPrintTree.failure
         }
 
-        return PartialPrintResult.success(leftResult.value, midResult.output)
+        return PartialPrintTree.of(leftResult.value, midResult)
     }
 }

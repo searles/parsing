@@ -19,5 +19,9 @@ class PrintInject(private val printOutput: (OutStream) -> Unit): Recognizer {
         override fun print(outStream: OutStream) {
             printOutput(outStream)
         }
+
+        override fun toString(): String {
+            return ""
+        }
     }
 }

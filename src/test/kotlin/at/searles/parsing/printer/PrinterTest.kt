@@ -60,7 +60,7 @@ class PrinterTest {
 
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
-        Assert.assertEquals("16+32", printResult.output.asString())
+        Assert.assertEquals("16+32", printResult.toString())
     }
 
     @Test
@@ -75,6 +75,11 @@ class PrinterTest {
 
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
-        Assert.assertEquals("16 + 32", printResult.output.asString())
+
+        val output = StringOutStream().also {
+            printResult.print(it)
+        }.toString()
+
+        Assert.assertEquals("16 + 32", output)
     }
 }

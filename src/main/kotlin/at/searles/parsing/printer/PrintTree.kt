@@ -1,8 +1,15 @@
 package at.searles.parsing.printer
 
 interface PrintTree {
+    val isSuccess get() = true
 
     fun print(outStream: OutStream)
+
+    fun asString(): String {
+        return  StringOutStream().also {
+            this.print(it)
+        }.toString()
+    }
 
     operator fun plus(right: PrintTree): PrintTree {
         // flatten and remove empty.
@@ -11,12 +18,6 @@ interface PrintTree {
         }
 
         return ComposedTree.of(this, right)
-    }
-
-    fun asString(): String {
-        val os = StringOutStream()
-        print(os)
-        return os.toString()
     }
 
     object Empty : PrintTree {
@@ -29,6 +30,12 @@ interface PrintTree {
     companion object {
         fun of(charSequence: CharSequence): PrintTree {
             return StringPrintTree(charSequence.toString())
+        }
+
+        val failure = object: PrintTree {
+            override val isSuccess: Boolean = false
+            override fun print(outStream: OutStream) { error("failure") }
+            override fun plus(right: PrintTree): PrintTree { error("failure") }
         }
     }
 }

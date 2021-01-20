@@ -4,7 +4,7 @@ import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Reducer
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 
 class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Reducer<A, B>): Parser<B> {
     override fun parse(stream: ParserStream): ParserResult<B> {
@@ -27,19 +27,19 @@ class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Re
         )
     }
 
-    override fun print(value: B): PrintResult {
+    override fun print(value: B): PrintTree {
         val rightPrintResult = right.print(value)
 
         if(!rightPrintResult.isSuccess) {
-            return PrintResult.failure()
+            return PrintTree.failure
         }
 
-        val leftPrintResult = left.print(rightPrintResult.value)
+        val leftPrintResult = left.print(rightPrintResult.leftValue)
 
         if(!leftPrintResult.isSuccess) {
-            return PrintResult.failure()
+            return PrintTree.failure
         }
 
-        return PrintResult.success(leftPrintResult.output + rightPrintResult.output)
+        return leftPrintResult + rightPrintResult.rightTree
     }
 }

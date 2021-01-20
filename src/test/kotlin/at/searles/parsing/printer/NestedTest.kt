@@ -77,10 +77,10 @@ class NestedTest {
     @Test
     fun testPrintNestedApp() {
         val tree = app.parse(ParserStream("(a b) c d (e f)"))
-        val printing = app.print(tree.value)
+        val printTree = app.print(tree.value)
 
-        Assert.assertTrue(printing.isSuccess)
-        Assert.assertEquals("abcd(ef)", printing.output.asString())
+        Assert.assertTrue(printTree.isSuccess)
+        Assert.assertEquals("abcd(ef)", printTree.toString())
     }
 
 
@@ -127,7 +127,7 @@ class NestedTest {
         val printTree = app.print(tree.value)
 
         val os = StringOutStream()
-        printTree.output.print(os)
+        printTree.print(os)
 
         Assert.assertEquals("a(\n" +
                 " b(\n" +

@@ -3,11 +3,11 @@ package at.searles.parsing.parser
 import at.searles.parsing.parser.combinators.ParserUnion
 import at.searles.parsing.parser.combinators.ParserPlusFold
 import at.searles.parsing.parser.combinators.ParserPlusReducer
-import at.searles.parsing.printer.PrintResult
+import at.searles.parsing.printer.PrintTree
 
 interface Parser<A> {
     fun parse(stream: ParserStream): ParserResult<A>
-    fun print(value: A): PrintResult
+    fun print(value: A): PrintTree
 
     operator fun plus(recognizer: Recognizer): Parser<A> {
         return this + recognizer.toReducer()
