@@ -8,7 +8,7 @@ class PrintInject(private val printOutput: (OutStream) -> Unit): Recognizer {
     private val tree = OutputPrintTree()
 
     override fun parse(stream: ParserStream): RecognizerResult {
-        return RecognizerResult.success(stream.index, 0)
+        return RecognizerResult.of(stream.index, 0)
     }
 
     override fun print(): PrintTree {

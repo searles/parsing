@@ -1,35 +1,25 @@
 package at.searles.parsing.parser
 
-class ParserResult<out A>
-    private constructor(private val mValue: Any?, private val mIndex: Long, private val mLength: Long) {
-    val isSuccess: Boolean get() = mValue !is Failure
-
-    @Suppress("UNCHECKED_CAST")
-    val value: A get() =
-        when {
-            isSuccess -> mValue as A
-            else -> error("No value in failure")
-        }
-
-    val index: Long get() =
-        when {
-            isSuccess -> mIndex
-            else -> error("failure")
-        }
-
-    val length: Long get() =
-        when {
-            isSuccess -> mLength
-            else -> error("failure")
-        }
-
-
-    private object Failure
+interface ParserResult<out A> {
+    val isSuccess: Boolean
+    val value: A
+    val index: Long
+    val length: Long
 
     companion object {
-        fun <T> success(value: T, index: Long, length: Long): ParserResult<T> = ParserResult(value, index, length)
-        @Suppress("UNCHECKED_CAST")
-        fun <T> failure(): ParserResult<T> = internalFailure as ParserResult<T>
-        private val internalFailure = ParserResult<Any?>(Failure, Long.MIN_VALUE, Long.MIN_VALUE)
+        fun <T> of(value: T, index: Long, length: Long): ParserResult<T> =
+            object: ParserResult<T> {
+                override val isSuccess: Boolean = true
+                override val value: T = value
+                override val index: Long = index
+                override val length: Long = length
+            }
+
+        val failure = object: ParserResult<Nothing> {
+            override val isSuccess: Boolean = false
+            override val value: Nothing get() = error("no value in failure")
+            override val index: Long get() = error("no index in failure")
+            override val length: Long get() = error("no length in failure")
+        }
     }
 }

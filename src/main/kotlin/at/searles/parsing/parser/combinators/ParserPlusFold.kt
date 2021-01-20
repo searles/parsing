@@ -8,11 +8,11 @@ class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fol
         val leftResult = mid.parse(stream)
 
         if(!leftResult.isSuccess) {
-            return ParserResult.failure()
+            return ParserResult.failure
         }
 
         val rightValue = right.fold(input, leftResult.value)
-        return ParserResult.success(rightValue, leftResult.index, leftResult.length)
+        return ParserResult.of(rightValue, leftResult.index, leftResult.length)
     }
 
     override fun print(value: C): PartialPrintTree<B> {

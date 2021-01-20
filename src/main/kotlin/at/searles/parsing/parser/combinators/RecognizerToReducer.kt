@@ -11,9 +11,9 @@ class RecognizerToReducer<A>(private val recognizer: Recognizer) : Reducer<A, A>
         val result = recognizer.parse(stream)
 
         return if(result.isSuccess) {
-            ParserResult.success(input, result.index, result.length)
+            ParserResult.of(input, result.index, result.length)
         } else {
-            ParserResult.failure()
+            ParserResult.failure
         }
     }
 

@@ -18,6 +18,11 @@ class FrameStream(private val stream: BufferedStream) {
         return stream.read()
     }
 
+    fun backtrackToIndex(newIndex: Long) {
+        frameIndex = newIndex
+        resetFrame()
+    }
+
     fun getFrame(): CharSequence {
         return stream.getCharSequence(frameIndex, frameLength.toInt())
     }

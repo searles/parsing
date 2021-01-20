@@ -37,20 +37,20 @@ class ParserStream(private val stream: FrameStream) {
         }
 
         if(!isTokenMatching(token.tokenId)) {
-            return ParserResult.failure()
+            return ParserResult.failure
         }
 
         isTokenAccepted = true
 
-        return ParserResult.success(stream.getFrame(), stream.frameIndex, stream.frameLength)
+        return ParserResult.of(stream.getFrame(), stream.frameIndex, stream.frameLength)
     }
 
-//    fun resetReadIndex(newIndex: Int) {
-//        if(newIndex != stream.index) {
-//            stream.backtrackToIndex(index)
-//            resetTokenFields()
-//        }
-//    }
+    fun backtrackToIndex(newIndex: Long) {
+        if(newIndex != stream.frameIndex) {
+            stream.backtrackToIndex(newIndex)
+            resetTokenFields()
+        }
+    }
 
     private fun consumeToken() {
         stream.consumeFrame()

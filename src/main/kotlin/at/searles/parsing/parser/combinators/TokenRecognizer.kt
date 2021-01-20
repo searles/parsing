@@ -18,9 +18,9 @@ class TokenRecognizer(private val token: Token, private val output: String): Rec
         val tokenResult = stream.acceptToken(token)
 
         return if(tokenResult.isSuccess) {
-            RecognizerResult.success(tokenResult.index, tokenResult.length)
+            RecognizerResult.of(tokenResult.index, tokenResult.length)
         } else {
-            RecognizerResult.failure()
+            RecognizerResult.failure
         }
     }
 

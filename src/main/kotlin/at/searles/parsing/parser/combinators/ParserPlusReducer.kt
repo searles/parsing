@@ -10,21 +10,16 @@ class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Re
     override fun parse(stream: ParserStream): ParserResult<B> {
         val leftResult = left.parse(stream)
 
-        if(!leftResult.isSuccess) {
-            return ParserResult.failure()
-        }
+        if(!leftResult.isSuccess) return ParserResult.failure
 
         val rightResult = right.parse(stream, leftResult.value)
 
         if(!rightResult.isSuccess) {
-            return ParserResult.failure()
+            stream.backtrackToIndex(leftResult.index)
+            return ParserResult.failure
         }
 
-        val length = (rightResult.index - leftResult.index).toInt() + rightResult.length
-        return ParserResult.success(rightResult.value,
-            leftResult.index,
-            length
-        )
+        return ParserResult.of(rightResult.value, leftResult.index, stream.index - leftResult.index)
     }
 
     override fun print(value: B): PrintTree {

@@ -14,7 +14,7 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
             }
         }
 
-        return ParserResult.failure()
+        return ParserResult.failure
     }
 
     override fun print(value: A): PrintTree {

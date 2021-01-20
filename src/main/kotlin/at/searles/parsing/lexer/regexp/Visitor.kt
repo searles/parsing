@@ -6,8 +6,8 @@ interface Visitor<A> {
     fun visitOr(l: Regexp, r: Regexp): A
     fun visitThen(l: Regexp, r: Regexp): A
     fun visitFirstMatch(regexp: Regexp): A
-    fun visitKleeneStar(regexp: Regexp): A
-    fun visitKleenePlus(regexp: Regexp): A
+    fun visitRep(regexp: Regexp): A
+    fun visitRep1(regexp: Regexp): A
     fun visitOpt(regexp: Regexp): A
     fun visitText(string: String): A
     fun visitEmpty(): A

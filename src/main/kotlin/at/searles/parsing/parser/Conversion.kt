@@ -5,7 +5,7 @@ import at.searles.parsing.printer.PrintTree
 
 interface Conversion<A, B>: Reducer<A, B> {
     override fun parse(stream: ParserStream, input: A): ParserResult<B> {
-        return ParserResult.success(convert(input), stream.index, 0)
+        return ParserResult.of(convert(input), stream.index, 0)
     }
 
     fun convert(left: A): B
@@ -20,5 +20,5 @@ interface Conversion<A, B>: Reducer<A, B> {
         return PartialPrintTree.of(invertedValue.value, PrintTree.Empty)
     }
 
-    fun invert(value: B): FnResult<A> = FnResult.failure()
+    fun invert(value: B): FnResult<A> = FnResult.failure
 }

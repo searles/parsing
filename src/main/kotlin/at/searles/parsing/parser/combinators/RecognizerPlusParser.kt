@@ -10,11 +10,17 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
     override fun parse(stream: ParserStream): ParserResult<A> {
         val leftResult = left.parse(stream)
 
-        return if(leftResult.isSuccess) {
-            right.parse(stream)
-        } else {
-            ParserResult.failure()
+        if(!leftResult.isSuccess) return ParserResult.failure
+
+        val rightResult = right.parse(stream)
+
+        if(!rightResult.isSuccess) {
+            stream.backtrackToIndex(leftResult.index)
+            return ParserResult.failure
         }
+
+        return ParserResult.of(rightResult.value, leftResult.index, stream.index - leftResult.index)
+
     }
 
     override fun print(value: A): PrintTree {

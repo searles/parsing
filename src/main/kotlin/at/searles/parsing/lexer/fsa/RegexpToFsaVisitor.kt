@@ -16,7 +16,7 @@ object RegexpToFsaVisitor: Visitor<Automaton> {
         return regexp.accept(this).firstMatch()
     }
 
-    override fun visitKleeneStar(regexp: Regexp): Automaton {
+    override fun visitRep(regexp: Regexp): Automaton {
         return regexp.accept(this).rep()
     }
 
@@ -36,7 +36,7 @@ object RegexpToFsaVisitor: Visitor<Automaton> {
         return Automaton.create(set)
     }
 
-    override fun visitKleenePlus(regexp: Regexp): Automaton {
+    override fun visitRep1(regexp: Regexp): Automaton {
         return regexp.accept(this).rep1()
     }
 

@@ -6,22 +6,34 @@ import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
-class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
+class RepeatReducer<A>(private val reducer: Reducer<A, A>, private val minCount: Int) : Reducer<A, A> {
+
+    init {
+        require(minCount >= 0)
+
+    }
+
     override fun parse(stream: ParserStream, input: A): ParserResult<A> {
         val startIndex = stream.index
-        var endIndex = startIndex
-
         var value = input
+
+        var count = 0
 
         while(true) {
             val result = reducer.parse(stream, value)
 
             if(!result.isSuccess) {
-                return ParserResult.success(value, startIndex, endIndex - startIndex)
+                if(count < minCount) {
+                    stream.backtrackToIndex(startIndex)
+                    return ParserResult.failure
+                }
+
+                // require(endIndex == stream.index)
+                return ParserResult.of(value, startIndex, stream.index - startIndex)
             }
 
-            endIndex = result.index + result.length
             value = result.value
+            count++
         }
     }
 
@@ -29,15 +41,20 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
         var leftValue = value
         var output: PrintTree = PrintTree.Empty
 
+        var count = 0
+
         while(true) {
             val result = reducer.print(leftValue)
 
             if(!result.isSuccess) {
+                if(count < minCount) return PartialPrintTree.failure
+
                 return PartialPrintTree.of(leftValue, output)
             }
 
             output = result.rightTree + output
             leftValue = result.leftValue
+            count++
         }
     }
 }

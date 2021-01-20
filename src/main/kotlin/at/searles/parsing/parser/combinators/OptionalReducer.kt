@@ -14,7 +14,7 @@ class OptionalReducer<A>(private val reducer: Reducer<A, A>): Reducer<A, A> {
             return result
         }
 
-        return ParserResult.success(input, stream.index, 0)
+        return ParserResult.of(input, stream.index, 0)
     }
 
     override fun print(value: A): PartialPrintTree<A> {

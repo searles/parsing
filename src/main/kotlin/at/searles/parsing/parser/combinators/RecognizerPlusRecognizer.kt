@@ -9,15 +9,17 @@ class RecognizerPlusRecognizer(private val left: Recognizer, private val right: 
     override fun parse(stream: ParserStream): RecognizerResult {
         val leftResult = left.parse(stream)
 
-        if(!leftResult.isSuccess) return RecognizerResult.failure()
+        if(!leftResult.isSuccess) return RecognizerResult.failure
 
         val rightResult = right.parse(stream)
 
-        if(!rightResult.isSuccess) return RecognizerResult.failure()
+        if(!rightResult.isSuccess) {
+            stream.backtrackToIndex(leftResult.index)
+            return RecognizerResult.failure
+        }
 
-        val length = (rightResult.index - leftResult.index).toInt() + rightResult.length
+        return RecognizerResult.of(leftResult.index, stream.index - leftResult.index)
 
-        return RecognizerResult.success(leftResult.index, length)
     }
 
     override fun print(): PrintTree {
