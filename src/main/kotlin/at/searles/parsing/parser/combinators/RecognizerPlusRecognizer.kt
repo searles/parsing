@@ -3,6 +3,7 @@ package at.searles.parsing.parser.combinators
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Recognizer
 import at.searles.parsing.parser.RecognizerResult
+import at.searles.parsing.printer.PrintTree
 
 class RecognizerPlusRecognizer(private val left: Recognizer, private val right: Recognizer) : Recognizer {
     override fun parse(stream: ParserStream): RecognizerResult {
@@ -19,7 +20,8 @@ class RecognizerPlusRecognizer(private val left: Recognizer, private val right: 
         return RecognizerResult.success(leftResult.index, length)
     }
 
-    override val output: String
-        get() = left.output + right.output
+    override fun print(): PrintTree {
+        return left.print() + right.print()
+    }
 
 }

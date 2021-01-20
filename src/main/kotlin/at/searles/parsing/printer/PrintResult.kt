@@ -1,20 +1,17 @@
 package at.searles.parsing.printer
 
-class PrintResult private constructor(private val mOutput: Any?) {
-    val isSuccess: Boolean get() = mOutput !is Failure
+class PrintResult private constructor(private val mOutput: PrintTree?) {
+    val isSuccess: Boolean get() = mOutput != null
 
-    @Suppress("UNCHECKED_CAST")
-    val output: String get() =
+    val output: PrintTree get() =
         when {
-            isSuccess -> mOutput as String
+            isSuccess -> mOutput!!
             else -> error("No value in failure")
         }
 
-    private object Failure
-
     companion object {
-        fun success(output: String): PrintResult = PrintResult(output)
+        fun success(output: PrintTree): PrintResult = PrintResult(output)
         fun failure(): PrintResult = internalFailure
-        private val internalFailure = PrintResult(Failure)
+        private val internalFailure = PrintResult(null)
     }
 }

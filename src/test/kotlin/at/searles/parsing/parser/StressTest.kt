@@ -44,9 +44,12 @@ class StressTest {
 
     @Test
     fun testParseLotsOfAs() {
-        val length = 1000000 // Int.MAX_VALUE.toLong() + 1L
+        val length = 1000000L
 
-        val aStream = generateAStream(Int.MAX_VALUE.toLong() + 1L)
+        // Int.MAX_VALUE.toLong() + 1L - 1:20 on macbook air m1 2020
+        //                             - 1:40 in old version!
+
+        val aStream = generateAStream(length)
         val stream = FrameStream(BufferedStream.of(aStream))
 
         val parserStream = ParserStream(stream)

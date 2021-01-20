@@ -60,12 +60,12 @@ class PrinterTest {
 
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
-        Assert.assertEquals("16+32", printResult.output)
+        Assert.assertEquals("16+32", printResult.output.asString())
     }
 
     @Test
     fun testPrinterWithMarks() {
-        val space = PrintInject { " " }
+        val space = PrintInject { it.append(" ") }
 
         addition = intParser + ((space + plusSign) + space + intParser + additionOp)
 
@@ -75,6 +75,6 @@ class PrinterTest {
 
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
-        Assert.assertEquals("16 + 32", printResult.output)
+        Assert.assertEquals("16 + 32", printResult.output.asString())
     }
 }

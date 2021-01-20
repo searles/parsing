@@ -1,6 +1,7 @@
 package at.searles.parsing.parser
 
 import at.searles.parsing.printer.PartialPrintResult
+import at.searles.parsing.printer.PrintTree
 
 interface Conversion<A, B>: Reducer<A, B> {
     override fun parse(stream: ParserStream, input: A): ParserResult<B> {
@@ -16,7 +17,7 @@ interface Conversion<A, B>: Reducer<A, B> {
             return PartialPrintResult.failure()
         }
 
-        return PartialPrintResult.success(invertedValue.value, "")
+        return PartialPrintResult.success(invertedValue.value, PrintTree.Empty)
     }
 
     fun invert(value: B): FnResult<A> = FnResult.failure()

@@ -24,6 +24,6 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
             return PrintResult.failure()
         }
 
-        return PrintResult.success(left.output + rightResult.output)
+        return PrintResult.success(left.print() + rightResult.output)
     }
 }

@@ -4,6 +4,7 @@ import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PartialPrintResult
+import at.searles.parsing.printer.PrintTree
 
 class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
     override fun parse(stream: ParserStream, input: A): ParserResult<A> {
@@ -16,7 +17,6 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
             val result = reducer.parse(stream, value)
 
             if(!result.isSuccess) {
-                // TODO make it LONG
                 return ParserResult.success(value, startIndex, endIndex - startIndex)
             }
 
@@ -27,7 +27,7 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>) : Reducer<A, A> {
 
     override fun print(value: A): PartialPrintResult<A> {
         var leftValue = value
-        var output = ""
+        var output: PrintTree = PrintTree.Empty
 
         while(true) {
             val result = reducer.print(leftValue)

@@ -8,6 +8,7 @@ import at.searles.parsing.parser.combinators.LazyParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 class NestedTest {
@@ -59,10 +60,13 @@ class NestedTest {
 
     val app = exprRef + (exprRef + AppCreate).rep()
 
-    val expr =
-        term or
-        TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
+    lateinit var expr: Parser<Tree>
 
+    @Before
+    fun setUp() {
+        expr = term or
+               TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
+    }
     @Test
     fun testSimpleApp() {
         val tree = app.parse(ParserStream("a b"))
@@ -77,7 +81,7 @@ class NestedTest {
         val printing = app.print(tree.value)
 
         Assert.assertTrue(printing.isSuccess)
-        Assert.assertEquals("abcd(ef)", printing.output)
+        Assert.assertEquals("abcd(ef)", printing.output.asString())
     }
 
 
@@ -88,5 +92,50 @@ class NestedTest {
         Assert.assertTrue(tree.isSuccess)
         Assert.assertEquals("((((a b) c) d) (e f))", tree.value.toString())
     }
+
+    var indent: Int = 0
+
+    @Before
+    fun resetIndentation() {
+        indent = 0
+    }
+
+    class IndentationContext {
+        var level = 0
+
+        val indent = PrintInject {
+            it.append("\n")
+            level++
+            it.append(" ".repeat(level))
+        }
+
+
+        val unindent = PrintInject {
+            it.append("\n")
+            level--
+            it.append(" ".repeat(level))
+        }
+    }
+
+    @Test
+    fun testIndentation() {
+        val ctx = IndentationContext()
+        expr = term or
+                TokenRecognizer.text("(", lexer) + ctx.indent + app + ctx.unindent + TokenRecognizer.text(")", lexer)
+
+        val tree = app.parse(ParserStream("(a (b (c d e) f) g) h"))
+        val printTree = app.print(tree.value)
+
+        val os = StringOutStream()
+        printTree.output.print(os)
+
+        Assert.assertEquals("a(\n" +
+                " b(\n" +
+                "  cde\n" +
+                " )f\n" +
+                ")gh", os.toString())
+    }
+
+    // TODO further tests with backtracking
 }
 
