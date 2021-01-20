@@ -1,5 +1,7 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.codepoint.BufferedStream
+import at.searles.parsing.codepoint.CodePointStream
 import at.searles.parsing.lexer.FrameStream
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.Token
@@ -9,6 +11,7 @@ import java.io.Reader
 class ParserStream(private val stream: FrameStream) {
     constructor(string: String): this(FrameStream(string))
     constructor(reader: Reader): this(FrameStream(reader))
+    constructor(stream: CodePointStream): this(FrameStream(BufferedStream.of(stream)))
 
     private var lexerForFrame: Lexer? = null
     private var tokenIdsOfFrame: IntSet? = null

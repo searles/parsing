@@ -56,17 +56,16 @@ class NestedTest {
 
     val term = TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1())) + TermCreate
 
-    val exprRef: Parser<Tree> = LazyParser { expr }
+    val expr = LazyParser<Tree>()
 
-    val app = exprRef + (exprRef + AppCreate).rep()
-
-    lateinit var expr: Parser<Tree>
+    val app = expr + (expr + AppCreate).rep()
 
     @Before
     fun setUp() {
-        expr = term or
+        expr.parser = term or
                TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
     }
+
     @Test
     fun testSimpleApp() {
         val tree = app.parse(ParserStream("a b"))
@@ -120,7 +119,8 @@ class NestedTest {
     @Test
     fun testIndentation() {
         val ctx = IndentationContext()
-        expr = term or
+
+        expr.parser = term or
                 TokenRecognizer.text("(", lexer) + ctx.indent + app + ctx.unindent + TokenRecognizer.text(")", lexer)
 
         val tree = app.parse(ParserStream("(a (b (c d e) f) g) h"))

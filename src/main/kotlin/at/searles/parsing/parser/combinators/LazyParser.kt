@@ -5,12 +5,20 @@ import at.searles.parsing.parser.ParserResult
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.printer.PrintResult
 
-class LazyParser<A>(private val parser: () -> Parser<A>) : Parser<A> {
+class LazyParser<A> constructor(_parser: Parser<A>? = null): Parser<A> {
+    lateinit var parser: Parser<A>
+
+    init {
+        if(_parser != null) {
+            this.parser = _parser
+        }
+    }
+
     override fun parse(stream: ParserStream): ParserResult<A> {
-        return parser().parse(stream)
+        return parser.parse(stream)
     }
 
     override fun print(value: A): PrintResult {
-        return parser().print(value)
+        return parser.print(value)
     }
 }

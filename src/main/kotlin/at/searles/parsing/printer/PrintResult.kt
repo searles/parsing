@@ -9,6 +9,10 @@ class PrintResult private constructor(private val mOutput: PrintTree?) {
             else -> error("No value in failure")
         }
 
+    override fun toString(): String {
+        return if(isSuccess) mOutput.toString() else "FAILURE"
+    }
+
     companion object {
         fun success(output: PrintTree): PrintResult = PrintResult(output)
         fun failure(): PrintResult = internalFailure

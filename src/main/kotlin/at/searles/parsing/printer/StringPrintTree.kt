@@ -5,4 +5,7 @@ class StringPrintTree(private val string: String) : PrintTree {
         outStream.append(string)
     }
 
+    override fun toString(): String {
+        return string
+    }
 }

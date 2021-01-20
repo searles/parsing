@@ -5,11 +5,12 @@ interface PrintTree {
     fun print(outStream: OutStream)
 
     operator fun plus(right: PrintTree): PrintTree {
+        // flatten and remove empty.
         if(right == Empty) {
             return this
         }
 
-        return ComposedTree(listOf(this, right))
+        return ComposedTree.of(this, right)
     }
 
     fun asString(): String {
