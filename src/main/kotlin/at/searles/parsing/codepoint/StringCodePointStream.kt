@@ -40,5 +40,4 @@ class StringCodePointStream(private val string: String) : BufferedStream {
     override fun toString(): String {
         return string.substring(0 until index.toInt()) + "_" + string.substring(index.toInt())
     }
-
 }

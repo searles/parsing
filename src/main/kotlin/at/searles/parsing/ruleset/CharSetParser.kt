@@ -12,53 +12,53 @@ object CharSetParser: ParserRule<CharSet> {
 
     private val charSet by lazy { text("[") + invertableSet + text("]") }
 
-    private val invertSet = object: Conversion<CharSet, CharSet> {
+    private object InvertSet: Conversion<CharSet, CharSet> {
         override fun convert(value: CharSet): CharSet {
             return value.invert()
         }
     }
 
     private val invertableSet: Parser<CharSet> by lazy {
-        text("^") + set + invertSet or
+        text("^") + set + InvertSet or
         set
     }
 
-    private val appendToSet = object: Fold<CharSet, Interval, CharSet> {
+    private object AppendToSet: Fold<CharSet, Interval, CharSet> {
         override fun fold(left: CharSet, right: Interval): CharSet {
             return left + CharSet(right.first .. right.last)
         }
     }
 
     private val set: Parser<CharSet> by lazy {
-        create { CharSet.empty() } + (
-                charOrRange + appendToSet
+        InitValue { CharSet.empty() } + (
+                charOrRange + AppendToSet
         ).rep(1)
     }
 
-    private val createRange = object: Fold<Int, Int, Interval> {
+    private object CreateRange: Fold<Int, Int, Interval> {
         override fun fold(left: Int, right: Int): Interval {
             return Interval(left .. right)
         }
     }
 
-    private val createSingleChar = object: Conversion<Int, Interval> {
+    private object CreateSingleChar: Conversion<Int, Interval> {
         override fun convert(value: Int): Interval {
             return Interval(value)
         }
     }
 
     private val startChar =
-        rex(EscapedChars.specialChar) + EscapedChars.createSpecialChar or
-        rex(EscapedChars.regularChar - CharSet(']')) + EscapedChars.createRegularChar
+        rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar or
+        rex(EscapedChars.regularChar - CharSet(']')) + EscapedChars.CreateRegularChar
 
     private val endChar =
-        rex(EscapedChars.specialChar) + EscapedChars.createSpecialChar or
-                rex(EscapedChars.regularChar) + EscapedChars.createRegularChar
+        rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar or
+                rex(EscapedChars.regularChar) + EscapedChars.CreateRegularChar
 
     private val charOrRange: Parser<Interval> by lazy {
         startChar + (
-            text("-") + endChar + createRange or
-            createSingleChar
+            text("-") + endChar + CreateRange or
+            CreateSingleChar
         )
     }
 
@@ -67,7 +67,7 @@ object CharSetParser: ParserRule<CharSet> {
     }
 
     override fun print(value: CharSet): PrintTree {
-        TODO("Not yet implemented")
+        return charSet.print(value)
     }
 
 }

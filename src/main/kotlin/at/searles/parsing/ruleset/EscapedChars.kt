@@ -19,7 +19,7 @@ object EscapedChars {
             Text("U") + hexDigit.count(8)
     )
 
-    val createSpecialChar = object: Conversion<CharSequence, Int> {
+    object CreateSpecialChar: Conversion<CharSequence, Int> {
         override fun convert(value: CharSequence): Int {
             return when(value[1]) {
                 'n' -> '\n'.toInt()
@@ -33,7 +33,7 @@ object EscapedChars {
 
     val regularChar = Text("\\") + CharSet.all() or CharSet.all()
 
-    val createRegularChar = object: Conversion<CharSequence, Int> {
+    object CreateRegularChar: Conversion<CharSequence, Int> {
         override fun convert(value: CharSequence): Int {
             return if(value[0] == '\\' && value.length > 1) {
                 value.toString().codePointAt(1)

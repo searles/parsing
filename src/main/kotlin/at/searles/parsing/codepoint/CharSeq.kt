@@ -1,7 +1,5 @@
 package at.searles.parsing.codepoint
 
-import java.text.CharacterIterator
-
 class CharSeq(private val streamIndex: Long, override val length: Int, private val stream: BufferedStream): CharSequence {
         override fun get(index: Int): Char {
             val cp = stream.getCodePointAt(streamIndex + index)

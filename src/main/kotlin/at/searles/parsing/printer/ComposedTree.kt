@@ -14,23 +14,16 @@ class ComposedTree private constructor(private val leftTree: PrintTree, private 
         tree.print(outStream)
     }
 
+    override operator fun plus(right: PrintTree): PrintTree {
+        return ComposedTree(leftTree, ComposedTree(rightTree, right))
+    }
+
     override fun toString(): String {
         return asString()
     }
 
     companion object {
-//
         fun of(left: PrintTree, right: PrintTree): PrintTree {
-  /*          val list = left.toFlatList() + right.toFlatList()
-
-            if(list.isEmpty()) {
-                return PrintTree.Empty
-            }
-
-            if(list.size == 1) {
-                return list.first()
-            }
-*/
             return ComposedTree(left, right)
         }
     }

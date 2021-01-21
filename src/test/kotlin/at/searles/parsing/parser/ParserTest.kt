@@ -49,4 +49,48 @@ class ParserTest {
         Assert.assertEquals("a", zeroPrinted.asString())
         Assert.assertEquals("b", nullPrinted.asString())
     }
+
+    @Test
+    fun testListParser() {
+        val lexer = Lexer()
+
+        val createString = object: Conversion<CharSequence, String> {
+            override fun convert(value: CharSequence): String {
+                return value.toString()
+            }
+        }
+
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))) + createString
+
+        val listParser = parser.rep()
+
+        val result = listParser.parse(ParserStream("abc"))
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(listOf("a", "b", "c"), result.value)
+    }
+
+    @Test
+    fun testOptParser() {
+        val lexer = Lexer()
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))).opt()
+
+        val result = parser.parse(ParserStream("1"))
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertNull(result.value)
+    }
+
+    @Test
+    fun testPairParser() {
+        val lexer = Lexer()
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))).opt()
+
+        val pairParser = parser + parser
+
+        val result = pairParser.parse(ParserStream("ab"))
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(Pair("a", "b"), result.value)
+    }
 }

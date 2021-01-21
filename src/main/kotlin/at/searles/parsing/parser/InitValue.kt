@@ -2,11 +2,7 @@ package at.searles.parsing.parser
 
 import at.searles.parsing.printer.PrintTree
 
-fun <A> create(value: () -> A): ValueCreation<A> {
-    return ValueCreation(value)
-}
-
-class ValueCreation<A>(value: () -> A): Parser<A> {
+class InitValue<A>(value: () -> A): Parser<A> {
 
     private val value = value()
 

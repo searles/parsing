@@ -1,16 +1,26 @@
 package at.searles.parsing.parser
 
-import at.searles.parsing.parser.combinators.ParserUnion
-import at.searles.parsing.parser.combinators.ParserPlusFold
-import at.searles.parsing.parser.combinators.ParserPlusReducer
+import at.searles.parsing.parser.Reducer.Companion.rep
+import at.searles.parsing.parser.combinators.*
+import at.searles.parsing.parser.tools.CastToNullable
+import at.searles.parsing.parser.tools.CreatePair
+import at.searles.parsing.parser.tools.ListAppend
 import at.searles.parsing.printer.PrintTree
 
 interface Parser<A> {
     fun parse(stream: ParserStream): ParserResult<A>
     fun print(value: A): PrintTree
 
+    infix fun or(other: Parser<A>): Parser<A> {
+        return ParserUnion(listOf(this, other))
+    }
+
     operator fun plus(recognizer: Recognizer): Parser<A> {
         return this + recognizer.toReducer()
+    }
+
+    operator fun <B> plus(parser: Parser<B>): Parser<Pair<A, B>> {
+        return this + (parser + CreatePair())
     }
 
     operator fun <B> plus(reducer: Reducer<A, B>): Parser<B> {
@@ -21,7 +31,11 @@ interface Parser<A> {
         return ParserPlusFold(this, fold)
     }
 
-    infix fun or(other: Parser<A>): Parser<A> {
-        return ParserUnion<A>(listOf(this, other))
+    fun rep(minCount: Int = 0): Parser<List<A>> {
+        return InitValue { emptyList<A>() } + (this + ListAppend()).rep(minCount)
+    }
+
+    fun opt(): Parser<A?> {
+        return this + CastToNullable() or InitValue { null }
     }
 }

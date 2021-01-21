@@ -51,28 +51,28 @@ object RegexpParser: ParserRule<Regexp> {
     val repeat by lazy { term + (text("*") + createRep or text("+") + createRep1).opt() }
 
     val term by lazy {
-            CharSetParser + cast<CharSet, Regexp>() or
+            text(".").init<Regexp>(CharSet.all()) or
+            CharSetParser + cast() or
             char or
-            text(".").init(CharSet.all()) or
             text("(") + union + text(")")
     }
 
-    val createChar = object: Conversion<Int, Regexp> {
+    object CreateChar: Conversion<Int, Regexp> {
         override fun convert(value: Int): Text {
             return Text(Character.toString(value))
         }
     }
 
-    val char by lazy { (escapedChar or regularChar) + createChar }
+    val char by lazy { (escapedChar or regularChar) + CreateChar }
 
-    val escapedChar = rex(EscapedChars.specialChar) + EscapedChars.createSpecialChar
-    val regularChar = rex(EscapedChars.regularChar - CharSet('(', '\\', ')', '|', '*', '+', '-', '.')) + EscapedChars.createRegularChar
+    val escapedChar = rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar
+    val regularChar = rex(EscapedChars.regularChar - CharSet('(', '\\', ')', '|', '*', '+', '-', '.')) + EscapedChars.CreateRegularChar
 
     override fun parse(stream: ParserStream): ParserResult<Regexp> {
         return union.parse(stream)
     }
 
     override fun print(value: Regexp): PrintTree {
-        TODO("Not yet implemented")
+        return union.print(value)
     }
 }

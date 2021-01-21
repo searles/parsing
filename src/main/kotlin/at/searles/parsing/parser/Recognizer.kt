@@ -9,12 +9,16 @@ interface Recognizer {
     fun parse(stream: ParserStream): RecognizerResult
     fun print(): PrintTree
 
-    operator fun <A> plus(parser: Parser<A>): Parser<A> {
-        return RecognizerPlusParser(this, parser)
+    infix fun or(other: Recognizer): Recognizer {
+        TODO()
     }
 
     operator fun plus(recognizer: Recognizer): Recognizer {
         return RecognizerPlusRecognizer(this, recognizer)
+    }
+
+    operator fun <A> plus(parser: Parser<A>): Parser<A> {
+        return RecognizerPlusParser(this, parser)
     }
 
     operator fun <A, B> plus(reducer: Reducer<A, B>): Reducer<A, B> {
@@ -26,6 +30,6 @@ interface Recognizer {
     }
 
     fun <A> init(value: A): Parser<A> {
-        return this + ValueCreation { value }
+        return this + InitValue { value }
     }
 }

@@ -22,9 +22,18 @@ class ReducerPlusReducer<A, B, C>(private val left: Reducer<A, B>, private val r
     }
 
     override fun print(value: C): PartialPrintTree<A> {
-        TODO("Not yet implemented")
+        val rightResult = right.print(value)
+
+        if(!rightResult.isSuccess) return PartialPrintTree.failure
+
+        val leftResult = left.print(rightResult.leftValue)
+
+        if(!leftResult.isSuccess) return PartialPrintTree.failure
+
+        return PartialPrintTree.of(leftResult.leftValue, leftResult.rightTree + rightResult.rightTree)
     }
 
-    // TODO plus!
-
+    override operator fun <D> plus(reducer: Reducer<C, D>): Reducer<A, D> {
+        return left + (right + reducer)
+    }
 }

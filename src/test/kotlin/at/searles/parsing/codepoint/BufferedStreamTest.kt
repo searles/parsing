@@ -74,10 +74,10 @@ class BufferedStreamTest {
 
         val length = stream.index - startIndex
 
-        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()))
+        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()).toString())
 
         Assert.assertEquals('d'.toInt(), stream.read())
 
-        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()))
+        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()).toString())
     }
 }
