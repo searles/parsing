@@ -1,6 +1,7 @@
 package at.searles.parsing.lexer.fsa
 
-data class Interval(val range: IntRange) /*: Comparable<Interval>*/ {
+// XXX This could be replaced by int-range
+data class Interval(val range: IntRange) {
     constructor(ch: Int): this(ch .. ch)
     constructor(start: Int, end: Int): this(start until end)
 
@@ -17,7 +18,7 @@ data class Interval(val range: IntRange) /*: Comparable<Interval>*/ {
 
     companion object {
         val all by lazy {
-            Interval(Int.MIN_VALUE until Int.MAX_VALUE) // TODO
+            Interval(Int.MIN_VALUE until Int.MAX_VALUE)
         }
     }
 }

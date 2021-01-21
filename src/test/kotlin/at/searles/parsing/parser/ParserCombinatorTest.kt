@@ -24,8 +24,8 @@ class ParserCombinatorTest {
         lexer = Lexer()
         number = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()))
         toInt = object: Conversion<CharSequence, Int> {
-            override fun convert(left: CharSequence): Int {
-                return left.toString().toInt()
+            override fun convert(value: CharSequence): Int {
+                return value.toString().toInt()
             }
         }
         plusSign = TokenRecognizer.text("+", lexer)

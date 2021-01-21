@@ -27,7 +27,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
         }
     })
 
-    infix fun or(that: CharSet): CharSet {
+    operator fun plus(that: CharSet): CharSet {
         return CharSet(set.copy().apply { add(that.set) })
     }
 
@@ -45,6 +45,10 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
 
     operator fun contains(ch: Int): Boolean {
         return set.contains(ch)
+    }
+
+    operator fun contains(ch: Char): Boolean {
+        return set.contains(ch.toInt())
     }
 
     override fun iterator(): Iterator<Interval> {

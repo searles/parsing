@@ -1,6 +1,6 @@
 package at.searles.parsing.lexer.regexp
 
-internal class Subtract(private val l: Regexp, private val r: Regexp) : Regexp {
+internal class Diff(private val l: Regexp, private val r: Regexp) : Regexp {
     override fun toString(): String {
         return "$l \\ $r"
     }

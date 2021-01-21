@@ -17,7 +17,15 @@ interface Recognizer {
         return RecognizerPlusRecognizer(this, recognizer)
     }
 
+    operator fun <A, B> plus(reducer: Reducer<A, B>): Reducer<A, B> {
+        return this.toReducer<A>() + reducer
+    }
+
     fun <A> toReducer(): Reducer<A, A> {
         return RecognizerToReducer(this)
+    }
+
+    fun <A> init(value: A): Parser<A> {
+        return this + ValueCreation { value }
     }
 }

@@ -14,7 +14,7 @@ class StressTest {
     val lexer = Lexer()
 
     val one = object: Conversion<CharSequence, Long> {
-        override fun convert(left: CharSequence): Long {
+        override fun convert(value: CharSequence): Long {
             return 1L
         }
     }

@@ -17,8 +17,8 @@ class BacktrackingTest {
         val tokenC = lexer.createToken(Text("c"))
 
         val createString = object: Conversion<CharSequence, String> {
-            override fun convert(left: CharSequence): String {
-                return left.toString()
+            override fun convert(value: CharSequence): String {
+                return value.toString()
             }
         }
 
@@ -44,8 +44,8 @@ class BacktrackingTest {
         val tokenB = lexer.createToken(Text("b"))
 
         val createString = object : Conversion<CharSequence, String> {
-            override fun convert(left: CharSequence): String {
-                return left.toString()
+            override fun convert(value: CharSequence): String {
+                return value.toString()
             }
         }
 

@@ -27,8 +27,8 @@ class NestedTest {
     }
 
     object TermCreate: Conversion<CharSequence, Tree> {
-        override fun convert(left: CharSequence): Tree {
-            return Term(left.toString())
+        override fun convert(value: CharSequence): Tree {
+            return Term(value.toString())
         }
 
         override fun invert(value: Tree): FnResult<String> {
@@ -135,7 +135,5 @@ class NestedTest {
                 " )f\n" +
                 ")gh", os.toString())
     }
-
-    // TODO further tests with backtracking
 }
 

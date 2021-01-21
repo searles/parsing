@@ -1,7 +1,7 @@
 package at.searles.parsing.lexer.regexp
 
 class Text(seq: CharSequence) : Regexp {
-    private val string: String = seq.toString()
+    val string: String = seq.toString()
 
     override fun toString(): String {
         return string

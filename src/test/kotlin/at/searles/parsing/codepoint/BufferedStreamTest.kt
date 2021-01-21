@@ -61,23 +61,23 @@ class BufferedStreamTest {
         Assert.assertEquals(-1, stream.read())
     }
 
-//    @Test
-//    fun testSubstring() {
-//        val stream = BufferedStream.of(StringCodePointStream("abcd"), 3)
-//
-//        Assert.assertEquals('a'.toInt(), stream.read())
-//
-//        val startIndex = stream.index
-//
-//        Assert.assertEquals('b'.toInt(), stream.read())
-//        Assert.assertEquals('c'.toInt(), stream.read())
-//
-//        val length = stream.index - startIndex
-//
-//        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length))
-//
-//        Assert.assertEquals('d'.toInt(), stream.read())
-//
-//        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length))
-//    } // TODO remove test because method was  removed
+    @Test
+    fun testSubstring() {
+        val stream = BufferedStream.of(StringCodePointStream("abcd"), 3)
+
+        Assert.assertEquals('a'.toInt(), stream.read())
+
+        val startIndex = stream.index
+
+        Assert.assertEquals('b'.toInt(), stream.read())
+        Assert.assertEquals('c'.toInt(), stream.read())
+
+        val length = stream.index - startIndex
+
+        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()))
+
+        Assert.assertEquals('d'.toInt(), stream.read())
+
+        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()))
+    }
 }

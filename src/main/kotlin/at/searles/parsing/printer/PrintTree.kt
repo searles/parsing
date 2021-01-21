@@ -37,5 +37,7 @@ interface PrintTree {
             override fun print(outStream: OutStream) { error("failure") }
             override fun plus(right: PrintTree): PrintTree { error("failure") }
         }
+
+        val empty = of("")
     }
 }

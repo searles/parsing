@@ -213,8 +213,8 @@ class ParserAndPrinterTest {
     }
 
     private val idToExpr = object: Conversion<CharSequence, Expr> {
-        override fun convert(left: CharSequence): Expr {
-            return Id(left.toString())
+        override fun convert(value: CharSequence): Expr {
+            return Id(value.toString())
         }
 
         override fun invert(value: Expr): FnResult<CharSequence> {

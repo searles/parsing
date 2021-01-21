@@ -56,6 +56,6 @@ interface Regexp {
     }
 
     operator fun minus(other: Regexp): Regexp {
-        return Subtract(this, other)
+        return Diff(this, other)
     }
 }

@@ -18,7 +18,6 @@ class ParserStream(private val stream: FrameStream) {
     private var isTokenAccepted = false
 
     val index: Long get() {
-        // TODO: This can be done better.
         return if(isTokenAccepted) {
             stream.frameIndex + stream.frameLength
         } else {
@@ -32,7 +31,6 @@ class ParserStream(private val stream: FrameStream) {
         }
 
         if(lexerForFrame != token.lexer) {
-            // TODO Maybe refactor...
             readTokenFromNewLexer(token.lexer)
         }
 

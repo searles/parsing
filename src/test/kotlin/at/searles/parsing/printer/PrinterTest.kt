@@ -24,8 +24,8 @@ class PrinterTest {
         lexer = Lexer()
         number = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()))
         toIntNode = object: Conversion<CharSequence, Tree> {
-            override fun convert(left: CharSequence): Tree.IntNode {
-                return Tree.IntNode(left.toString().toInt())
+            override fun convert(value: CharSequence): Tree.IntNode {
+                return Tree.IntNode(value.toString().toInt())
             }
 
             override fun invert(value: Tree): FnResult<String> {

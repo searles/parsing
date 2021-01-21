@@ -8,7 +8,7 @@ interface Conversion<A, B>: Reducer<A, B> {
         return ParserResult.of(convert(input), stream.index, 0)
     }
 
-    fun convert(left: A): B
+    fun convert(value: A): B
 
     override fun print(value: B): PartialPrintTree<A> {
         val invertedValue = invert(value)
