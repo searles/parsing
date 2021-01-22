@@ -144,10 +144,10 @@ class Automaton(val startNode: Node = Node()) {
     private fun addTrap() {
         val trapNode = Node()
 
-        trapNode.connectTo(trapNode, IntervalSet().apply { add(Interval.all) })
+        trapNode.connectTo(trapNode, IntervalSet().apply { add(fullRange) })
 
         nodes.forEach {
-            it.edges.add(Interval.all, trapNode) { original, _ -> original }
+            it.edges.add(fullRange, trapNode) { original, _ -> original }
         }
     }
 
@@ -262,7 +262,7 @@ class Automaton(val startNode: Node = Node()) {
 
             text.codePoints().forEach {
                 val node = Node()
-                lastNode.edges.add(Interval(it), node) { _, _ -> error("unexpected") }
+                lastNode.edges.add((it .. it), node) { _, _ -> error("unexpected") }
                 lastNode = node
             }
 
@@ -293,7 +293,9 @@ class Automaton(val startNode: Node = Node()) {
         }
 
         fun all(): Automaton {
-            return create(IntervalSet(Interval(0, Int.MAX_VALUE)))
+            return create(IntervalSet((0 until Int.MAX_VALUE))) // TODO make it full.
         }
+
+        private val fullRange = Int.MIN_VALUE until Int.MAX_VALUE
     }
 }

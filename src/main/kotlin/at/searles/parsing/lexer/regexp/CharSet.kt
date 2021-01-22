@@ -1,29 +1,28 @@
 package at.searles.parsing.lexer.regexp
 
-import at.searles.parsing.lexer.fsa.Interval
 import at.searles.parsing.lexer.fsa.IntervalSet
 import java.util.*
 
-class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterable<Interval> {
+class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterable<IntRange> {
     constructor(vararg chars: Char): this(*chars.map { it.toInt() }.toIntArray())
 
     constructor(vararg codePoints: Int): this(codePoints.asIterable())
 
     constructor(chars: Iterable<Int>): this(IntervalSet().apply {
         chars.forEach {
-            add(Interval(it))
+            add((it .. it))
         }
     })
 
     constructor(vararg intervals: CharRange): this(IntervalSet().apply {
         for (interval in intervals) {
-            add(Interval(interval.first.toInt()..interval.last.toInt()))
+            add((interval.first.toInt()..interval.last.toInt()))
         }
     })
 
     constructor(vararg intervals: IntRange): this(IntervalSet().apply {
         for (interval in intervals) {
-            add(Interval(interval))
+            add((interval))
         }
     })
 
@@ -51,7 +50,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
         return set.contains(ch.toInt())
     }
 
-    override fun iterator(): Iterator<Interval> {
+    override fun iterator(): Iterator<IntRange> {
         return set.iterator()
     }
 
@@ -77,7 +76,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
         }
 
         fun all(): CharSet {
-            return CharSet(IntervalSet().apply { add(Interval(0, Int.MAX_VALUE)) })
+            return CharSet(IntervalSet().apply { add((0 until Int.MAX_VALUE)) }) // TODO make it full.
         }
 
         fun eof(): Regexp {

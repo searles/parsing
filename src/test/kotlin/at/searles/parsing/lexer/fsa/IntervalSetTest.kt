@@ -12,7 +12,7 @@ class IntervalSetTest {
 
     @Test
     fun testBoundsForOneItem() {
-        val set = IntervalSet().apply { add(Interval(0)) }
+        val set = IntervalSet().apply { add((0 .. 0)) }
         Assert.assertFalse(set.contains(-1))
         Assert.assertTrue(set.contains(0))
         Assert.assertFalse(set.contains(1))
@@ -21,7 +21,7 @@ class IntervalSetTest {
     @Test
     fun testBoundsForOneItemInverted() {
         val set = IntervalSet().apply {
-            add(Interval(0))
+            add((0 .. 0))
         }.inverted(-10, 10)
 
         Assert.assertTrue(set.contains(-1))
@@ -32,30 +32,30 @@ class IntervalSetTest {
     @Test
     fun testMergeRight() {
         val set = IntervalSet().apply {
-            add(Interval(0))
-            add(Interval(1))
+            add((0 .. 0))
+            add((1 .. 1))
         }
 
         val iterator = set.iterator()
 
         val interval = iterator.next()
 
-        Assert.assertEquals(Interval(0, 2), interval)
+        Assert.assertEquals((0 until 2), interval)
         Assert.assertFalse(iterator.hasNext())
     }
 
     @Test
     fun testMergeLeft() {
         val set = IntervalSet().apply {
-            add(Interval(1))
-            add(Interval(0))
+            add((1 .. 1))
+            add((0 .. 0))
         }
 
         val iterator = set.iterator()
 
         val interval = iterator.next()
 
-        Assert.assertEquals(Interval(0, 2), interval)
+        Assert.assertEquals((0 until 2), interval)
         Assert.assertFalse(iterator.hasNext())
     }
 
@@ -63,15 +63,15 @@ class IntervalSetTest {
     fun testInsertInOrder() {
         val set = IntervalSet()
 
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
-        set.add(Interval(5, 6))
+        set.add((1 until 2))
+        set.add((3 until 4))
+        set.add((5 until 6))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 2), iterator.next())
-        Assert.assertEquals(Interval(3, 4), iterator.next())
-        Assert.assertEquals(Interval(5, 6), iterator.next())
+        Assert.assertEquals((1 until 2), iterator.next())
+        Assert.assertEquals((3 until 4), iterator.next())
+        Assert.assertEquals((5 until 6), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -81,15 +81,15 @@ class IntervalSetTest {
     fun testInsertInReverse() {
         val set = IntervalSet()
 
-        set.add(Interval(5, 6))
-        set.add(Interval(3, 4))
-        set.add(Interval(1, 2))
+        set.add((5 until 6))
+        set.add((3 until 4))
+        set.add((1 until 2))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 2), iterator.next())
-        Assert.assertEquals(Interval(3, 4), iterator.next())
-        Assert.assertEquals(Interval(5, 6), iterator.next())
+        Assert.assertEquals((1 until 2), iterator.next())
+        Assert.assertEquals((3 until 4), iterator.next())
+        Assert.assertEquals((5 until 6), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -98,15 +98,15 @@ class IntervalSetTest {
     fun testInsert231() {
         val set = IntervalSet()
 
-        set.add(Interval(3, 4))
-        set.add(Interval(5, 6))
-        set.add(Interval(1, 2))
+        set.add((3 until 4))
+        set.add((5 until 6))
+        set.add((1 until 2))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 2), iterator.next())
-        Assert.assertEquals(Interval(3, 4), iterator.next())
-        Assert.assertEquals(Interval(5, 6), iterator.next())
+        Assert.assertEquals((1 until 2), iterator.next())
+        Assert.assertEquals((3 until 4), iterator.next())
+        Assert.assertEquals((5 until 6), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -115,15 +115,15 @@ class IntervalSetTest {
     fun testInsert213() {
         val set = IntervalSet()
 
-        set.add(Interval(3, 4))
-        set.add(Interval(1, 2))
-        set.add(Interval(5, 6))
+        set.add((3 until 4))
+        set.add((1 until 2))
+        set.add((5 until 6))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 2), iterator.next())
-        Assert.assertEquals(Interval(3, 4), iterator.next())
-        Assert.assertEquals(Interval(5, 6), iterator.next())
+        Assert.assertEquals((1 until 2), iterator.next())
+        Assert.assertEquals((3 until 4), iterator.next())
+        Assert.assertEquals((5 until 6), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -132,17 +132,17 @@ class IntervalSetTest {
     fun testInsertBug() {
         val set = IntervalSet()
 
-        set.add(Interval(5, 6))
-        set.add(Interval(7, 8))
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
+        set.add((5 until 6))
+        set.add((7 until 8))
+        set.add((1 until 2))
+        set.add((3 until 4))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 2), iterator.next())
-        Assert.assertEquals(Interval(3, 4), iterator.next())
-        Assert.assertEquals(Interval(5, 6), iterator.next())
-        Assert.assertEquals(Interval(7, 8), iterator.next())
+        Assert.assertEquals((1 until 2), iterator.next())
+        Assert.assertEquals((3 until 4), iterator.next())
+        Assert.assertEquals((5 until 6), iterator.next())
+        Assert.assertEquals((7 until 8), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -151,14 +151,14 @@ class IntervalSetTest {
     fun testInsertLargeRange() {
         val set = IntervalSet()
 
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
-        set.add(Interval(5, 6))
-        set.add(Interval(0, 7))
+        set.add((1 until 2))
+        set.add((3 until 4))
+        set.add((5 until 6))
+        set.add((0 until 7))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(0, 7), iterator.next())
+        Assert.assertEquals((0 until 7), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -167,14 +167,14 @@ class IntervalSetTest {
     fun testInsertLargeRangeOuterOverlap() {
         val set = IntervalSet()
 
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
-        set.add(Interval(5, 6))
-        set.add(Interval(2, 5))
+        set.add((1 until 2))
+        set.add((3 until 4))
+        set.add((5 until 6))
+        set.add((2 until 5))
 
         val iterator = set.iterator()
 
-        Assert.assertEquals(Interval(1, 6), iterator.next())
+        Assert.assertEquals((1 until 6), iterator.next())
 
         Assert.assertFalse(iterator.hasNext())
     }
@@ -183,8 +183,8 @@ class IntervalSetTest {
     fun testContains() {
         val set = IntervalSet()
 
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
+        set.add((1 until 2))
+        set.add((3 until 4))
 
         Assert.assertFalse(set.contains(0))
         Assert.assertTrue(set.contains(1))
@@ -197,17 +197,17 @@ class IntervalSetTest {
     fun testContainsAny() {
         val set = IntervalSet()
 
-        set.add(Interval(1, 2))
-        set.add(Interval(3, 4))
+        set.add((1 until 2))
+        set.add((3 until 4))
 
         val set2 = IntervalSet()
-        set2.add(Interval(2, 3))
-        set2.add(Interval(4, 5))
+        set2.add((2 until 3))
+        set2.add((4 until 5))
 
         Assert.assertFalse(set.containsAny(set2))
         Assert.assertFalse(set2.containsAny(set))
 
-        set.add(Interval(2, 3))
+        set.add((2 until 3))
 
         Assert.assertTrue(set.containsAny(set2))
         Assert.assertTrue(set2.containsAny(set))

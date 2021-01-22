@@ -6,9 +6,9 @@ import kotlin.math.min
 /**
  * Format is start - end - start - end ...
  */
-class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
+class IntervalSet(vararg intervals: IntRange) : Iterable<IntRange> {
 
-    private val intervals = ArrayList<Interval>()
+    private val intervals = ArrayList<IntRange>()
 
     init {
         intervals.forEach {
@@ -22,7 +22,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         other.forEach { add(it) }
     }
 
-    fun add(interval: Interval) {
+    fun add(interval: IntRange) {
         // -1 because touch is fine.
         val pos = indexOfOverlapOrCeil(interval.first - 1)
 
@@ -39,7 +39,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
             intervals.removeAt(pos)
         }
 
-        intervals.add(pos, Interval(start .. last))
+        intervals.add(pos, (start .. last))
     }
 
     private fun indexOfOverlapOrCeil(value: Int): Int {
@@ -76,13 +76,13 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
 
         intervals.forEach {
             if(start < it.first) {
-                invertedSet.add(Interval(start, it.first))
+                invertedSet.add((start until it.first))
                 start = it.last + 1
             }
         }
 
         if(start <= rangeEnd) {
-            invertedSet.add(Interval(start, rangeEnd))
+            invertedSet.add((start until rangeEnd))
         }
 
         return invertedSet
@@ -106,7 +106,7 @@ class IntervalSet(vararg intervals: Interval) : Iterable<Interval> {
         return false
     }
 
-    override fun iterator(): Iterator<Interval> {
+    override fun iterator(): Iterator<IntRange> {
         return intervals.iterator()
     }
 

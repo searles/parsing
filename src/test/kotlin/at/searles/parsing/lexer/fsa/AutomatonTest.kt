@@ -12,8 +12,8 @@ class AutomatonTest {
         val node2 = Node()
         val node3 = Node()
 
-        node1.connectTo(node2, IntervalSet(Interval(1, 2)))
-        node1.connectTo(node3, IntervalSet(Interval(2, 3)))
+        node1.connectTo(node2, IntervalSet((1 until 2)))
+        node1.connectTo(node3, IntervalSet((2 until 3)))
 
         Assert.assertEquals(3, Automaton(node1).nodes.count())
     }
@@ -24,8 +24,8 @@ class AutomatonTest {
         val node2 = Node()
         val node3 = Node()
 
-        node1.connectTo(node2, IntervalSet(Interval(1, 2)))
-        node1.connectTo(node3, IntervalSet(Interval(2, 3)))
+        node1.connectTo(node2, IntervalSet((1 until 2)))
+        node1.connectTo(node3, IntervalSet((2 until 3)))
 
         Assert.assertEquals(2, node1.edges.size)
     }
@@ -36,8 +36,8 @@ class AutomatonTest {
         val node2 = Node()
         val node3 = Node()
 
-        node1.connectTo(node2, IntervalSet(Interval(1, 2)))
-        node1.connectTo(node3, IntervalSet(Interval(2, 3)))
+        node1.connectTo(node2, IntervalSet((1 until 2)))
+        node1.connectTo(node3, IntervalSet((2 until 3)))
 
         val automaton = Automaton(node1)
 

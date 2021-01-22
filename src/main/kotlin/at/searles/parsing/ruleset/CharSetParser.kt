@@ -1,7 +1,6 @@
 package at.searles.parsing.ruleset
 
 import at.searles.parsing.lexer.Lexer
-import at.searles.parsing.lexer.fsa.Interval
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
@@ -23,8 +22,8 @@ object CharSetParser: ParserRule<CharSet> {
         set
     }
 
-    private object AppendToSet: Fold<CharSet, Interval, CharSet> {
-        override fun fold(left: CharSet, right: Interval): CharSet {
+    private object AppendToSet: Fold<CharSet, IntRange, CharSet> {
+        override fun fold(left: CharSet, right: IntRange): CharSet {
             return left + CharSet(right.first .. right.last)
         }
     }
@@ -35,15 +34,15 @@ object CharSetParser: ParserRule<CharSet> {
         ).rep(1)
     }
 
-    private object CreateRange: Fold<Int, Int, Interval> {
-        override fun fold(left: Int, right: Int): Interval {
-            return Interval(left .. right)
+    private object CreateRange: Fold<Int, Int, IntRange> {
+        override fun fold(left: Int, right: Int): IntRange {
+            return (left .. right)
         }
     }
 
-    private object CreateSingleChar: Conversion<Int, Interval> {
-        override fun convert(value: Int): Interval {
-            return Interval(value)
+    private object CreateSingleChar: Conversion<Int, IntRange> {
+        override fun convert(value: Int): IntRange {
+            return (value .. value)
         }
     }
 
@@ -55,7 +54,7 @@ object CharSetParser: ParserRule<CharSet> {
         rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar or
                 rex(EscapedChars.regularChar) + EscapedChars.CreateRegularChar
 
-    private val charOrRange: Parser<Interval> by lazy {
+    private val charOrRange: Parser<IntRange> by lazy {
         startChar + (
             text("-") + endChar + CreateRange or
             CreateSingleChar
