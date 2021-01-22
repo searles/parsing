@@ -3,6 +3,8 @@ package at.searles.parsing.parser
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.combinators.TokenParser
+import at.searles.parsing.parser.combinators.TokenRecognizer
+import at.searles.parsing.parser.combinators.ref
 import org.junit.Assert
 import org.junit.Test
 
@@ -92,5 +94,46 @@ class ParserTest {
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals(Pair("a", "b"), result.value)
+    }
+
+
+    @Test
+    fun testSelfReferringParser() {
+        val str = object: Conversion<CharSequence, String> {
+            override fun convert(value: CharSequence): String {
+                return value.toString()
+            }
+        }
+
+        val stringAppend = object: Fold<String, String, String> {
+            override fun fold(left: String, right: String): String {
+                return left + right
+            }
+        }
+
+        val parserSet = object {
+            val recursiveParser: Parser<String> by ref { charParser + (recursiveParser + stringAppend) or charParser }
+            val charParser = TokenParser(Lexer().createToken(CharSet('a'..'z'))) + str
+        }
+
+        val result = parserSet.recursiveParser.parse(ParserStream("abcde"))
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals("abcde", result.value)
+    }
+
+    @Test
+    fun testFlag() {
+        val lexer = Lexer()
+        val a = TokenRecognizer.text("a", lexer).flag()
+
+        val resultTrue = a.parse(ParserStream("a"))
+        val resultFalse = a.parse(ParserStream(""))
+
+        Assert.assertTrue(resultTrue.isSuccess)
+        Assert.assertTrue(resultFalse.isSuccess)
+
+        Assert.assertTrue(resultTrue.value)
+        Assert.assertFalse(resultFalse.value)
     }
 }

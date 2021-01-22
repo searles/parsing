@@ -7,10 +7,8 @@ import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
 class RepeatReducer<A>(private val reducer: Reducer<A, A>, private val minCount: Int) : Reducer<A, A> {
-
     init {
         require(minCount >= 0)
-
     }
 
     override fun parse(stream: ParserStream, input: A): ParserResult<A> {

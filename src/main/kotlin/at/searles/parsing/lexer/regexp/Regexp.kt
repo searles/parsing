@@ -47,7 +47,7 @@ interface Regexp {
     }
 
     // A^
-    fun nonGreedy(): Regexp {
+    fun shortest(): Regexp {
         return FirstMatch(this)
     }
 

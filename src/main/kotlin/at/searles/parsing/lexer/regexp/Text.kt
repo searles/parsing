@@ -16,12 +16,12 @@ class Text(seq: CharSequence) : Regexp {
             return seqs.drop(1).fold(Text(seqs.first()) as Regexp, { a, b -> a or Text(b) } )
         }
 
-        fun caseInsensitive(seq: CharSequence): Regexp {
+        fun itext(seq: CharSequence): Regexp {
             return seq.drop(1).fold(CharSet.ichars(seq.first()) as Regexp, {rex, chr -> rex + CharSet.ichars(chr)} )
         }
 
         fun imany(vararg seqs: CharSequence): Regexp {
-            return seqs.drop(1).fold(caseInsensitive(seqs.first()), { a, b -> a or caseInsensitive(b) } )
+            return seqs.drop(1).fold(itext(seqs.first()), { a, b -> a or itext(b) } )
         }
     }
 }

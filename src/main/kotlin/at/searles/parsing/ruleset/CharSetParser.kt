@@ -6,10 +6,10 @@ import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.printer.PrintTree
 
-object CharSetParser: ParserRule<CharSet> {
+object CharSetParser: ParserRules {
     override val lexer: Lexer = Lexer()
 
-    private val charSet by lazy { text("[") + invertableSet + text("]") }
+    val charSet by lazy { ch('[') + invertableSet + ch(']') }
 
     private object InvertSet: Conversion<CharSet, CharSet> {
         override fun convert(value: CharSet): CharSet {
@@ -60,13 +60,4 @@ object CharSetParser: ParserRule<CharSet> {
             CreateSingleChar
         )
     }
-
-    override fun parse(stream: ParserStream): ParserResult<CharSet> {
-        return charSet.parse(stream)
-    }
-
-    override fun print(value: CharSet): PrintTree {
-        return charSet.print(value)
-    }
-
 }

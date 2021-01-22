@@ -1,9 +1,10 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'java-library'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'at.searles'
+version '0.0.10'
 
 repositories {
     mavenCentral()
@@ -11,7 +12,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 compileKotlin {
     kotlinOptions {

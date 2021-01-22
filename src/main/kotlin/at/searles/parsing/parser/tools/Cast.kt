@@ -1,4 +1,4 @@
-package at.searles.parsing.parser.combinators
+package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Conversion
 import at.searles.parsing.parser.FnResult

@@ -66,7 +66,7 @@ class RegexpText {
 
     @Test
     fun testFirstMatch() {
-        val regexp = Text("a").rep1().nonGreedy()
+        val regexp = Text("a").rep1().shortest()
         val automaton = regexp.accept(RegexpToFsaVisitor)
         Assert.assertEquals(
                 "q0 --97..97--> q1*", automaton.toString())

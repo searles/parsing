@@ -25,6 +25,10 @@ interface Recognizer {
         return this.toReducer<A>() + reducer
     }
 
+    fun flag(): Parser<Boolean> {
+        return this.init(true) or InitValue { false }
+    }
+
     fun <A> toReducer(): Reducer<A, A> {
         return RecognizerToReducer(this)
     }

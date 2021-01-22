@@ -1,0 +1,72 @@
+package at.searles.parsing.parser.tools
+
+import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.parser.Parser.Companion.orEmpty
+import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.parser.combinators.TokenRecognizer
+import org.junit.Assert
+import org.junit.Test
+
+class ListTest {
+    @Test
+    fun testPushBack() {
+        val list = BacktrackingList<Int>()
+
+        val list2 = list + 1 + 2
+        val list3 = list2 + 3
+
+        Assert.assertEquals(listOf(1, 2, 3), list3)
+
+        val list4 = list2 + 4
+
+        Assert.assertEquals(listOf(1, 2, 4), list4)
+    }
+
+    @Test
+    fun testEmptyList() {
+        val emptyList = EmptyList<Int>()
+        val list = emptyList.initialize()
+
+        Assert.assertTrue(list.isEmpty())
+        Assert.assertTrue(emptyList.consume(emptyList()))
+        Assert.assertFalse(emptyList.consume(listOf(1)))
+    }
+
+    @Test
+    fun testListWithSeparator() {
+        val lexer = Lexer()
+        val a = TokenRecognizer.text("a", lexer).init("a")
+        val list = a.join(TokenRecognizer.text(",", lexer))
+
+        val parseResult = list.parse(ParserStream("a,a,a"))
+        val printResult = list.print(listOf("a", "a"))
+
+        Assert.assertTrue(parseResult.isSuccess)
+        Assert.assertEquals(listOf("a", "a", "a"), parseResult.value)
+
+        Assert.assertTrue(printResult.isSuccess)
+        Assert.assertEquals("a,a", printResult.asString())
+    }
+
+    @Test
+    fun testOrEmpty() {
+        val lexer = Lexer()
+        val a = TokenRecognizer.text("a", lexer).init("a")
+        val plus = TokenRecognizer.text("+", lexer)
+
+        val list = (plus + a.join(TokenRecognizer.text(",", lexer))).orEmpty()
+
+        val parseResult = list.parse(ParserStream("+a,a,a"))
+        val printResult = list.print(listOf("a", "a"))
+        val printResultEmpty = list.print(emptyList())
+
+        Assert.assertTrue(parseResult.isSuccess)
+        Assert.assertEquals(listOf("a", "a", "a"), parseResult.value)
+
+        Assert.assertTrue(printResult.isSuccess)
+        Assert.assertEquals("+a,a", printResult.asString())
+
+        Assert.assertTrue(printResultEmpty.isSuccess)
+        Assert.assertEquals("", printResultEmpty.asString())
+    }
+}
