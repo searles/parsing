@@ -17,6 +17,10 @@ interface Parser<A> {
         return ParserUnion(listOf(this, other))
     }
 
+    fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
+        return if(swapPrint) ParserUnion(listOf(other, this)) else this or other
+    }
+
     operator fun plus(recognizer: Recognizer): Parser<A> {
         return this + recognizer.toReducer()
     }

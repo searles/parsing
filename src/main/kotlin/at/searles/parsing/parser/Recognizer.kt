@@ -1,5 +1,6 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.parser.combinators.OptionalRecognizer
 import at.searles.parsing.parser.combinators.RecognizerPlusParser
 import at.searles.parsing.parser.combinators.RecognizerPlusRecognizer
 import at.searles.parsing.parser.combinators.RecognizerToReducer
@@ -23,6 +24,10 @@ interface Recognizer {
 
     operator fun <A, B> plus(reducer: Reducer<A, B>): Reducer<A, B> {
         return this.toReducer<A>() + reducer
+    }
+
+    fun opt(): Recognizer {
+        return OptionalRecognizer(this)
     }
 
     fun flag(): Parser<Boolean> {

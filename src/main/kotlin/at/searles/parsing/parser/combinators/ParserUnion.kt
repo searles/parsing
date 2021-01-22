@@ -29,7 +29,11 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
         return PrintTree.failure
     }
 
-    override fun or(other: Parser<A>): Parser<A> {
+    override infix fun or(other: Parser<A>): Parser<A> {
         return ParserUnion(parsers + other)
+    }
+
+    override fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
+        return if(swapPrint) ParserUnion(listOf(other) + parsers) else this or other
     }
 }

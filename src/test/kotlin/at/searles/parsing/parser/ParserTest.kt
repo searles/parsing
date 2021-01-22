@@ -136,4 +136,34 @@ class ParserTest {
         Assert.assertTrue(resultTrue.value)
         Assert.assertFalse(resultFalse.value)
     }
+
+    @Test
+    fun testSwapPrint() {
+        val lexer = Lexer()
+        val a = TokenRecognizer.text("a", lexer).init(1)
+        val b = TokenRecognizer.text("b", lexer).init(1)
+
+        val ab = a.or(b, swapPrint = true)
+
+        val printResult = ab.print(1)
+
+        Assert.assertTrue(printResult.isSuccess)
+        Assert.assertEquals("b", printResult.asString())
+    }
+
+
+    @Test
+    fun testSwapPrintMultipleItems() {
+        val lexer = Lexer()
+        val a = TokenRecognizer.text("a", lexer).init(1)
+        val b = TokenRecognizer.text("b", lexer).init(1)
+        val c = TokenRecognizer.text("c", lexer).init(1)
+
+        val ab = a.or(b, swapPrint = true).or(c, swapPrint = false)
+
+        val printResult = ab.print(1)
+
+        Assert.assertTrue(printResult.isSuccess)
+        Assert.assertEquals("b", printResult.asString())
+    }
 }
