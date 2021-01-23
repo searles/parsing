@@ -8,7 +8,7 @@ interface Initializer<A>: Parser<A> {
     }
 
     override fun print(value: A): PrintTree {
-        if(!consume(value)) {
+        if(consume(value)) {
             return PrintTree.failure
         }
 
@@ -16,5 +16,5 @@ interface Initializer<A>: Parser<A> {
     }
 
     fun initialize(): A
-    fun consume(value: A): Boolean
+    fun consume(value: A): Boolean = error("Not invertible function")
 }

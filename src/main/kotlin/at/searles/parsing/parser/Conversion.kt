@@ -20,5 +20,5 @@ interface Conversion<A, B>: Reducer<A, B> {
         return PartialPrintTree.of(invertedValue.value, PrintTree.Empty)
     }
 
-    fun invert(value: B): FnResult<A> = FnResult.failure
+    fun invert(value: B): FnResult<A> = error("not invertible function")
 }

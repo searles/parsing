@@ -69,4 +69,13 @@ class ListTest {
         Assert.assertTrue(printResultEmpty.isSuccess)
         Assert.assertEquals("", printResultEmpty.asString())
     }
+
+    @Test
+    fun listAppendWithMin() {
+        val append = ListAppend<Int>(2)
+
+        Assert.assertEquals(3, append.invertRight(listOf(1, 2, 3)).value)
+        Assert.assertFalse(append.invertLeft(listOf(1, 2)).isSuccess)
+        Assert.assertFalse(append.invertRight(listOf(1, 2)).isSuccess)
+    }
 }

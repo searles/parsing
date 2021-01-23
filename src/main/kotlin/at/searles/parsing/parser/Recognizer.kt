@@ -10,10 +10,6 @@ interface Recognizer {
     fun parse(stream: ParserStream): RecognizerResult
     fun print(): PrintTree
 
-    infix fun or(other: Recognizer): Recognizer {
-        TODO()
-    }
-
     operator fun plus(recognizer: Recognizer): Recognizer {
         return RecognizerPlusRecognizer(this, recognizer)
     }
