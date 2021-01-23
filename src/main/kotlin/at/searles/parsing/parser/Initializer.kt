@@ -8,7 +8,7 @@ interface Initializer<A>: Parser<A> {
     }
 
     override fun print(value: A): PrintTree {
-        if(consume(value)) {
+        if(!consume(value)) {
             return PrintTree.failure
         }
 

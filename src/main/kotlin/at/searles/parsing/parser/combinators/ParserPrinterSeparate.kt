@@ -1,9 +1,6 @@
 package at.searles.parsing.parser.combinators
 
-import at.searles.parsing.parser.Parser
-import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.parser.Reducer
+import at.searles.parsing.parser.*
 import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 

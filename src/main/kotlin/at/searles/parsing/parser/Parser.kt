@@ -18,7 +18,7 @@ interface Parser<A> {
     }
 
     fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
-        return if(swapPrint) ParserUnion(listOf(other, this)) else this or other
+        return if(swapPrint) ParserPrinterSeparate(this or other, other or this) else this or other
     }
 
     operator fun plus(recognizer: Recognizer): Parser<A> {
