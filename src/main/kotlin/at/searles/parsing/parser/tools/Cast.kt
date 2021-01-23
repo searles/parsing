@@ -19,3 +19,21 @@ inline fun <reified T: U, U> cast(): Conversion<T, U> {
         }
     }
 }
+
+inline fun <reified T: U, U> castAll(): Conversion<List<T>, List<U>> {
+    return object: Conversion<List<T>, List<U>> {
+        override fun convert(value: List<T>): List<U> {
+            return value
+        }
+
+        override fun invert(value: List<U>): FnResult<List<T>> {
+            if(value.any { it !is T }) return FnResult.failure
+            @Suppress("UNCHECKED_CAST")
+            return FnResult.success(value as List<T>)
+        }
+
+        override fun toString(): String {
+            return "{castAll<${T::class.java.simpleName}>}"
+        }
+    }
+}
