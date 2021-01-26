@@ -79,7 +79,6 @@ class ListTest {
         Assert.assertFalse(append.invertRight(listOf(1, 2)).isSuccess)
     }
 
-
     @Test
     fun testCastAll() {
         val cast = castAll<Int, Number>()
