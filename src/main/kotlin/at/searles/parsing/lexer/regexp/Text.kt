@@ -1,5 +1,8 @@
 package at.searles.parsing.lexer.regexp
 
+import at.searles.parsing.codepoint.CodePointStream
+import at.searles.parsing.codepoint.StringCodePointStream
+
 class Text(seq: CharSequence) : Regexp {
     val string: String = seq.toString()
 
@@ -12,12 +15,26 @@ class Text(seq: CharSequence) : Regexp {
     }
 
     companion object {
-        fun many(vararg seqs: CharSequence): Regexp {
-            return seqs.drop(1).fold(Text(seqs.first()) as Regexp, { a, b -> a or Text(b) } )
+        fun itext(seq: CharSequence): Regexp {
+            val stream = StringCodePointStream(seq.toString())
+            var regexp: Regexp = CharSet.ichars(stream.read())
+
+            while(true) {
+                val ch = stream.read()
+                if(ch == -1) break
+                regexp += CharSet.ichars(ch)
+
+            }
+
+            return regexp
         }
 
-        fun itext(seq: CharSequence): Regexp {
-            return seq.map { CharSet.ichars(it) }.reduce { acc, charSet -> acc union charSet }
+        fun many(vararg seqs: CharSequence): Regexp {
+            return seqs.map<CharSequence, Regexp> {
+                Text(it.toString())
+            }.reduce { acc, charSet ->
+                acc or charSet
+            }
         }
 
         fun imany(vararg seqs: CharSequence): Regexp {

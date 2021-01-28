@@ -52,13 +52,17 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp {
 
     companion object {
         fun ichars(vararg chars: Char): CharSet {
+            return ichars(*chars.map { it.toInt() }.toIntArray())
+        }
+
+        fun ichars(vararg chars: Int): CharSet {
             val list = ArrayList<Int>(chars.size * 2)
 
             for(ch in chars) {
-                list.add(ch.toInt())
-                when(Character.getType(ch)) {
-                    Character.LOWERCASE_LETTER.toInt() -> list.add(ch.toUpperCase().toInt())
-                    Character.UPPERCASE_LETTER.toInt() -> list.add(ch.toLowerCase().toInt())
+                list.add(ch)
+                when(Character.getType(ch)) { // TODO are all upper/lower-cases in the char-range?
+                    Character.LOWERCASE_LETTER.toInt() -> list.add(ch.toChar().toUpperCase().toInt())
+                    Character.UPPERCASE_LETTER.toInt() -> list.add(ch.toChar().toLowerCase().toInt())
                 }
             }
 
