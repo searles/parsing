@@ -4,7 +4,6 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
-import at.searles.parsing.printer.PrintTree
 
 object CharSetParser: ParserRules {
     override val lexer: Lexer = Lexer()
@@ -24,7 +23,7 @@ object CharSetParser: ParserRules {
 
     private object AppendToSet: Fold<CharSet, IntRange, CharSet> {
         override fun fold(left: CharSet, right: IntRange): CharSet {
-            return left + CharSet(right.first .. right.last)
+            return left.union(CharSet(right.first .. right.last))
         }
     }
 

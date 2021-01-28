@@ -3,7 +3,7 @@ package at.searles.parsing.lexer.regexp
 import at.searles.parsing.lexer.fsa.IntervalSet
 import java.util.*
 
-class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterable<IntRange> {
+class CharSet private constructor(private val set: IntervalSet) : Regexp {
     constructor(vararg chars: Char): this(*chars.map { it.toInt() }.toIntArray())
 
     constructor(vararg codePoints: Int): this(codePoints.asIterable())
@@ -26,7 +26,7 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
         }
     })
 
-    operator fun plus(that: CharSet): CharSet {
+    infix fun union(that: CharSet): CharSet {
         return CharSet(set.copy().apply { add(that.set) })
     }
 
@@ -48,10 +48,6 @@ class CharSet private constructor(private val set: IntervalSet) : Regexp, Iterab
 
     operator fun contains(ch: Char): Boolean {
         return set.contains(ch.toInt())
-    }
-
-    override fun iterator(): Iterator<IntRange> {
-        return set.iterator()
     }
 
     companion object {

@@ -2,9 +2,11 @@ package at.searles.parsing.parser
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
+import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
+import at.searles.parsing.ruleset.ParserRules
 import org.junit.Assert
 import org.junit.Test
 
@@ -165,5 +167,17 @@ class ParserTest {
 
         Assert.assertTrue(printResult.isSuccess)
         Assert.assertEquals("b", printResult.asString())
+    }
+
+    @Test
+    fun testItextMany() {
+        val rules = object: ParserRules {
+            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+            val a = itext("a", "b")
+        }
+
+        val result = rules.a.parse(ParserStream("A B"))
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals("ab", rules.a.print().asString())
     }
 }

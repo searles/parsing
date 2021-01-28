@@ -17,11 +17,11 @@ class Text(seq: CharSequence) : Regexp {
         }
 
         fun itext(seq: CharSequence): Regexp {
-            return seq.drop(1).fold(CharSet.ichars(seq.first()) as Regexp, {rex, chr -> rex + CharSet.ichars(chr)} )
+            return seq.map { CharSet.ichars(it) }.reduce { acc, charSet -> acc union charSet }
         }
 
         fun imany(vararg seqs: CharSequence): Regexp {
-            return seqs.drop(1).fold(itext(seqs.first()), { a, b -> a or itext(b) } )
+            return seqs.map { itext(it) }.reduce { a, b -> a or b }
         }
     }
 }

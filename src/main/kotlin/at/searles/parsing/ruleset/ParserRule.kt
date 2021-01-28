@@ -14,14 +14,16 @@ import at.searles.parsing.parser.combinators.TokenRecognizer
 interface ParserRules {
     val lexer: Lexer
 
-    fun itext(text: String): Recognizer {
-        val token = lexer.createToken(Text.itext(text))
-        return TokenRecognizer(token, text)
+    fun itext(vararg text: String): Recognizer {
+        return text.map<String, Recognizer> {
+            TokenRecognizer(lexer.createToken(Text.itext(it)), it)
+        }.reduce { a, b -> a + b }
     }
 
-    fun text(text: String): Recognizer {
-        val token = lexer.createToken(Text(text))
-        return TokenRecognizer(token, text)
+    fun text(vararg text: String): Recognizer {
+        return text.map<String, Recognizer> {
+            TokenRecognizer(lexer.createToken(Text(it)), it)
+        }.reduce { a, b -> a + b }
     }
 
     fun ch(char: Char): Recognizer {

@@ -1,14 +1,15 @@
 package at.searles.parsing.parser
 
-import at.searles.parsing.parser.combinators.OptionalRecognizer
-import at.searles.parsing.parser.combinators.RecognizerPlusParser
-import at.searles.parsing.parser.combinators.RecognizerPlusRecognizer
-import at.searles.parsing.parser.combinators.RecognizerToReducer
+import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.printer.PrintTree
 
 interface Recognizer {
     fun parse(stream: ParserStream): RecognizerResult
     fun print(): PrintTree
+
+    infix fun or(other: Recognizer): Recognizer {
+        return RecognizerOrRecognizer(this, other)
+    }
 
     operator fun plus(recognizer: Recognizer): Recognizer {
         return RecognizerPlusRecognizer(this, recognizer)
