@@ -180,4 +180,5 @@ class ParserTest {
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals("ab", rules.a.print().asString())
     }
+
 }

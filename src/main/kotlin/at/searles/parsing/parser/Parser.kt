@@ -5,7 +5,7 @@ import at.searles.parsing.parser.Reducer.Companion.join
 import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.parser.tools.CastToNullable
 import at.searles.parsing.parser.tools.CreatePair
-import at.searles.parsing.parser.tools.EmptyList
+import at.searles.parsing.parser.tools.CreateEmptyList
 import at.searles.parsing.parser.tools.ListAppend
 import at.searles.parsing.printer.PrintTree
 
@@ -38,7 +38,7 @@ interface Parser<A> {
     }
 
     fun rep(minCount: Int = 0): Parser<List<A>> {
-        return EmptyList<A>() + (this + ListAppend()).rep(minCount)
+        return CreateEmptyList<A>() + (this + ListAppend()).rep(minCount)
     }
 
     fun opt(): Parser<A?> {
@@ -46,12 +46,16 @@ interface Parser<A> {
     }
 
     fun join(separator: Recognizer): Parser<List<A>> {
-        return EmptyList<A>() + (this + ListAppend()).join(separator)
+        return CreateEmptyList<A>() + (this + ListAppend()).join(separator)
     }
 
     companion object {
         fun <A> Parser<List<A>>.orEmpty(): Parser<List<A>> {
-            return ParserPrinterSeparate(this or EmptyList(), EmptyList<A>() or this)
+            return ParserPrinterSeparate(this or CreateEmptyList(), CreateEmptyList<A>() or this)
+        }
+
+        fun <A> variation(vararg others: Parser<A>): Parser<List<A>> {
+            return CreateEmptyList<A>() + Variation(others.map { it + ListAppend() }.toList())
         }
     }
 }

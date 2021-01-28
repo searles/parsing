@@ -24,7 +24,7 @@ class ListTest {
 
     @Test
     fun testEmptyList() {
-        val emptyList = EmptyList<Int>()
+        val emptyList = CreateEmptyList<Int>()
         val list = emptyList.initialize()
 
         Assert.assertTrue(list.isEmpty())

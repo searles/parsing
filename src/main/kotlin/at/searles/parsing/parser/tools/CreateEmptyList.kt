@@ -2,7 +2,7 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Initializer
 
-class EmptyList<A>: Initializer<List<A>> {
+class CreateEmptyList<A>: Initializer<List<A>> {
     override fun initialize(): List<A> {
         return emptyList()
     }
