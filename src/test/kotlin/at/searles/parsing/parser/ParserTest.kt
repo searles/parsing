@@ -6,6 +6,9 @@ import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
+import at.searles.parsing.parser.tools.AsInt
+import at.searles.parsing.parser.tools.AsString
+import at.searles.parsing.parser.tools.NewInstance
 import at.searles.parsing.ruleset.ParserRules
 import org.junit.Assert
 import org.junit.Test
@@ -181,4 +184,54 @@ class ParserTest {
         Assert.assertEquals("ab", rules.a.print().asString())
     }
 
+    @Test
+    fun testPlusStraightened() {
+        val rules = object: ParserRules {
+            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+            val a = itext("a").init(1)
+            val b = itext("b").init(2)
+            val c = itext("c").init(3)
+
+            val abc = a + b + c
+        }
+
+        Assert.assertEquals(Pair(Pair(1, 2), 3), rules.abc.parse(ParserStream("abc")).value)
+    }
+
+    @Test
+    fun testParsePersonExample() {
+        class Person(val firstName: Int, val lastName: Int, val age: Int)
+
+        val rules = object: ParserRules {
+            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
+            val num = rex(CharSet('0'..'9').rep1()) + AsInt
+
+            val person = name + name + text(",") + num + NewInstance.of<Person>().create()
+        }
+
+        val result = rules.person.parse(ParserStream("Joe Biden, 78"))
+        Assert.assertTrue(result.isSuccess)
+        val person = result.value
+        Assert.assertEquals("Joe", person.firstName)
+        Assert.assertEquals("Biden", person.lastName)
+        Assert.assertEquals(78, person.age)
+    }
+
+    @Test
+    fun testPrintPersonExample() {
+        class Person(val firstName: String, val lastName: String, val age: Int)
+
+        val rules = object: ParserRules {
+            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
+            val num = rex(CharSet('0'..'9').rep1()) + AsInt
+
+            val person = name + name + text(",") + num + NewInstance.of<Person>().create()
+        }
+
+        val result = rules.person.print(Person("John", "Doe", 111))
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals("JohnDoe,111", result.asString())
+    }
 }
