@@ -37,4 +37,8 @@ class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Re
 
         return leftPrintResult + rightPrintResult.rightTree
     }
+
+    override fun <C> plus(reducer: Reducer<B, C>): Parser<C> {
+        return this.left + (this.right + reducer)
+    }
 }
