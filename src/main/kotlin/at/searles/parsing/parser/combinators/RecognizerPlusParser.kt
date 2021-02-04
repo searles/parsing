@@ -20,7 +20,6 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
         }
 
         return ParserResult.of(rightResult.value, leftResult.index, stream.index - leftResult.index)
-
     }
 
     override fun print(value: A): PrintTree {
@@ -31,5 +30,9 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
         }
 
         return left.print() + rightResult
+    }
+
+    override fun toString(): String {
+        return "$left.plus($right)"
     }
 }

@@ -37,6 +37,21 @@ class FrameStreamTest {
     }
 
     @Test
+    fun testFrameStreamToString() {
+        val frameStream = FrameStream(StringCodePointStream("abcd"))
+
+        Assert.assertEquals('a'.toInt(), frameStream.read())
+        Assert.assertEquals('b'.toInt(), frameStream.read())
+
+        frameStream.setFrameEnd()
+
+        frameStream.read()
+
+        Assert.assertEquals("\"ab\": abc_d[0:2]", frameStream.toString())
+    }
+
+
+    @Test
     fun testMultipleSetFrameEnd() {
         val frameStream = FrameStream(StringCodePointStream("abcd"))
 

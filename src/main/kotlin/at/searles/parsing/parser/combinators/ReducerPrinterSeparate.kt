@@ -13,4 +13,9 @@ class ReducerPrinterSeparate<A>(private val parser: Reducer<A, A>, private val p
     override fun print(value: A): PartialPrintTree<A> {
         return printer.print(value)
     }
+
+    override fun toString(): String {
+        return "*$parser"
+    }
+
 }

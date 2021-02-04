@@ -55,4 +55,8 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>, private val minCount:
             count++
         }
     }
+
+    override fun toString(): String {
+        return "$reducer.rep($minCount)"
+    }
 }

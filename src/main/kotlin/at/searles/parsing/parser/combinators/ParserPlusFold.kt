@@ -31,4 +31,8 @@ class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fol
 
         return PartialPrintTree.of(leftResult.value, midResult)
     }
+
+    override fun toString(): String {
+        return "$mid.plus($right)"
+    }
 }

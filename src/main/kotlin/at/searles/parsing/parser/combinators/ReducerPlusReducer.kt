@@ -36,4 +36,8 @@ class ReducerPlusReducer<A, B, C>(private val left: Reducer<A, B>, private val r
     override operator fun <D> plus(reducer: Reducer<C, D>): Reducer<A, D> {
         return left + (right + reducer)
     }
+
+    override fun toString(): String {
+        return "$left.plus($right)"
+    }
 }

@@ -15,4 +15,8 @@ class RecognizerOrRecognizer(private val first: Recognizer, private val second: 
     override fun print(): PrintTree {
         return first.print()
     }
+
+    override fun toString(): String {
+        return "$first.or($second)"
+    }
 }

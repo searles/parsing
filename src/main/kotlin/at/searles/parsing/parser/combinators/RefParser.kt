@@ -7,14 +7,22 @@ import at.searles.parsing.printer.PrintTree
 import kotlin.reflect.KProperty
 
 fun <T> ref(parser: (() -> Parser<T>)): RefParser<T> {
-    return RefParser(parser)
+    return RefParser("{}", parser)
 }
 
-class RefParser<T>(private val createParser: (() -> Parser<T>)): Parser<T> {
+fun <T> ref(label: String, parser: (() -> Parser<T>)): RefParser<T> {
+    return RefParser(label, parser)
+}
+
+class RefParser<T>(private val label: String, private val createParser: (() -> Parser<T>)): Parser<T> {
     private var status: Int = UNRESOLVED
     private lateinit var lazyParser: Parser<T>
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Parser<T> {
+        return getValue()
+    }
+
+    private fun getValue(): Parser<T> {
         return when (status) {
             UNRESOLVED -> {
                 status = RESOLVING
@@ -28,11 +36,15 @@ class RefParser<T>(private val createParser: (() -> Parser<T>)): Parser<T> {
     }
 
     override fun parse(stream: ParserStream): ParserResult<T> {
-        return lazyParser.parse(stream)
+        return getValue().parse(stream)
     }
 
     override fun print(value: T): PrintTree {
-        return lazyParser.print(value)
+        return getValue().print(value)
+    }
+
+    override fun toString(): String {
+        return label
     }
 
     companion object {

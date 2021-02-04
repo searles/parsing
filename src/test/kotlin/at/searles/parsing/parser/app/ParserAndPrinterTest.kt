@@ -6,10 +6,11 @@ import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.opt
 import at.searles.parsing.parser.Reducer.Companion.rep
-import at.searles.parsing.parser.combinators.LazyParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
+import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.printer.PrintTree
+import at.searles.parsing.ruleset.ParserRules
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -193,23 +194,43 @@ class ParserAndPrinterTest {
     }
     
     private fun recursiveParser(): Parser<Expr> {
-        val exprParser = LazyParser<Expr>()
-        val term = term(exprParser)
-        val exprReducer: Reducer<Expr, Expr> = appReducer(exprParser)
-        
-        exprParser.parser = term + exprReducer.opt()
-        
-        return exprParser
+        val rules = object: ParserRules {
+            override val lexer: Lexer = Lexer()
+
+            val expr: Parser<Expr> by ref("expr") {
+                term + appReducer(expr).opt()
+            }
+
+            val term by ref("term") {
+                id or text("(") + expr + text(")")
+            }
+
+            val id by ref("id") {
+                rex(CharSet('a' .. 'z')) + idToExpr
+            }
+        }
+
+        return rules.expr
     }
     
     private fun iterativeParser(): Parser<Expr> {
-        val exprParser = LazyParser<Expr>()
-        val term = term(exprParser)
-        val appReducer: Reducer<Expr, Expr> = appReducer(term)
+        val rules = object: ParserRules {
+            override val lexer: Lexer = Lexer()
 
-        exprParser.parser = term + appReducer.rep()
+            val expr: Parser<Expr> by ref("expr") {
+                term + appReducer(term).rep()
+            }
 
-        return exprParser
+            val term by ref("term") {
+                id or text("(") + expr + text(")")
+            }
+
+            val id by ref("id") {
+                rex(CharSet('a' .. 'z')) + idToExpr
+            }
+        }
+
+        return rules.expr
     }
 
     private val idToExpr = object: Conversion<CharSequence, Expr> {
@@ -222,30 +243,22 @@ class ParserAndPrinterTest {
         }
     }
 
-    private fun term(exprParser: Parser<Expr>): Parser<Expr> {
-        val tokenizer = Lexer()
+    private fun appReducer(term: Parser<Expr>): Reducer<Expr, Expr> {
+        return term.plus(
+            object : Fold<Expr, Expr, Expr> {
+                override fun fold(left: Expr, right: Expr): Expr {
+                    return left.app(right)
+                }
 
-        val idToken = tokenizer.createToken(CharSet('a' .. 'z'))
+                override fun invertLeft(value: Expr): FnResult<Expr> {
+                    return FnResult.ofNullable((value as? App)?.left)
+                }
 
-        val idParser: Parser<Expr> = TokenParser(idToken) + idToExpr
-
-        val wrappedExprParser: Parser<Expr> = TokenRecognizer.text("(", tokenizer).plus(exprParser).plus(TokenRecognizer.text(")", tokenizer))
-        return idParser.or(wrappedExprParser)
+                override fun invertRight(value: Expr): FnResult<Expr> {
+                    return FnResult.ofNullable((value as? App)?.right)
+                }
+            }
+        )
     }
-
-    private fun appReducer(term: Parser<Expr>): Reducer<Expr, Expr> = term.plus(
-        object : Fold<Expr, Expr, Expr> {
-            override fun fold(left: Expr, right: Expr): Expr {
-                return left.app(right)
-            }
-
-            override fun invertLeft(value: Expr): FnResult<Expr> {
-                return FnResult.ofNullable((value as? App)?.left)
-            }
-
-            override fun invertRight(value: Expr): FnResult<Expr> {
-                return FnResult.ofNullable((value as? App)?.right)
-            }
-        })
 }
 

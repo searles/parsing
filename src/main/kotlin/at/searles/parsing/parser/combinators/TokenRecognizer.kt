@@ -28,6 +28,10 @@ class TokenRecognizer(private val token: Token, private val output: String): Rec
         return printTree
     }
 
+    override fun toString(): String {
+        return "\'$output\'"
+    }
+
     companion object {
         fun text(text: String, lexer: Lexer): Recognizer {
             return TokenRecognizer(lexer.createToken(Text(text)), text)

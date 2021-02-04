@@ -20,4 +20,8 @@ class RecognizerToReducer<A>(private val recognizer: Recognizer) : Reducer<A, A>
     override fun print(value: A): PartialPrintTree<A> {
         return PartialPrintTree.of(value, recognizer.print())
     }
+
+    override fun toString(): String {
+        return recognizer.toString()
+    }
 }

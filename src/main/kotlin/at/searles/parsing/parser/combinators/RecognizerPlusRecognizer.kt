@@ -19,11 +19,13 @@ class RecognizerPlusRecognizer(private val left: Recognizer, private val right: 
         }
 
         return RecognizerResult.of(leftResult.index, stream.index - leftResult.index)
-
     }
 
     override fun print(): PrintTree {
         return left.print() + right.print()
     }
 
+    override fun toString(): String {
+        return "$left.plus($right)"
+    }
 }

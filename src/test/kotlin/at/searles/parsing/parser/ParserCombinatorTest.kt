@@ -88,4 +88,5 @@ class ParserCombinatorTest {
         Assert.assertEquals(1, result.index)
         Assert.assertEquals(7, result.length)
     }
+
 }

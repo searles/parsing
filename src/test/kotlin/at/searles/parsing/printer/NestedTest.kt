@@ -4,9 +4,10 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
-import at.searles.parsing.parser.combinators.LazyParser
+import at.searles.parsing.parser.combinators.RefParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
+import at.searles.parsing.parser.combinators.ref
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -54,16 +55,19 @@ class NestedTest {
         createSpecialToken(CharSet(' ', '\n'))
     }
 
-    val term = TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1())) + TermCreate
+    val term by ref { TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1())) + TermCreate }
+    
+    val app: Parser<Tree> by ref { expr + (expr + AppCreate).rep() }
+    
+    var expr = RefParser<Tree>("expr") {
+        term or TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
+    }
 
-    val expr = LazyParser<Tree>()
-
-    val app = expr + (expr + AppCreate).rep()
+    var indent: Int = 0
 
     @Before
-    fun setUp() {
-        expr.parser = term or
-               TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
+    fun resetIndentation() {
+        indent = 0
     }
 
     @Test
@@ -92,13 +96,6 @@ class NestedTest {
         Assert.assertEquals("((((a b) c) d) (e f))", tree.value.toString())
     }
 
-    var indent: Int = 0
-
-    @Before
-    fun resetIndentation() {
-        indent = 0
-    }
-
     class IndentationContext {
         var level = 0
 
@@ -120,8 +117,10 @@ class NestedTest {
     fun testIndentation() {
         val ctx = IndentationContext()
 
-        expr.parser = term or
-                TokenRecognizer.text("(", lexer) + ctx.indent + app + ctx.unindent + TokenRecognizer.text(")", lexer)
+        expr = RefParser<Tree>("expr") {
+            term or 
+            TokenRecognizer.text("(", lexer) + ctx.indent + app + ctx.unindent + TokenRecognizer.text(")", lexer)
+        }
 
         val tree = app.parse(ParserStream("(a (b (c d e) f) g) h"))
         val printTree = app.print(tree.value)

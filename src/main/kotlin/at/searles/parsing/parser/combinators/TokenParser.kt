@@ -14,4 +14,8 @@ class TokenParser(private val token: Token): Parser<CharSequence> {
     override fun print(value: CharSequence): PrintTree {
         return PrintTree.of(value)
     }
+
+    override fun toString(): String {
+        return "<${token.tokenId}>"
+    }
 }

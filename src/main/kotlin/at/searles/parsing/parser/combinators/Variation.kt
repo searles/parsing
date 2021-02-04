@@ -54,4 +54,8 @@ class Variation<A>(private val reducers: List<Reducer<A, A>>): Reducer<A, A> {
 
         return PartialPrintTree.of(output, outputTree)
     }
+
+    override fun toString(): String {
+        return "variation(${reducers.joinToString(", ")})"
+    }
 }

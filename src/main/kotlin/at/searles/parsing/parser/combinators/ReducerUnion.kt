@@ -33,4 +33,8 @@ class ReducerUnion<A, B>(private val reducers: List<Reducer<A, B>>) : Reducer<A,
     override fun or(other: Reducer<A, B>): Reducer<A, B> {
         return ReducerUnion(reducers + other)
     }
+
+    override fun toString(): String {
+        return "union(${reducers.joinToString(", ")})"
+    }
 }

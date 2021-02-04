@@ -20,4 +20,7 @@ class OptionalRecognizer(private val recognizer: Recognizer) : Recognizer {
         return PrintTree.empty
     }
 
+    override fun toString(): String {
+        return "$recognizer.opt()"
+    }
 }

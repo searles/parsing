@@ -12,4 +12,8 @@ class ParserPrinterSeparate<A>(private val parser: Parser<A>, private val printe
     override fun print(value: A): PrintTree {
         return printer.print(value)
     }
+
+    override fun toString(): String {
+        return parser.toString()
+    }
 }

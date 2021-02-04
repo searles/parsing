@@ -40,4 +40,8 @@ class FrameStream(private val stream: BufferedStream) {
         frameLength = 0
         stream.backtrackToIndex(frameIndex)
     }
+
+    override fun toString(): String {
+        return "\"${getFrame()}\": $stream[$frameIndex:$frameLength]"
+    }
 }

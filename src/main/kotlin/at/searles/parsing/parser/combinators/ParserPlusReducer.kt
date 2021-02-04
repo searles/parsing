@@ -41,4 +41,8 @@ class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Re
     override fun <C> plus(reducer: Reducer<B, C>): Parser<C> {
         return this.left + (this.right + reducer)
     }
+
+    override fun toString(): String {
+        return "$left.plus($right)"
+    }
 }

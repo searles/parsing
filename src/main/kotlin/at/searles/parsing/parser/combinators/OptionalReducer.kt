@@ -26,4 +26,8 @@ class OptionalReducer<A>(private val reducer: Reducer<A, A>): Reducer<A, A> {
 
         return PartialPrintTree.of(value, PrintTree.Empty)
     }
+
+    override fun toString(): String {
+        return "$reducer.opt()"
+    }
 }

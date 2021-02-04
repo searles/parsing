@@ -235,4 +235,32 @@ class ParserTest {
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals("JohnDoe,111", result.asString())
     }
+
+    @Test
+    fun testReversePrint() {
+        val rules = object: ParserRules {
+            override val lexer = Lexer()
+
+            val a = text("a").init(1)
+            val b = text("b").init(1)
+
+            val aOrB = a.or(b, swapPrint = true)
+        }
+
+        Assert.assertEquals("b", rules.aOrB.print(1).asString())
+    }
+
+    @Test
+    fun testDoNotReverseParseForReversePrint() {
+        val rules = object: ParserRules {
+            override val lexer = Lexer()
+
+            val a = text("a").init(1)
+            val a2 = text("a").init(2)
+
+            val aOrA2 = a.or(a2, swapPrint = true)
+        }
+
+        Assert.assertEquals(1, rules.aOrA2.parse(ParserStream("a")).value)
+    }
 }
