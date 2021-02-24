@@ -8,7 +8,7 @@ import at.searles.parsing.parser.combinators.RefParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.PrintInject
+import at.searles.parsing.parser.tools.Print
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -100,14 +100,14 @@ class NestedTest {
     class IndentationContext {
         var level = 0
 
-        val indent = PrintInject {
+        val indent = Print {
             it.append("\n")
             level++
             it.append(" ".repeat(level))
         }
 
 
-        val unindent = PrintInject {
+        val unindent = Print {
             it.append("\n")
             level--
             it.append(" ".repeat(level))

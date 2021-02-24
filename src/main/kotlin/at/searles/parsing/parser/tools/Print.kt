@@ -6,7 +6,7 @@ import at.searles.parsing.parser.RecognizerResult
 import at.searles.parsing.printer.OutStream
 import at.searles.parsing.printer.PrintTree
 
-class PrintInject(private val printOutput: (OutStream) -> Unit): Recognizer {
+class Print(private val printOutput: (OutStream) -> Unit): Recognizer {
 
     private val tree = OutputPrintTree()
 

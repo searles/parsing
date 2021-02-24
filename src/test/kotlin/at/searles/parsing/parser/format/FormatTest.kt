@@ -4,13 +4,17 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.Parser.Companion.asString
+import at.searles.parsing.parser.Parser.Companion.orEmpty
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Recognizer
 import at.searles.parsing.parser.RecognizerResult
 import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.parser.tools.NewInstance.of
+import at.searles.parsing.parser.tools.Print
 import at.searles.parsing.parser.tools.cast
+import at.searles.parsing.printer.OutStream
 import at.searles.parsing.printer.PrintTree
+import at.searles.parsing.printer.StringOutStream
 import at.searles.parsing.printer.StringPrintTree
 import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
@@ -36,6 +40,12 @@ class FormatTest {
     }
 
     @Test
+    fun testCanParseBlocksWithCall() {
+        val result by Rules.block.parse("{f();}")
+        Assert.assertEquals(Block(listOf(Call("f", emptyList()))), result)
+    }
+
+    @Test
     fun testCanPrintEmptyBlocks() {
         val result = Rules.block.print(Block(emptyList()))
         Assert.assertEquals("{}", result.asString())
@@ -44,7 +54,37 @@ class FormatTest {
     @Test
     fun testCanPrintBlocksWithItems() {
         val result = Rules.block.print(Block(listOf(Call("f", emptyList()))))
-        Assert.assertEquals("{\n    f();\n}", result.asString())
+
+        val output = StringOutStream().run {
+            result.print(IndentOutStream(this))
+            this.toString()
+        }
+
+        Assert.assertEquals("{\n    f();\n}", output)
+    }
+
+    @Test
+    fun testCanPrintBlocksWithNestedItems() {
+        val result = Rules.block.print(
+            Block(listOf(
+                Call("f", emptyList()),
+                Block(listOf(
+                    Call("f", emptyList())
+                ))
+            ))
+        )
+
+        val output = StringOutStream().run {
+            result.print(IndentOutStream(this))
+            this.toString()
+        }
+
+        Assert.assertEquals("""{
+            |    f();
+            |    {
+            |        f();
+            |    }
+            |}""".trimMargin(), output)
     }
 
     interface Stmt
@@ -59,17 +99,38 @@ class FormatTest {
 
         override val lexer: Lexer = Lexer()
 
+        val indentStart = Print {
+             if(it is IndentOutStream) {
+                it.startIndent()
+            }
+        }
+
+        val indentEnd = Print {
+            if(it is IndentOutStream) {
+                it.endIndent()
+            }
+        }
+
+        val indent = Print {
+            if(it is IndentOutStream) {
+                it.indent()
+            }
+        }
+
+        val newLine by lazy { Print { it.append("\n") } }
+
+        val separator by lazy { Print { it.append(" ") } }
+
         val block: Parser<Block> by ref {
-            text("{") + stmts + text("}") + of<Block>().create()
+            text("{") + (indentStart + stmts + indentEnd).orEmpty() + text("}") + of<Block>().create()
         }
 
         val stmts: Parser<List<Stmt>> by ref {
-            (stmt + text(";")).rep()
+            (indent + (stmt + text(";") or block + cast()) + newLine).rep(1)
         }
 
         val stmt: Parser<Stmt> by ref {
             ifstmt + cast<IfStmt, Stmt>() or
-            block + cast() or
             assignment + cast() or
             call + cast()
         }
@@ -82,18 +143,8 @@ class FormatTest {
             id + text("=") + expr + of<Assignment>().create()
         }
 
-        object Separator: Recognizer {
-            override fun parse(stream: ParserStream): RecognizerResult {
-                return RecognizerResult.of(stream.index, 0)
-            }
-
-            override fun print(): PrintTree {
-                return StringPrintTree(" ")
-            }
-        }
-
         val call: Parser<Call> by ref {
-            id + text("(") + expr.join(text(",") + Separator) + text(")") + of<Call>().create()
+            id + text("(") + expr.join(text(",") + separator).orEmpty() + text(")") + of<Call>().create()
         }
 
         val expr: Parser<Expr> by ref {
@@ -112,6 +163,32 @@ class FormatTest {
         val ws = lexer.createSpecialToken(CharSet(' ', '\n', '\t', '\r').rep1())
 
 //                    comment: '//' [^\n]* | ('/*' .* '*/')!
+    }
+
+    class IndentOutStream(private val outStream: OutStream): OutStream {
+        private var indentLevel = 0
+
+        fun startIndent() {
+            indentLevel ++
+            append("\n")
+        }
+
+        fun endIndent() {
+            indentLevel --
+            indent()
+        }
+
+        fun indent() {
+            repeat(indentLevel) { append("    ") }
+        }
+
+        override fun append(seq: CharSequence) {
+            outStream.append(seq)
+        }
+
+        override fun append(codePoint: Int) {
+            outStream.append(codePoint)
+        }
     }
 
 //    1. Autoformat:
