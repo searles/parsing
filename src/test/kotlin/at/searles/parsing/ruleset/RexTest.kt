@@ -2,7 +2,6 @@ package at.searles.parsing.ruleset
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.parser.Conversion
 import at.searles.parsing.parser.ParserStream
 import org.junit.Assert
 import org.junit.Test
@@ -10,7 +9,7 @@ import org.junit.Test
 class RexTest {
     @Test
     fun testRexWithConversion() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
             val num = rex(CharSet('0' .. '9').rep1()) { it.toString().toInt() }
         }

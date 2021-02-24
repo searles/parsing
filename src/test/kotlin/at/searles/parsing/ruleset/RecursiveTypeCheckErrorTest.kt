@@ -16,7 +16,7 @@ class RecursiveTypeCheckErrorTest {
 
     enum class Op {Plus, Minus, Times, Div, Power, Neg}
 
-    class ExprParser: ParserRules {
+    class ExprParser: Grammar {
         override val lexer = Lexer()
 
         class CreateBinaryExpr(private val op: Op) :

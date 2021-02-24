@@ -26,5 +26,4 @@ open class Node(var isFinal: Boolean = false, set: IntSet = IntSet()) {
             }
         }
     }
-
 }

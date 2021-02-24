@@ -6,6 +6,7 @@ import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
+import at.searles.parsing.parser.tools.PrintInject
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

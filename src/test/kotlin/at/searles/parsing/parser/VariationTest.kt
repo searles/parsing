@@ -4,18 +4,18 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.parser.Parser.Companion.variation
 import at.searles.parsing.parser.combinators.Variation
 import at.searles.parsing.parser.tools.ListAppend
-import at.searles.parsing.ruleset.ParserRules
+import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 class VariationTest {
-    lateinit var rules: ParserRules
+    lateinit var rules: Grammar
     lateinit var abcdVariation: Reducer<List<Int>, List<Int>>
 
     @Before
     fun setUp() {
-        rules = object : ParserRules {
+        rules = object : Grammar {
             override val lexer = Lexer()
             val a = itext("a").init(1) + ListAppend()
             val b = itext("b").init(2) + ListAppend()
@@ -62,7 +62,7 @@ class VariationTest {
 
     @Test
     fun testVariationParser() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
             val a1 = itext("a").init(1)
             val b2 = itext("b").init(2)

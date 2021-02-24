@@ -15,4 +15,8 @@ class CreatePair<A, B> : Fold<A, B, Pair<A, B>> {
     override fun invertRight(value: Pair<A, B>): FnResult<B> {
         return FnResult.success(value.second)
     }
+
+    override fun toString(): String {
+        return "{pair}"
+    }
 }

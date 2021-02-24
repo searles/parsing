@@ -10,7 +10,9 @@ import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.parser.tools.cast
 
-object RegexpParser: ParserRules {
+object RegexpGrammar: Grammar {
+
+    // TODO: Quoted strings
 
     override val lexer = Lexer()
 
@@ -55,6 +57,8 @@ object RegexpParser: ParserRules {
             return value.shortest()
         }
     }
+
+    val regexp: Parser<Regexp> by ref { union + eof }
 
     val union: Parser<Regexp> by ref { diff + (text("|") + diff + createUnion).rep() }
 

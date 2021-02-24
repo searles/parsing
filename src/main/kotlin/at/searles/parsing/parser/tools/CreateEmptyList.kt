@@ -10,4 +10,8 @@ class CreateEmptyList<A>: Initializer<List<A>> {
     override fun consume(value: List<A>): Boolean {
         return value.isEmpty()
     }
+
+    override fun toString(): String {
+        return "{emptyList}"
+    }
 }

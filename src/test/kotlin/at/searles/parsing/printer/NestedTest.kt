@@ -8,6 +8,7 @@ import at.searles.parsing.parser.combinators.RefParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
+import at.searles.parsing.parser.tools.PrintInject
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

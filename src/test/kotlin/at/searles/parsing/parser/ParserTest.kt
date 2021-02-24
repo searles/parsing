@@ -9,7 +9,7 @@ import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.parser.tools.AsInt
 import at.searles.parsing.parser.tools.AsString
 import at.searles.parsing.parser.tools.NewInstance
-import at.searles.parsing.ruleset.ParserRules
+import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Test
 
@@ -174,7 +174,7 @@ class ParserTest {
 
     @Test
     fun testItextMany() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
             val a = itext("a", "b")
         }
@@ -186,7 +186,7 @@ class ParserTest {
 
     @Test
     fun testPlusStraightened() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
             val a = itext("a").init(1)
             val b = itext("b").init(2)
@@ -202,7 +202,7 @@ class ParserTest {
     fun testParsePersonExample() {
         class Person(val firstName: String, val lastName: String, val age: Int)
 
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
             val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
             val num = rex(CharSet('0'..'9').rep1()) + AsInt
@@ -223,7 +223,7 @@ class ParserTest {
     fun testPrintPersonExample() {
         class Person(val firstName: String, val lastName: String, val age: Int)
 
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
             val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
             val num = rex(CharSet('0'..'9').rep1()) + AsInt
@@ -238,7 +238,7 @@ class ParserTest {
 
     @Test
     fun testReversePrint() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer()
 
             val a = text("a").init(1)
@@ -252,7 +252,7 @@ class ParserTest {
 
     @Test
     fun testDoNotReverseParseForReversePrint() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer = Lexer()
 
             val a = text("a").init(1)

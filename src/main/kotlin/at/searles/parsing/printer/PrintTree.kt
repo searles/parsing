@@ -6,7 +6,7 @@ interface PrintTree {
     fun print(outStream: OutStream)
 
     fun asString(): String {
-        return  StringOutStream().also {
+        return StringOutStream().also {
             this.print(it)
         }.toString()
     }
@@ -28,16 +28,12 @@ interface PrintTree {
     }
 
     companion object {
-        fun of(charSequence: CharSequence): PrintTree {
-            return StringPrintTree(charSequence.toString())
-        }
-
         val failure = object: PrintTree {
             override val isSuccess: Boolean = false
             override fun print(outStream: OutStream) { error("failure") }
             override fun plus(right: PrintTree): PrintTree { error("failure") }
         }
 
-        val empty = of("")
+        val empty: PrintTree by lazy { StringPrintTree("") }
     }
 }

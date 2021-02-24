@@ -2,18 +2,18 @@ package at.searles.parsing.ruleset
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.lexer.regexp.Regexp
 import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.ref
+import at.searles.parsing.parser.tools.InitValue
 import org.junit.Assert
 import org.junit.Test
 
 class CycleCheck {
     @Test
     fun testSimpleCycleCausesInfiniteRecursion() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
 
             val a: Parser<Int> by lazy { b }
@@ -29,7 +29,7 @@ class CycleCheck {
 
     @Test
     fun testNoInfiniteRecursionOnRef() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
 
             val a: Parser<Int> by ref { b }
@@ -42,7 +42,7 @@ class CycleCheck {
 
     @Test
     fun testNoLongestMatchMissDueToLazyRefParsers() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
 
             val mergeString = object: Fold<String, String, String> {
@@ -77,7 +77,7 @@ class CycleCheck {
 
     @Test
     fun testSelfLoop() {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
             val a: Parser<String> by ref { text("a") + a }
         }

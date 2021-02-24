@@ -5,11 +5,11 @@ import at.searles.parsing.parser.ParserStream
 import org.junit.Assert
 import org.junit.Test
 
-class RegexpParserTest {
+class RegexpGrammarTest {
     @Test
     fun testUnion() {
         val src = "a|b"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Union)
@@ -18,7 +18,7 @@ class RegexpParserTest {
     @Test
     fun testDiff() {
         val src = "a-b"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Diff)
@@ -27,7 +27,7 @@ class RegexpParserTest {
     @Test
     fun testConcat() {
         val src = "ab"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Concat)
@@ -36,7 +36,7 @@ class RegexpParserTest {
     @Test
     fun testRepeat0() {
         val src = "a*"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Rep)
@@ -45,7 +45,7 @@ class RegexpParserTest {
     @Test
     fun testRepeat1() {
         val src = "a+"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Rep1)
@@ -54,7 +54,7 @@ class RegexpParserTest {
     @Test
     fun testChar() {
         val src = "a"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Text)
@@ -64,7 +64,7 @@ class RegexpParserTest {
     @Test
     fun testNormalEscaped() {
         val src = "\\("
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Text)
@@ -74,7 +74,7 @@ class RegexpParserTest {
     @Test
     fun testLfEscaped() {
         val src = "\\n"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is Text)
@@ -84,7 +84,7 @@ class RegexpParserTest {
     @Test
     fun testCharSetSingleChars() {
         val src = "[ab]"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -95,7 +95,7 @@ class RegexpParserTest {
     @Test
     fun testCharSetRange() {
         val src = "[a-c]"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -107,7 +107,7 @@ class RegexpParserTest {
     @Test
     fun testCharSetInverted() {
         val src = "[^a-c]"
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -121,7 +121,7 @@ class RegexpParserTest {
     fun testCodePointInString() {
         val src = "[\uD83C\uDF09]"
 
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -134,7 +134,7 @@ class RegexpParserTest {
     fun testLongCodePointAsEncoding() {
         val src = "[\\U0001F309]"
 
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -147,7 +147,7 @@ class RegexpParserTest {
     fun testShortCodePointAsEncoding() {
         val src = "[\\u0309]"
 
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -158,7 +158,7 @@ class RegexpParserTest {
     fun testVeryShortCodePointAsEncoding() {
         val src = "[\\xff]"
 
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)
@@ -169,7 +169,7 @@ class RegexpParserTest {
     fun testLfInCharSet() {
         val src = "[\\n]"
 
-        val regexp = RegexpParser.union.parse(ParserStream(src))
+        val regexp = RegexpGrammar.union.parse(ParserStream(src))
 
         Assert.assertTrue(regexp.isSuccess)
         Assert.assertTrue(regexp.value is CharSet)

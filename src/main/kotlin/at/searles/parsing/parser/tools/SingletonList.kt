@@ -15,4 +15,8 @@ class SingletonList<A>: Conversion<A, List<A>> {
 
         return FnResult.success(value.first())
     }
+
+    override fun toString(): String {
+        return "{list}"
+    }
 }

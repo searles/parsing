@@ -3,13 +3,15 @@ package at.searles.parsing.parser
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.Reducer.Companion.join
 import at.searles.parsing.parser.combinators.*
-import at.searles.parsing.parser.tools.CastToNullable
-import at.searles.parsing.parser.tools.CreatePair
-import at.searles.parsing.parser.tools.CreateEmptyList
-import at.searles.parsing.parser.tools.ListAppend
+import at.searles.parsing.parser.tools.*
 import at.searles.parsing.printer.PrintTree
 
 interface Parser<A> {
+    fun parse(string: String): ParserResult<A> {
+        val stream = ParserStream(string)
+        return parse(stream)
+    }
+
     fun parse(stream: ParserStream): ParserResult<A>
     fun print(value: A): PrintTree
 
@@ -56,6 +58,10 @@ interface Parser<A> {
 
         fun <A> variation(vararg others: Parser<A>): Parser<List<A>> {
             return CreateEmptyList<A>() + Variation(others.map { it + ListAppend() }.toList())
+        }
+
+        fun Parser<CharSequence>.asString(): Parser<String> {
+            return this + AsString
         }
     }
 }

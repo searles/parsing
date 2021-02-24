@@ -4,8 +4,9 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
+import at.searles.parsing.parser.tools.InitValue
 
-object CharSetParser: ParserRules {
+object CharSetParser: Grammar {
     override val lexer: Lexer = Lexer()
 
     val charSet by lazy { ch('[') + invertableSet + ch(']') }

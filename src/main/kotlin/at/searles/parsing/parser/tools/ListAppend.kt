@@ -17,4 +17,8 @@ class ListAppend<A>(private val minSize: Int = 0): Fold<List<A>, A, List<A>> {
         if(value.size <= minSize) return FnResult.failure
         return FnResult.success(value.last())
     }
+
+    override fun toString(): String {
+        return "{append}"
+    }
 }

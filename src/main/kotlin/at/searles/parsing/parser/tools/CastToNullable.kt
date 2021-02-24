@@ -11,4 +11,8 @@ class CastToNullable<A>: Conversion<A, A?> {
     override fun invert(value: A?): FnResult<A> {
         return value?.let { FnResult.success(it) } ?: FnResult.failure
     }
+
+    override fun toString(): String {
+        return "{castToNullable}"
+    }
 }

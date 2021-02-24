@@ -1,10 +1,16 @@
 package at.searles.parsing.parser
 
+import kotlin.reflect.KProperty
+
 interface ParserResult<out A> {
     val isSuccess: Boolean
     val value: A
     val index: Long
     val length: Long
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): A {
+        return value
+    }
 
     companion object {
         fun <T> of(value: T, index: Long, length: Long): ParserResult<T> =

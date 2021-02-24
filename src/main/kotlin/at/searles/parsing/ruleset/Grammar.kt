@@ -4,14 +4,11 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.lexer.regexp.Regexp
 import at.searles.parsing.lexer.regexp.Text
-import at.searles.parsing.parser.Conversion
-import at.searles.parsing.parser.FnResult
-import at.searles.parsing.parser.Parser
-import at.searles.parsing.parser.Recognizer
+import at.searles.parsing.parser.*
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 
-interface ParserRules {
+interface Grammar {
     val lexer: Lexer
 
     fun itext(vararg text: String): Recognizer {
@@ -35,15 +32,29 @@ interface ParserRules {
         return TokenParser(lexer.createToken(regexp))
     }
 
-    fun <A> rex(regexp: Regexp, create: (CharSequence) -> A): Parser<A> {
-        return TokenParser(lexer.createToken(regexp)) + object: Conversion<CharSequence, A> {
-            override fun convert(value: CharSequence): A {
-                return create(value)
-            }
+    fun rex(regexpString: String): Parser<CharSequence> {
+        val regexp by RegexpGrammar.regexp.parse(ParserStream(regexpString))
 
-            override fun invert(value: A): FnResult<CharSequence> {
-                return FnResult.success(value.toString())
-            }
+        return TokenParser(lexer.createToken(regexp))
+    }
+
+    val eof get() = TokenRecognizer(lexer.createToken(CharSet.eof()), "")
+
+    fun <A> rex(regexp: Regexp, create: (CharSequence) -> A): Parser<A> {
+        return TokenParser(lexer.createToken(regexp)) + CreateFromString(create)
+    }
+
+    class CreateFromString<A>(val create: (CharSequence) -> A): Conversion<CharSequence, A> {
+        override fun convert(value: CharSequence): A {
+            return create(value)
+        }
+
+        override fun invert(value: A): FnResult<CharSequence> {
+            return FnResult.success(value.toString())
+        }
+
+        override fun toString(): String {
+            return "{create}"
         }
     }
 }

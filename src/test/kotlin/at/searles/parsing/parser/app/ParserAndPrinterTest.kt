@@ -6,11 +6,9 @@ import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.opt
 import at.searles.parsing.parser.Reducer.Companion.rep
-import at.searles.parsing.parser.combinators.TokenParser
-import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.printer.PrintTree
-import at.searles.parsing.ruleset.ParserRules
+import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -194,7 +192,7 @@ class ParserAndPrinterTest {
     }
     
     private fun recursiveParser(): Parser<Expr> {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
 
             val expr: Parser<Expr> by ref("expr") {
@@ -214,7 +212,7 @@ class ParserAndPrinterTest {
     }
     
     private fun iterativeParser(): Parser<Expr> {
-        val rules = object: ParserRules {
+        val rules = object: Grammar {
             override val lexer: Lexer = Lexer()
 
             val expr: Parser<Expr> by ref("expr") {

@@ -46,9 +46,10 @@ class Lexer {
         return Token(tokenId, this)
     }
 
-    fun createSpecialToken(regexp: Regexp) {
+    fun createSpecialToken(regexp: Regexp): Token {
         val token = createToken(regexp)
         specialTokens.add(token.tokenId)
+        return token
     }
 
     private fun replaceTemporaryIdByExistingOrNewId(): Int {

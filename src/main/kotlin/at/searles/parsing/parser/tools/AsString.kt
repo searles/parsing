@@ -11,4 +11,8 @@ object AsString: Conversion<CharSequence, String> {
     override fun invert(value: String): FnResult<CharSequence> {
         return FnResult.success(value)
     }
+
+    override fun toString(): String {
+        return "{asString}"
+    }
 }

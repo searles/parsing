@@ -1,5 +1,8 @@
-package at.searles.parsing.parser
+package at.searles.parsing.parser.tools
 
+import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.parser.Recognizer
+import at.searles.parsing.parser.RecognizerResult
 import at.searles.parsing.printer.OutStream
 import at.searles.parsing.printer.PrintTree
 
@@ -23,5 +26,9 @@ class PrintInject(private val printOutput: (OutStream) -> Unit): Recognizer {
         override fun toString(): String {
             return ""
         }
+    }
+
+    override fun toString(): String {
+        return "[]"
     }
 }
