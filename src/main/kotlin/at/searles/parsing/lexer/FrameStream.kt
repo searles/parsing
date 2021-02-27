@@ -18,7 +18,7 @@ class FrameStream(private val stream: BufferedStream) {
         return stream.read()
     }
 
-    fun backtrackToIndex(newIndex: Long) {
+    fun restoreIndex(newIndex: Long) {
         frameIndex = newIndex
         resetFrame()
     }

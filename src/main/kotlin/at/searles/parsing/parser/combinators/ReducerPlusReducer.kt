@@ -7,6 +7,7 @@ import at.searles.parsing.printer.PartialPrintTree
 
 class ReducerPlusReducer<A, B, C>(private val left: Reducer<A, B>, private val right: Reducer<B, C>) : Reducer<A, C> {
     override fun parse(stream: ParserStream, input: A): ParserResult<C> {
+        val state = stream.createState()
         val leftResult = left.parse(stream, input)
 
         if(!leftResult.isSuccess) return ParserResult.failure
@@ -14,7 +15,7 @@ class ReducerPlusReducer<A, B, C>(private val left: Reducer<A, B>, private val r
         val rightResult = right.parse(stream, leftResult.value)
 
         if(!rightResult.isSuccess) {
-            stream.backtrackToIndex(leftResult.index)
+            stream.restoreState(state)
             return ParserResult.failure
         }
 

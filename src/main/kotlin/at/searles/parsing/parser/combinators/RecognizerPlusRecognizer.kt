@@ -7,6 +7,7 @@ import at.searles.parsing.printer.PrintTree
 
 class RecognizerPlusRecognizer(private val left: Recognizer, private val right: Recognizer) : Recognizer {
     override fun parse(stream: ParserStream): RecognizerResult {
+        val state = stream.createState()
         val leftResult = left.parse(stream)
 
         if(!leftResult.isSuccess) return RecognizerResult.failure
@@ -14,7 +15,7 @@ class RecognizerPlusRecognizer(private val left: Recognizer, private val right: 
         val rightResult = right.parse(stream)
 
         if(!rightResult.isSuccess) {
-            stream.backtrackToIndex(leftResult.index)
+            stream.restoreState(state)
             return RecognizerResult.failure
         }
 

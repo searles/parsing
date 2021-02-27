@@ -19,11 +19,11 @@ class ParserStreamTest {
         val helloToken = lexer.createToken(Text("hello"))
         val worldToken = lexer.createToken(Text("World"))
 
-        Assert.assertFalse(stream.acceptToken(worldToken).isSuccess)
-        Assert.assertTrue(stream.acceptToken(helloToken).isSuccess)
+        Assert.assertFalse(stream.parseToken(worldToken).isSuccess)
+        Assert.assertTrue(stream.parseToken(helloToken).isSuccess)
 
-        Assert.assertFalse(stream.acceptToken(helloToken).isSuccess)
-        Assert.assertTrue(stream.acceptToken(worldToken).isSuccess)
+        Assert.assertFalse(stream.parseToken(helloToken).isSuccess)
+        Assert.assertTrue(stream.parseToken(worldToken).isSuccess)
     }
 
     @Test

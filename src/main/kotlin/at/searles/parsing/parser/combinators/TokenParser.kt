@@ -9,7 +9,7 @@ import at.searles.parsing.printer.StringPrintTree
 
 class TokenParser(private val token: Token): Parser<CharSequence> {
     override fun parse(stream: ParserStream): ParserResult<CharSequence> {
-        return stream.acceptToken(token)
+        return stream.parseToken(token)
     }
 
     override fun print(value: CharSequence): PrintTree {

@@ -15,7 +15,7 @@ class TokenRecognizer(private val token: Token, private val output: String): Rec
     }
 
     override fun parse(stream: ParserStream): RecognizerResult {
-        val tokenResult = stream.acceptToken(token)
+        val tokenResult = stream.parseToken(token)
 
         return if(tokenResult.isSuccess) {
             RecognizerResult.of(tokenResult.index, tokenResult.length)

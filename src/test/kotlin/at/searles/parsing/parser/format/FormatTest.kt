@@ -1,200 +1,175 @@
 package at.searles.parsing.parser.format
 
-import at.searles.parsing.lexer.Lexer
-import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.parser.Parser
-import at.searles.parsing.parser.Parser.Companion.asString
-import at.searles.parsing.parser.Parser.Companion.orEmpty
+import at.searles.parsing.lexer.fsa.IntSet
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.parser.Recognizer
-import at.searles.parsing.parser.RecognizerResult
-import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.NewInstance.of
-import at.searles.parsing.parser.tools.Print
-import at.searles.parsing.parser.tools.cast
-import at.searles.parsing.printer.OutStream
-import at.searles.parsing.printer.PrintTree
 import at.searles.parsing.printer.StringOutStream
-import at.searles.parsing.printer.StringPrintTree
-import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import java.lang.StringBuilder
 
 class FormatTest {
-    @Test
-    fun testCanParseExpressions() {
-        val result by Rules.expr.parse("f(1,2)")
-        Assert.assertEquals(Call("f", listOf(Num("1"), Num("2"))), result)
+    abstract class Edit {
+        abstract fun edit(sb: StringBuilder)
     }
 
-    @Test
-    fun testCanPrintExpression() {
-        val result = Rules.expr.print(Call("f", listOf(Num("1"), Num("2"))))
-        Assert.assertEquals("f(1, 2)", result.asString())
+    data class Delete(val index: Long, val length: Long): Edit() {
+        override fun edit(sb: StringBuilder) {
+            sb.delete(index.toInt(), (index + length).toInt())
+        }
     }
 
-    @Test
-    fun testCanParseEmptyBlocks() {
-        val result by Rules.block.parse("{}")
-        Assert.assertEquals(Block(emptyList()), result)
+    data class Insert(val index: Long, val s: String): Edit() {
+        override fun edit(sb: StringBuilder) {
+            sb.insert(index.toInt(), s)
+        }
     }
 
-    @Test
-    fun testCanParseBlocksWithCall() {
-        val result by Rules.block.parse("{f();}")
-        Assert.assertEquals(Block(listOf(Call("f", emptyList()))), result)
+    data class Highlight(val index: Long, val length: Long): Edit() {
+        override fun edit(sb: StringBuilder) {
+            // do nothing
+        }
     }
 
-    @Test
-    fun testCanPrintEmptyBlocks() {
-        val result = Rules.block.print(Block(emptyList()))
-        Assert.assertEquals("{}", result.asString())
+    lateinit var edits: ArrayList<Edit>
+
+    @Before
+    fun setUp() {
+        edits = ArrayList()
     }
 
-    @Test
-    fun testCanPrintBlocksWithItems() {
-        val result = Rules.block.print(Block(listOf(Call("f", emptyList()))))
+    class MyState(val listSize: Int, stream: ParserStream): ParserStream.State(stream)
 
-        val output = StringOutStream().run {
-            result.print(IndentOutStream(this))
-            this.toString()
+    inner class MyParserStream(src: String): ParserStream(src) {
+        override fun createState(): State {
+            return MyState(edits.size, this)
         }
 
-        Assert.assertEquals("{\n    f();\n}", output)
+        override fun restoreState(state: State) {
+            super.restoreState(state)
+
+            while(edits.size > (state as MyState).listSize) {
+                edits.removeLast()
+            }
+        }
     }
 
     @Test
-    fun testCanPrintBlocksWithNestedItems() {
-        val result = Rules.block.print(
-            Block(listOf(
-                Call("f", emptyList()),
-                Block(listOf(
-                    Call("f", emptyList())
-                ))
-            ))
+    fun testGenerateDeleteCommands() {
+        val src = """  {  f  (  )  ;  }  """
+
+
+        val stream = MyParserStream(src)
+
+        stream.listener = object: ParserStream.Listener {
+            override fun onSpecialToken(
+                tokenIds: IntSet,
+                frame: CharSequence,
+                index: Long,
+                length: Long
+            ) {
+                edits.add(Delete(index, length))
+            }
+
+            override fun onToken(tokenId: Int, frame: CharSequence, index: Long, length: Long) {}
+            override fun onSelect(source: ParserStream, label: Any, startState: ParserStream.State) {}
+            override fun onMark(source: ParserStream, label: Any) {}
+        }
+
+        val result = Rules.block.parse(stream)
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(
+            listOf(Delete(0L, 2L), Delete(3L, 2L), Delete(6L, 2L),
+                Delete(9L, 2L), Delete(12L, 2L), Delete(15L, 2L)),
+            edits
         )
-
-        val output = StringOutStream().run {
-            result.print(IndentOutStream(this))
-            this.toString()
-        }
-
-        Assert.assertEquals("""{
-            |    f();
-            |    {
-            |        f();
-            |    }
-            |}""".trimMargin(), output)
     }
 
-    interface Stmt
-    data class Block(val stmts: List<Stmt>): Stmt
-    data class IfStmt(val condition: Expr, val thenBranch: Stmt, val elseBranch: Stmt?): Stmt
-    data class Assignment(val id: String, val rValue: Expr): Stmt
-    interface Expr
-    data class Call(val id: String, val args: List<Expr>): Stmt, Expr
-    data class Num(val str: String): Expr
+    @Test
+    fun testCanFormatBlock() {
+        val src = """{f();g();}"""
 
-    object Rules: Grammar {
+        val stream = MyParserStream(src)
 
-        override val lexer: Lexer = Lexer()
+        stream.listener = object: ParserStream.Listener {
+            override fun onSpecialToken(
+                tokenIds: IntSet,
+                frame: CharSequence,
+                index: Long,
+                length: Long
+            ) {
+                // TODO keep comments
+                edits.add(Delete(index, length))
+            }
 
-        val indentStart = Print {
-             if(it is IndentOutStream) {
-                it.startIndent()
+            override fun onToken(tokenId: Int, frame: CharSequence, index: Long, length: Long) {}
+
+            override fun onSelect(source: ParserStream, label: Any, startState: ParserStream.State) {
+                if(label == "indent") {
+                    val iterator = edits.listIterator((startState as MyState).listSize)
+
+                    while(iterator.hasNext()) {
+                        val edit = iterator.next()
+
+                        if(edit is Insert) {
+                            if(edit.s.startsWith("\n")) {
+                                iterator.set(
+                                    Insert(edit.index, "\n    " + edit.s.substring(1))
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onMark(source: ParserStream, label: Any) {
+                if(label == "newLine") {
+                    edits.add(Insert(source.index, "\n"))
+                }
             }
         }
 
-        val indentEnd = Print {
-            if(it is IndentOutStream) {
-                it.endIndent()
+        val result = Rules.block.parse(stream)
+
+        Assert.assertTrue(result.isSuccess)
+
+        val sb = StringBuilder(src)
+
+        for(cmd in edits.reversed()) {
+            cmd.edit(sb)
+        }
+
+        Assert.assertEquals("{\n    f();\n    g();\n}", sb.toString())
+    }
+
+    @Test
+    fun testNumbersHighlighted() {
+        val src = """f(10, 20)"""
+
+        val stream = MyParserStream(src)
+
+        stream.listener = object: ParserStream.Listener {
+            override fun onSpecialToken(tokenIds: IntSet, frame: CharSequence, index: Long, length: Long) {}
+
+            override fun onToken(tokenId: Int, frame: CharSequence, index: Long, length: Long) {}
+            override fun onSelect(source: ParserStream, label: Any, startState: ParserStream.State) {
+                if(label == "num") {
+                    val length = source.index - startState.index
+                    edits.add(Highlight(startState.index, length))
+                }
+            }
+
+            override fun onMark(source: ParserStream, label: Any) {
             }
         }
 
-        val indent = Print {
-            if(it is IndentOutStream) {
-                it.indent()
-            }
-        }
+        val result = Rules.call.parse(stream)
 
-        val newLine by lazy { Print { it.append("\n") } }
-
-        val separator by lazy { Print { it.append(" ") } }
-
-        val block: Parser<Block> by ref {
-            text("{") + (indentStart + stmts + indentEnd).orEmpty() + text("}") + of<Block>().create()
-        }
-
-        val stmts: Parser<List<Stmt>> by ref {
-            (indent + (stmt + text(";") or block + cast()) + newLine).rep(1)
-        }
-
-        val stmt: Parser<Stmt> by ref {
-            ifstmt + cast<IfStmt, Stmt>() or
-            assignment + cast() or
-            call + cast()
-        }
-
-        val ifstmt: Parser<IfStmt> by ref {
-            text("if") + expr + stmt + (text("else") + stmt).opt() + of<IfStmt>().create()
-        }
-
-        val assignment: Parser<Assignment> by ref {
-            id + text("=") + expr + of<Assignment>().create()
-        }
-
-        val call: Parser<Call> by ref {
-            id + text("(") + expr.join(text(",") + separator).orEmpty() + text(")") + of<Call>().create()
-        }
-
-        val expr: Parser<Expr> by ref {
-            call + cast<Call, Expr>() or
-            num + cast()
-        }
-
-        val num: Parser<Num> by ref {
-            rex("[0-9]+").asString() + of<Num>().create()
-        }
-
-        val id: Parser<String> by ref {
-            rex(CharSet('a'..'z').rep1()).asString()
-        }
-
-        val ws = lexer.createSpecialToken(CharSet(' ', '\n', '\t', '\r').rep1())
-
-//                    comment: '//' [^\n]* | ('/*' .* '*/')!
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(
+            listOf(Highlight(2L, 2L), Highlight(6L, 2L)),
+            edits
+        )
     }
-
-    class IndentOutStream(private val outStream: OutStream): OutStream {
-        private var indentLevel = 0
-
-        fun startIndent() {
-            indentLevel ++
-            append("\n")
-        }
-
-        fun endIndent() {
-            indentLevel --
-            indent()
-        }
-
-        fun indent() {
-            repeat(indentLevel) { append("    ") }
-        }
-
-        override fun append(seq: CharSequence) {
-            outStream.append(seq)
-        }
-
-        override fun append(codePoint: Int) {
-            outStream.append(codePoint)
-        }
-    }
-
-//    1. Autoformat:
-//    formatter.format("{ print(1); }")
-//    --> Returns a list of commands like
-//    Delete(index, length)
-//    Insert(index, string)
-//    Highlight(index, length, marker)
 }

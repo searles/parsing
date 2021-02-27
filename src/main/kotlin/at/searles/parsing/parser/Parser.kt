@@ -8,6 +8,7 @@ import at.searles.parsing.printer.PrintTree
 
 interface Parser<A> {
     fun parse(string: String): ParserResult<A> {
+        // for convenience
         val stream = ParserStream(string)
         return parse(stream)
     }
@@ -49,6 +50,10 @@ interface Parser<A> {
 
     fun join(separator: Recognizer): Parser<List<A>> {
         return CreateEmptyList<A>() + (this + ListAppend()).join(separator)
+    }
+
+    fun highlight(highlight: Any): Parser<A> {
+        return SelectParser(highlight, this)
     }
 
     companion object {

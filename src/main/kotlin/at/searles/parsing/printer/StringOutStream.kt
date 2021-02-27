@@ -1,7 +1,5 @@
 package at.searles.parsing.printer
 
-import at.searles.parsing.printer.OutStream
-
 class StringOutStream : OutStream {
     private val sb = StringBuilder()
 
