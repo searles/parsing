@@ -58,13 +58,13 @@ class RecursiveTypeCheckErrorTest {
             }
         }
         
-        val signed by lazy<Parser<Expr>> {
+        val signed by lazy {
             itext("+") + basis or
             itext("-") + basis + CreateUnaryExpr(Op.Neg) or
             basis
         }
 
-        val basis: Parser<Expr> by ref<Expr> {
+        val basis: Parser<Expr> by ref {
             literal + cast<Literal, Expr>() or
             itext("(") + arithmeticExpression + itext(")")
         }
