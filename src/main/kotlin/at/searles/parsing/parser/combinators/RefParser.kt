@@ -23,24 +23,31 @@ class RefParser<T>(private val label: String?, private val createParser: (() -> 
     }
 
     private fun getValue(): Parser<T> {
-        return when (status) {
-            UNRESOLVED -> {
-                status = RESOLVING
-                lazyParser = createParser()
-                status = RESOLVED
-                if(label == null) lazyParser else this
-            }
-            RESOLVING -> this
-            else -> if(label == null) lazyParser else this
+        if(status == RESOLVING) {
+            return this
+        }
+
+        initializeIfUninitialized()
+
+        return if(label == null) lazyParser else this
+    }
+
+    private fun initializeIfUninitialized() {
+        if(status == UNRESOLVED) {
+            status = RESOLVING
+            lazyParser = createParser()
+            status = RESOLVED
         }
     }
 
     override fun parse(stream: ParserStream): ParserResult<T> {
-        return getValue().parse(stream)
+        initializeIfUninitialized()
+        return lazyParser.parse(stream)
     }
 
     override fun print(value: T): PrintTree {
-        return getValue().print(value)
+        initializeIfUninitialized()
+        return lazyParser.print(value)
     }
 
     override fun toString(): String {
