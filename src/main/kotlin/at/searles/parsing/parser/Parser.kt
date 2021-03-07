@@ -52,7 +52,7 @@ interface Parser<A> {
         return CreateEmptyList<A>() + (this + ListAppend()).join(separator)
     }
 
-    fun highlight(highlight: Any): Parser<A> {
+    fun select(highlight: Any): Parser<A> {
         return SelectParser(highlight, this)
     }
 

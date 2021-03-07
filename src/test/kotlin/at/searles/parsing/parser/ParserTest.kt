@@ -8,7 +8,8 @@ import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.parser.tools.AsInt
 import at.searles.parsing.parser.tools.AsString
-import at.searles.parsing.parser.tools.NewInstance
+import at.searles.parsing.parser.tools.ReducerBuilders.newInstance
+import at.searles.parsing.parser.tools.ReducerBuilders.plus
 import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Test
@@ -207,7 +208,7 @@ class ParserTest {
             val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
             val num = rex(CharSet('0'..'9').rep1()) + AsInt
 
-            val person = name + name + text(",") + num + NewInstance.of<Person>().create()
+            val person = name + name + text(",") + num + newInstance<Person>()
         }
 
         val result = rules.person.parse(ParserStream("Joe Biden, 78"))
@@ -228,7 +229,7 @@ class ParserTest {
             val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
             val num = rex(CharSet('0'..'9').rep1()) + AsInt
 
-            val person = name + name + text(",") + num + NewInstance.of<Person>().create()
+            val person = name + name + text(",") + num + newInstance<Person>()
         }
 
         val result = rules.person.print(Person("John", "Doe", 111))

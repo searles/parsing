@@ -5,9 +5,10 @@ import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.Parser.Companion.asString
 import at.searles.parsing.parser.Parser.Companion.orEmpty
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.NewInstance
 import at.searles.parsing.parser.tools.Mark
-import at.searles.parsing.parser.tools.cast
+import at.searles.parsing.parser.tools.ReducerBuilders.cast
+import at.searles.parsing.parser.tools.ReducerBuilders.newInstance
+import at.searles.parsing.parser.tools.ReducerBuilders.plus
 import at.searles.parsing.ruleset.Grammar
 import at.searles.parsing.ruleset.RegexpGrammar
 
@@ -15,7 +16,7 @@ object Rules: Grammar {
     override val lexer: Lexer = Lexer()
 
     val block: Parser<Block> by ref {
-        text("{") + (stmts.highlight("indent") + Mark("newLine")).orEmpty() + text("}") + NewInstance.of<Block>().create()
+        text("{") + (stmts.select("indent") + Mark("newLine")).orEmpty() + text("}") + newInstance<Block>()
     }
 
     val stmts: Parser<List<Stmt>> by ref {
@@ -23,31 +24,31 @@ object Rules: Grammar {
     }
 
     val stmt: Parser<Stmt> by ref {
-        ifstmt + cast<IfStmt, Stmt>() or
+        ifstmt + cast<Stmt>() or
                 assignment + cast() or
                 call + cast()
     }
 
     val ifstmt: Parser<IfStmt> by ref {
-        text("if") + expr + stmt + (text("else") + stmt).opt() + NewInstance.of<IfStmt>().create()
+        text("if") + expr + stmt + (text("else") + stmt).opt() + newInstance<IfStmt>()
     }
 
     val assignment: Parser<Assignment> by ref {
-        id + text("=") + expr + NewInstance.of<Assignment>().create()
+        id + text("=") + expr + newInstance<Assignment>()
     }
 
     val call: Parser<Call> by ref {
         id + text("(") + expr.join(text(",") + Mark("separator"))
-            .orEmpty() + text(")") + NewInstance.of<Call>().create()
+            .orEmpty() + text(")") + newInstance<Call>()
     }
 
     val expr: Parser<Expr> by ref {
-        call + cast<Call, Expr>() or
-                num.highlight("num") + cast()
+        call + cast<Expr>() or
+        num.select("num") + cast()
     }
 
     val num: Parser<Num> by ref {
-        rex("[0-9]+").asString() + NewInstance.of<Num>().create()
+        rex("[0-9]+").asString() + newInstance<Num>()
     }
 
     val id: Parser<String> by ref {

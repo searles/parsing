@@ -8,7 +8,6 @@ import at.searles.parsing.parser.combinators.RefParser
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.Print
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -100,14 +99,14 @@ class NestedTest {
     class IndentationContext {
         var level = 0
 
-        val indent = Print {
+        fun indent(it: OutStream) {
             it.append("\n")
             level++
             it.append(" ".repeat(level))
         }
 
 
-        val unindent = Print {
+        fun unindent(it: OutStream) {
             it.append("\n")
             level--
             it.append(" ".repeat(level))
@@ -120,13 +119,22 @@ class NestedTest {
 
         expr = RefParser<Tree>("expr") {
             term or 
-            TokenRecognizer.text("(", lexer) + ctx.indent + app + ctx.unindent + TokenRecognizer.text(")", lexer)
+            TokenRecognizer.text("(", lexer) + app.select("indent") + TokenRecognizer.text(")", lexer)
         }
 
         val tree = app.parse(ParserStream("(a (b (c d e) f) g) h"))
         val printTree = app.print(tree.value)
 
-        val os = StringOutStream()
+        val os = object: StringOutStream() {
+            override fun select(label: Any, tree: PrintTree) {
+                if(label == "indent") {
+                    ctx.indent(this)
+                    tree.print(this)
+                    ctx.unindent(this)
+                }
+            }
+        }
+
         printTree.print(os)
 
         Assert.assertEquals("a(\n" +

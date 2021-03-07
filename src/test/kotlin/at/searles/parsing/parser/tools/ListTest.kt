@@ -4,6 +4,7 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.parser.Parser.Companion.orEmpty
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.combinators.TokenRecognizer
+import at.searles.parsing.parser.tools.ReducerBuilders.castAll
 import org.junit.Assert
 import org.junit.Test
 
@@ -81,7 +82,7 @@ class ListTest {
 
     @Test
     fun testCastAll() {
-        val cast = castAll<Int, Number>()
+        val cast = castAll<Number>().from<Int>()
 
         Assert.assertEquals(listOf(1, 2), cast.convert(listOf(1, 2)))
         Assert.assertFalse(cast.invert(listOf<Number>(1, 2, 3.4)).isSuccess)

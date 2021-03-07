@@ -6,7 +6,7 @@ import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
-import at.searles.parsing.parser.tools.Print
+import at.searles.parsing.parser.tools.Mark
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -66,9 +66,9 @@ class PrinterTest {
 
     @Test
     fun testPrinterWithMarks() {
-        val space = Print { it.append(" ") }
+        fun space(it: OutStream) { it.append(" ") }
 
-        addition = intParser + ((space + plusSign) + space + intParser + additionOp)
+        addition = intParser + ((Mark("space") + plusSign) + Mark("space") + intParser + additionOp)
 
         val result = addition.parse(ParserStream("16+32"))
 
@@ -77,7 +77,11 @@ class PrinterTest {
         val printResult = addition.print(result.value)
         Assert.assertTrue(printResult.isSuccess)
 
-        val output = StringOutStream().also {
+        val output = object: StringOutStream() {
+            override fun mark(label: Any) {
+                if(label == "space") space(this)
+            }
+        }.also {
             printResult.print(it)
         }.toString()
 

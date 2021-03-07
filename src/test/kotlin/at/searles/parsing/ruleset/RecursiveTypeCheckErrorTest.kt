@@ -7,7 +7,8 @@ import at.searles.parsing.parser.Fold
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.cast
+import at.searles.parsing.parser.tools.ReducerBuilders.cast
+import at.searles.parsing.parser.tools.ReducerBuilders.plus
 
 class RecursiveTypeCheckErrorTest {
     interface Expr {}
@@ -65,7 +66,7 @@ class RecursiveTypeCheckErrorTest {
         }
 
         val basis: Parser<Expr> by ref {
-            literal + cast<Literal, Expr>() or
+            literal + cast<Expr>() or
             itext("(") + arithmeticExpression + itext(")")
         }
         

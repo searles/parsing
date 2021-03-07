@@ -1,6 +1,6 @@
 package at.searles.parsing.printer
 
-class StringOutStream : OutStream {
+open class StringOutStream : OutStream {
     private val sb = StringBuilder()
 
     override fun append(seq: CharSequence) {
