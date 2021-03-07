@@ -160,6 +160,10 @@ object ReducerBuilders {
         return this + cast.from()
     }
 
+    inline operator fun <reified T: U, U> Parser<List<T>>.plus(castAll: CastAll<U>): Parser<List<U>> {
+        return this + castAll.from()
+    }
+
     inline operator fun <reified T, U> Parser<T>.plus(newInstance: NewInstance<U>): Parser<U> {
         return this + newInstance.from()
     }
