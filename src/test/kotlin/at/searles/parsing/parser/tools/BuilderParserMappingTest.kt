@@ -16,4 +16,13 @@ class BuilderParserMappingTest {
 
         Assert.assertTrue(b.isSuccess)
     }
+
+    @Test
+    fun testNullable() {
+        class A
+
+        val nullableCast = ReducerBuilders.nullable<A>()
+
+        Assert.assertFalse(nullableCast.print(null).isSuccess)
+    }
 }

@@ -16,6 +16,23 @@ object ReducerBuilders {
         return CastAll()
     }
 
+    inline fun <reified T> nullable(): Conversion<T, T?> {
+        return object: Conversion<T, T?> {
+            override fun convert(value: T): T? {
+                return value
+            }
+
+            override fun invert(value: T?): FnResult<T> {
+                return value?.let { FnResult.success(it) } ?: FnResult.failure
+            }
+
+            override fun toString(): String {
+                return "(nullable)"
+            }
+        }
+
+    }
+
     inline fun <reified T> newInstance(): NewInstance<T> {
         return NewInstance(T::class)
     }
