@@ -1,79 +1,82 @@
 package at.searles.parsing.ruleset
 
 import at.searles.parsing.lexer.Lexer
-import at.searles.parsing.parser.Conversion
-import at.searles.parsing.parser.FnResult
-import at.searles.parsing.parser.Fold
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.ReducerBuilders.cast
-import at.searles.parsing.parser.tools.ReducerBuilders.plus
+import at.searles.parsing.parser.tools.CastBuilders.cast
+import at.searles.parsing.parser.tools.CastBuilders.plus
+import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
+import org.junit.Assert
+import org.junit.Test
 
 class RecursiveTypeCheckErrorTest {
+    @ExperimentalStdlibApi
+    @Test
+    fun testParseExpr() {
+        val src = "(2+42)*1/-33-3^(2-+4)"
+
+        val result = ExprGrammar.expr.parse(src)
+
+        Assert.assertTrue(result.isSuccess)
+    }
+
+    @ExperimentalStdlibApi
+    @Test
+    fun testPrintExpr() {
+        val src = "(2+42)*1/-33-3^(2-4)"
+
+        val expr = ExprGrammar.expr.parse(src).value
+
+        Assert.assertEquals(src, ExprGrammar.expr.print(expr).asString())
+    }
+
     interface Expr {}
     
     interface Literal: Expr {}
 
+    class Num(val num: Int): Literal
+
     enum class Op {Plus, Minus, Times, Div, Power, Neg}
 
-    class ExprParser: Grammar {
+    data class BinExpr(val op: Op, val arg0: Expr, val arg1: Expr): Expr
+    data class UnExpr(val op: Op, val arg: Expr): Expr
+
+    @ExperimentalStdlibApi
+    object ExprGrammar: Grammar {
         override val lexer = Lexer()
-
-        class CreateBinaryExpr(private val op: Op) :
-            Fold<Expr, Expr, Expr> {
-            override fun fold(left: Expr, right: Expr): Expr {
-                TODO("Not yet implemented")
-            }
-
-            override fun invertLeft(value: Expr): FnResult<Expr> {
-                TODO("Not yet implemented")
-            }
-
-            override fun invertRight(value: Expr): FnResult<Expr> {
-                TODO("Not yet implemented")
-            }
-        }
         
-        val arithmeticExpression by lazy<Parser<Expr>> {
+        val expr by ref {
             timesDiv + (
-                    itext("+") + timesDiv + CreateBinaryExpr(Op.Plus) or
-                    itext("-") + timesDiv + CreateBinaryExpr(Op.Minus)
+                    itext("+") + timesDiv + newInstance<BinExpr>(Op.Plus).left<Expr>() + cast<Expr>() or
+                    itext("-") + timesDiv + newInstance<BinExpr>(Op.Minus).left<Expr>() + cast()
             ).rep()
         }
 
-        val timesDiv by lazy<Parser<Expr>> {
+        val timesDiv by ref {
             power + (
-                    itext("*") + power + CreateBinaryExpr(Op.Times) or
-                    itext("/") + power + CreateBinaryExpr(Op.Div)
+                    itext("*") + power + newInstance<BinExpr>(Op.Times).left<Expr>() + cast<Expr>() or
+                    itext("/") + power + newInstance<BinExpr>(Op.Div).left<Expr>() + cast()
             ).rep()
         }
 
-        val power by lazy<Parser<Expr>> {
-            signed + (itext("**") + basis + CreateBinaryExpr(Op.Power)).rep()
+        val power: Parser<Expr> by ref {
+            signed + (itext("^") + basis + newInstance<BinExpr>(Op.Power).left<Expr>() + cast<Expr>()).rep()
         }
         
-        class CreateUnaryExpr(private val op: Op) : Conversion<Expr, Expr> {
-            override fun convert(value: Expr): Expr {
-                TODO("Not yet implemented")
-            }
-        }
-        
-        val signed by lazy {
-            itext("+") + basis or
-            itext("-") + basis + CreateUnaryExpr(Op.Neg) or
-            basis
+        val signed: Parser<Expr> by ref {
+            itext("-") + basis + newInstance<UnExpr>(Op.Neg) + cast<Expr>() or
+            itext("+").opt() + basis
         }
 
         val basis: Parser<Expr> by ref {
             literal + cast<Expr>() or
-            itext("(") + arithmeticExpression + itext(")")
+            itext("(") + expr + itext(")")
         }
-        
-        object Num: Literal 
-        
+
         val literal by ref<Literal> {
-            itext("0").init(Num)
+            rex("[0-9]+") { it.toString().toInt() } + newInstance<Num>() + cast()
         }
     }
 }

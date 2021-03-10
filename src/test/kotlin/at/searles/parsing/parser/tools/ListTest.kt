@@ -4,7 +4,7 @@ import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.parser.Parser.Companion.orEmpty
 import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.combinators.TokenRecognizer
-import at.searles.parsing.parser.tools.ReducerBuilders.castAll
+import at.searles.parsing.parser.tools.CastBuilders.castAll
 import org.junit.Assert
 import org.junit.Test
 

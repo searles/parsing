@@ -2,13 +2,13 @@ package at.searles.parsing.parser.format
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.parser.Parser
-import at.searles.parsing.parser.Parser.Companion.asString
 import at.searles.parsing.parser.Parser.Companion.orEmpty
 import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.parser.tools.Mark
-import at.searles.parsing.parser.tools.ReducerBuilders.cast
-import at.searles.parsing.parser.tools.ReducerBuilders.newInstance
-import at.searles.parsing.parser.tools.ReducerBuilders.plus
+import at.searles.parsing.parser.tools.CastBuilders.cast
+import at.searles.parsing.parser.tools.CastBuilders.plus
+import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
 import at.searles.parsing.ruleset.Grammar
 import at.searles.parsing.ruleset.RegexpGrammar
 
@@ -48,11 +48,11 @@ object Rules: Grammar {
     }
 
     val num: Parser<Num> by ref {
-        rex("[0-9]+").asString() + newInstance<Num>()
+        rex("[0-9]+") + newInstance<Num>()
     }
 
     val id: Parser<String> by ref {
-        rex("[a-z]+").asString()
+        rex("[a-z]+")
     }
 
     val ws = lexer.createSpecialToken(RegexpGrammar.regexp.parse("""[\n\r\t ]+""").value)

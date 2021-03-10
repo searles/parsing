@@ -28,23 +28,26 @@ interface Grammar {
         return TokenRecognizer(token, char.toString())
     }
 
-    fun rex(regexp: Regexp): Parser<CharSequence> {
-        return TokenParser(lexer.createToken(regexp))
+    fun rex(regexp: Regexp): Parser<String> {
+        return rex(regexp) { it.toString() }
     }
 
-    fun rex(regexpString: String): Parser<CharSequence> {
-        val regexp by RegexpGrammar.regexp.parse(ParserStream(regexpString))
-
-        return TokenParser(lexer.createToken(regexp))
+    fun rex(regexpString: String): Parser<String> {
+        return rex(regexpString) { it.toString() }
     }
 
     val eof get() = TokenRecognizer(lexer.createToken(CharSet.eof()), "")
+
+    fun <A> rex(regexpString: String, create: (CharSequence) -> A): Parser<A> {
+        val regexp by RegexpGrammar.regexp.parse(ParserStream(regexpString))
+        return rex(regexp, create)
+    }
 
     fun <A> rex(regexp: Regexp, create: (CharSequence) -> A): Parser<A> {
         return TokenParser(lexer.createToken(regexp)) + CreateFromString(create)
     }
 
-    class CreateFromString<A>(val create: (CharSequence) -> A): Conversion<CharSequence, A> {
+    private class CreateFromString<A>(val create: (CharSequence) -> A): Conversion<CharSequence, A> {
         override fun convert(value: CharSequence): A {
             return create(value)
         }

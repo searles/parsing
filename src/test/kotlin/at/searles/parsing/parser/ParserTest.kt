@@ -6,10 +6,8 @@ import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.AsInt
-import at.searles.parsing.parser.tools.AsString
-import at.searles.parsing.parser.tools.ReducerBuilders.newInstance
-import at.searles.parsing.parser.tools.ReducerBuilders.plus
+import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
 import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Test
@@ -205,8 +203,8 @@ class ParserTest {
 
         val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
-            val num = rex(CharSet('0'..'9').rep1()) + AsInt
+            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
+            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
 
             val person = name + name + text(",") + num + newInstance<Person>()
         }
@@ -226,8 +224,8 @@ class ParserTest {
 
         val rules = object: Grammar {
             override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1()) + AsString
-            val num = rex(CharSet('0'..'9').rep1()) + AsInt
+            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
+            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
 
             val person = name + name + text(",") + num + newInstance<Person>()
         }

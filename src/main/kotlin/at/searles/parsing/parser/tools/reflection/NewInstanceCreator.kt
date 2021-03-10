@@ -5,6 +5,10 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.jvmErasure
 
 class NewInstanceCreator<T>(outClass: KClass<*>) {
+    init {
+        require(outClass.constructors.size == 1) { "${outClass.simpleName} must have exactly one constructor" }
+    }
+
     private val ctor = outClass.constructors.first()
     private val ctorParameterToField = ctor.parameters.map { parameter ->
         outClass.memberProperties.find { it.name == parameter.name } ?: error("no field for ${parameter.name}")

@@ -8,8 +8,8 @@ import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.opt
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.*
-import at.searles.parsing.parser.tools.ReducerBuilders.cast
-import at.searles.parsing.parser.tools.ReducerBuilders.plus
+import at.searles.parsing.parser.tools.CastBuilders.cast
+import at.searles.parsing.parser.tools.CastBuilders.plus
 
 object RegexpGrammar: Grammar {
 

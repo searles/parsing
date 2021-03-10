@@ -64,9 +64,5 @@ interface Parser<A> {
         fun <A> variation(vararg others: Parser<A>): Parser<List<A>> {
             return CreateEmptyList<A>() + Variation(others.map { it + ListAppend() }.toList())
         }
-
-        fun Parser<CharSequence>.asString(): Parser<String> {
-            return this + AsString
-        }
     }
 }

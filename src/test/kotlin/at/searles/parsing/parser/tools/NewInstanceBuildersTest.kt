@@ -2,34 +2,54 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.parser.tools.ReducerBuilders.newInstance
-import at.searles.parsing.parser.tools.ReducerBuilders.plus
+import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
 import org.junit.Assert
 import org.junit.Test
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
-class BuilderParserMappingTest {
+class NewInstanceBuildersTest {
     @Test
-    fun testCast() {
-        open class A {}
-        class B: A() {}
+    fun testCreateDataClassInstanceFromPair() {
+        data class A(val s: String, val i: Int)
 
-        val cast = ReducerBuilders.cast<A>().from<B>()
+        val creator = newInstance<A>().from<Pair<String, Int>>()
 
-        val a: A = cast.convert(B())
-        val b = cast.print(a)
-
-        Assert.assertTrue(b.isSuccess)
+        val result = creator.convert(Pair("Hello", 123))
+        Assert.assertEquals(A("Hello", 123), result)
     }
 
     @Test
-    fun testNullable() {
-        class A
+    fun testCreatePairFromDataClassInstance() {
+        data class A(val s: String, val i: Int)
 
-        val nullableCast = ReducerBuilders.nullable<A>()
+        val creator = newInstance<A>().from<Pair<String, Int>>()
 
-        Assert.assertFalse(nullableCast.print(null).isSuccess)
+        val result = creator.invert(A("Hello", 123))
+        Assert.assertEquals(Pair("Hello", 123), result.value)
+    }
+
+    @Test
+    fun testCreateDataClassInstanceFromTwoPair() {
+        data class A(val s: String, val i: Int, val t: List<Int>)
+        val a = A("Hello", 123, listOf(1, 2, 3))
+        val pairs = Pair(Pair("Hello", 123), listOf(1, 2, 3))
+
+        val creator = newInstance<A>().from<Pair<Pair<String, Int>, List<Int>>>()
+
+        val result = creator.convert(pairs)
+        Assert.assertEquals(a, result)
+    }
+
+    @Test
+    fun testCreateTwoPairFromDataClassInstance() {
+        data class A(val s: String, val i: Int, val t: List<Int>)
+        val a = A("Hello", 123, listOf(1, 2, 3))
+        val pairs = Pair(Pair("Hello", 123), listOf(1, 2, 3))
+
+        val creator = newInstance<A>().from<Pair<Pair<String, Int>, List<Int>>>()
+
+        val result = creator.invert(a)
+        Assert.assertEquals(pairs, result.value)
     }
 
     @ExperimentalStdlibApi

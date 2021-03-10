@@ -2,80 +2,12 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.tools.reflection.NewInstanceCreator
-import at.searles.parsing.printer.PartialPrintTree
-import at.searles.parsing.printer.PrintTree
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 
-object ReducerBuilders {
-    inline fun <reified T> cast(): Cast<T> {
-        return Cast()
-    }
-
-    inline fun <reified T> castAll(): CastAll<T> {
-        return CastAll()
-    }
-
-    inline fun <reified T> nullable(): Conversion<T, T?> {
-        return object: Conversion<T, T?> {
-            override fun convert(value: T): T? {
-                return value
-            }
-
-            override fun invert(value: T?): FnResult<T> {
-                return value?.let { FnResult.success(it) } ?: FnResult.failure
-            }
-
-            override fun toString(): String {
-                return "(nullable)"
-            }
-        }
-
-    }
-
+object NewInstanceBuilders {
     inline fun <reified T> newInstance(vararg ctorArgs: Any?): NewInstance<T> {
         return NewInstance(T::class, ctorArgs.toList())
-    }
-
-    class Cast<U> {
-        inline fun <reified T: U> from(): Conversion<T, U> {
-            return object: Conversion<T, U> {
-                override fun convert(value: T): U {
-                    return value
-                }
-
-                override fun print(value: U): PartialPrintTree<T> {
-                    return if(value is T)
-                        PartialPrintTree.of(value, PrintTree.Empty)
-                    else
-                        PartialPrintTree.failure
-                }
-
-                override fun toString(): String {
-                    return "cast(${T::class.simpleName})"
-                }
-            }
-        }
-    }
-
-    class CastAll<U> {
-        inline fun <reified T: U> from(): Conversion<List<T>, List<U>> {
-            return object: Conversion<List<T>, List<U>> {
-                override fun convert(value: List<T>): List<U> {
-                    return value
-                }
-
-                override fun invert(value: List<U>): FnResult<List<T>> {
-                    if(value.any { it !is T }) return FnResult.failure
-                    @Suppress("UNCHECKED_CAST")
-                    return FnResult.success(value as List<T>)
-                }
-
-                override fun toString(): String {
-                    return "{castAll<${T::class.java.simpleName}>}"
-                }
-            }
-        }
     }
 
     class NewInstance<U>(val resultClass: KClass<*>, val ctorArgs: List<Any?>) {
@@ -97,7 +29,7 @@ object ReducerBuilders {
         }
     }
 
-    class NewInstanceConversion<T, U>(private val outClass: KClass<*>, val ctorArgs: List<Any?>) : Conversion<T, U> {
+    class NewInstanceConversion<T, U>(private val outClass: KClass<*>, private val ctorArgs: List<Any?>) : Conversion<T, U> {
         private val newInstanceCreator = NewInstanceCreator<U>(outClass)
 
         override fun convert(value: T): U {
@@ -129,7 +61,7 @@ object ReducerBuilders {
         }
     }
 
-    class NewInstanceFold<T, U, V>(private val countLeft: Int, resultClass: KClass<*>, val ctorArgs: List<Any?>) : Fold<T, U, V> {
+    class NewInstanceFold<T, U, V>(private val countLeft: Int, resultClass: KClass<*>, private val ctorArgs: List<Any?>) : Fold<T, U, V> {
         private val newInstanceCreator = NewInstanceCreator<V>(resultClass)
         override fun fold(left: T, right: U): V {
             val leftArgs = createListFromPairs(left)
@@ -166,14 +98,6 @@ object ReducerBuilders {
             @Suppress("UNCHECKED_CAST")
             return FnResult.success(createPairsFromList(args.drop(countLeft)) as U)
         }
-    }
-
-    inline operator fun <reified T: U, U> Parser<T>.plus(cast: Cast<U>): Parser<U> {
-        return this + cast.from()
-    }
-
-    inline operator fun <reified T: U, U> Parser<List<T>>.plus(castAll: CastAll<U>): Parser<List<U>> {
-        return this + castAll.from()
     }
 
     inline operator fun <reified T, U> Parser<T>.plus(newInstance: NewInstance<U>): Parser<U> {

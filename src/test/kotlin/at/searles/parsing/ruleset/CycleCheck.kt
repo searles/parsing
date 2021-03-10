@@ -53,13 +53,7 @@ class CycleCheck {
 
             val emptyString = InitValue("")
 
-            val str = object: Conversion<CharSequence, String> {
-                override fun convert(value: CharSequence): String {
-                    return value.toString()
-                }
-            }
-
-            val id = rex(CharSet('a', 'z').rep1() - Text("excl")) + str
+            val id = rex(CharSet('a', 'z').rep1() - Text("excl"))
 
             val a: Parser<String> by ref { emptyString + (id + mergeString).rep(1) or b }
             val b by ref { text("excl").init("hello world") }

@@ -231,12 +231,12 @@ class ParserAndPrinterTest {
         return rules.expr
     }
 
-    private val idToExpr = object: Conversion<CharSequence, Expr> {
-        override fun convert(value: CharSequence): Expr {
+    private val idToExpr = object: Conversion<String, Expr> {
+        override fun convert(value: String): Expr {
             return Id(value.toString())
         }
 
-        override fun invert(value: Expr): FnResult<CharSequence> {
+        override fun invert(value: Expr): FnResult<String> {
             return FnResult.ofNullable((value as? Id)?.id)
         }
     }
