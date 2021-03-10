@@ -29,7 +29,7 @@ interface Recognizer {
     }
 
     fun flag(): Parser<Boolean> {
-        return this.init(true) or InitValue { false }
+        return this.init(true) or InitValue(false)
     }
 
     fun <A> toReducer(): Reducer<A, A> {
@@ -37,6 +37,6 @@ interface Recognizer {
     }
 
     fun <A> init(value: A): Parser<A> {
-        return this + InitValue { value }
+        return this + InitValue(value)
     }
 }

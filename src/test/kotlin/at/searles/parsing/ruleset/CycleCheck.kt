@@ -51,7 +51,7 @@ class CycleCheck {
                 }
             }
 
-            val emptyString = InitValue { "" }
+            val emptyString = InitValue("")
 
             val str = object: Conversion<CharSequence, String> {
                 override fun convert(value: CharSequence): String {

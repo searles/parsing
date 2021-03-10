@@ -2,9 +2,7 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Initializer
 
-class InitValue<A>(value: () -> A): Initializer<A> {
-    private val value = value()
-
+class InitValue<A>(val value: A): Initializer<A> {
     override fun initialize(): A {
         return value
     }

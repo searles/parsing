@@ -45,7 +45,7 @@ interface Parser<A> {
     }
 
     fun opt(): Parser<A?> {
-        return this + CastToNullable() or InitValue { null }
+        return this + CastToNullable() or InitValue(null)
     }
 
     fun join(separator: Recognizer): Parser<List<A>> {

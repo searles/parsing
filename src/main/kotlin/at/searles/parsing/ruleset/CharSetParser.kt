@@ -29,7 +29,7 @@ object CharSetParser: Grammar {
     }
 
     private val set: Parser<CharSet> by lazy {
-        InitValue { CharSet.empty() } + (
+        InitValue(CharSet.empty()) + (
                 charOrRange + AppendToSet
         ).rep(1)
     }
