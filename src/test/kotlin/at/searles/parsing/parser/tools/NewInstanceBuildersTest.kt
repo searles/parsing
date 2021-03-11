@@ -2,6 +2,7 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
 import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
 import org.junit.Assert
@@ -132,8 +133,6 @@ class NewInstanceBuildersTest {
 
     @Test
     fun testNewInstanceWithPresetArgs() {
-        // TODO must test pairs too.
-
         data class A(val i: Int = 0)
         data class B(val i: Int = 0)
         class C(val a: A, val b: B)
@@ -145,8 +144,6 @@ class NewInstanceBuildersTest {
 
     @Test
     fun testNewInstancePrintWithPresetArgs() {
-        // TODO must test pairs too.
-
         data class A(val i: Int = 0)
         data class B(val i: Int = 0)
         class C(val a: A, val b: B)
@@ -181,5 +178,15 @@ class NewInstanceBuildersTest {
         val parser = InitValue(B()) + (InitValue(C()) + newInstance<D>(A()).left())
 
         Assert.assertTrue(parser.print(D(A(), B(), C())).isSuccess)
+    }
+
+    @ExperimentalStdlibApi
+    @Test
+    fun testNewInstanceFoldFromRecognizer() {
+        data class A(val i: Int)
+
+        val parser = InitValue(1) + (Mark("just_a_recognizer") + newInstance<A>().left())
+
+        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
 }

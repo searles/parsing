@@ -16,7 +16,7 @@ object NewInstanceBuilders {
         }
 
         @ExperimentalStdlibApi
-        inline fun <reified T> left(): NewInstanceFoldBuilder<T, U> {
+        inline fun <reified T> left(): NewInstanceLeftBuilder<T, U> {
             var type = typeOf<T>()
             var countLeft = 1
 
@@ -25,7 +25,7 @@ object NewInstanceBuilders {
                 countLeft ++
             }
 
-            return NewInstanceFoldBuilder(resultClass, countLeft, ctorArgs)
+            return NewInstanceLeftBuilder(resultClass, countLeft, ctorArgs)
         }
     }
 
@@ -55,9 +55,13 @@ object NewInstanceBuilders {
         }
     }
 
-    class NewInstanceFoldBuilder<T, V>(val resultClass: KClass<*>, val countLeft: Int, val ctorArgs: List<Any?>) {
+    class NewInstanceLeftBuilder<T, V>(val resultClass: KClass<*>, val countLeft: Int, val ctorArgs: List<Any?>) {
         inline fun <reified U> from(): Fold<T, U, V> {
             return NewInstanceFold(countLeft, resultClass, ctorArgs)
+        }
+
+        fun create(): Conversion<T, V> {
+            return NewInstanceConversion(resultClass, ctorArgs)
         }
     }
 
@@ -104,8 +108,12 @@ object NewInstanceBuilders {
         return this + newInstance.from()
     }
 
-    inline operator fun <T, reified U, V> Parser<U>.plus(newInstance: NewInstanceFoldBuilder<T, V>): Reducer<T, V> {
+    inline operator fun <T, reified U, V> Parser<U>.plus(newInstance: NewInstanceLeftBuilder<T, V>): Reducer<T, V> {
         return this + newInstance.from()
+    }
+
+    inline operator fun <T, V> Recognizer.plus(newInstance: NewInstanceLeftBuilder<T, V>): Reducer<T, V> {
+        return this + newInstance.create()
     }
 
     fun createPairsFromList(list: List<Any?>): Any? {

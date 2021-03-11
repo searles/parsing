@@ -262,4 +262,34 @@ class ParserTest {
 
         Assert.assertEquals(1, rules.aOrA2.parse(ParserStream("a")).value)
     }
+
+    @Test
+    fun testDoNotReverseParseForReversePrintUnion() {
+        val rules = object: Grammar {
+            override val lexer = Lexer()
+
+            val a = text("a").init(1)
+            val a2 = text("a").init(2)
+            val a3 = text("a").init(3)
+
+            val aaa = (a or a2).or(a3, swapPrint = true)
+        }
+
+        Assert.assertEquals(1, rules.aaa.parse(ParserStream("a")).value)
+    }
+
+    @Test
+    fun testReversePrintForReversePrintUnion() {
+        val rules = object: Grammar {
+            override val lexer = Lexer()
+
+            val a = text("a").init(1)
+            val b = text("b").init(1)
+            val c = text("c").init(1)
+
+            val abc = (a or b).or(c, swapPrint = true)
+        }
+
+        Assert.assertEquals("c", rules.abc.print(1).asString())
+    }
 }

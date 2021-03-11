@@ -34,8 +34,11 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
     }
 
     override fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
-        // TODO This is a bug!
-        return if(swapPrint) ParserUnion(listOf(other) + parsers) else this or other
+        return if(swapPrint)
+            ParserPrinterSeparate(this or other, ParserUnion(listOf(other) + parsers))
+        else {
+            this or other
+        }
     }
 
     override fun toString(): String {
