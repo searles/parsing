@@ -31,57 +31,55 @@ open class ParserStream(private val stream: FrameStream) {
     }
 
     fun parseToken(token: Token): ParserResult<CharSequence> {
-        while(true) {
-            consumeTokenIfAccepted()
-            readNewTokenIfNecessary(token)
+        if(!isTokenAccepted && this.lexer == token.lexer) {
+            // there already is a valid result
+            return createParserResult(token)
+        }
 
-            if(isTokenSpecial()) {
-                listener?.onSpecialToken(tokenIds!!, stream.getFrame(), stream.frameIndex, stream.frameLength)
-                isTokenAccepted = true
+        if (isTokenAccepted) {
+            stream.consumeFrame()
+        } else {
+            stream.resetFrame()
+        }
+
+        resetTokenFields()
+        fetchNextToken(token.lexer)
+        return createParserResult(token)
+    }
+
+    fun fetchNextToken(newLexer: Lexer): Boolean {
+        while (true) {
+            val tokenIds = newLexer.readNextToken(stream)
+
+            if (tokenIds != null && newLexer.isSpecialToken(tokenIds)) {
+                listener?.onSpecialToken(tokenIds, stream.getFrame(), stream.frameIndex, stream.frameLength)
+                stream.consumeFrame()
+
                 continue
             }
 
-            return if(isTokenMatching(token.tokenId)) {
-                listener?.onToken(token.tokenId, stream.getFrame(), stream.frameIndex, stream.frameLength)
-                isTokenAccepted = true
-                ParserResult.of(stream.getFrame(), stream.frameIndex, stream.frameLength)
-            } else {
-                ParserResult.failure
-            }
+            this.lexer = newLexer
+            this.tokenIds = tokenIds
+
+            return tokenIds != null
+        }
+    }
+
+    fun getFrame(): CharSequence {
+        return stream.getFrame()
+    }
+
+    private fun createParserResult(token: Token): ParserResult<CharSequence> {
+        return if (isTokenMatching(token.tokenId)) {
+            listener?.onToken(token.tokenId, stream.getFrame(), stream.frameIndex, stream.frameLength)
+            isTokenAccepted = true
+            ParserResult.of(stream.getFrame(), stream.frameIndex, stream.frameLength)
+        } else {
+            ParserResult.failure
         }
     }
 
     open fun notifyToken(tokenId: Int, frame: CharSequence, frameIndex: Long, frameLength: Long) {
-    }
-
-    private fun readNewTokenIfNecessary(token: Token) {
-        if (lexer != token.lexer) {
-            stream.resetFrame()
-            lexer = token.lexer
-            tokenIds = token.lexer.readNextToken(stream)
-        }
-    }
-
-    private fun consumeTokenIfAccepted() {
-        if (isTokenAccepted) {
-            stream.consumeFrame()
-            resetTokenFields()
-        }
-    }
-
-    open class State(stream: ParserStream) {
-        val index = stream.index
-    }
-
-    open fun createState(): State {
-        return State(this)
-    }
-
-    open fun restoreState(state: State) {
-        if(state.index != stream.frameIndex) {
-            stream.restoreIndex(state.index)
-            resetTokenFields()
-        }
     }
 
     private fun resetTokenFields() {
@@ -94,8 +92,19 @@ open class ParserStream(private val stream: FrameStream) {
         return tokenIds?.contains(tokenId) == true
     }
 
-    private fun isTokenSpecial(): Boolean {
-        return tokenIds != null && lexer!!.isSpecialToken(tokenIds!!)
+    open class State(stream: ParserStream) {
+        val index = stream.index
+    }
+
+    open fun createState(): State {
+        return State(this)
+    }
+
+    open fun restoreState(state: State) {
+        if (state.index != stream.frameIndex) {
+            stream.restoreIndex(state.index)
+            resetTokenFields()
+        }
     }
 
     fun notifySelection(label: Any, startState: State) {

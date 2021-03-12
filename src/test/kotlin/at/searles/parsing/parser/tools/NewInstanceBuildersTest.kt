@@ -2,7 +2,6 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
 import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
 import org.junit.Assert
