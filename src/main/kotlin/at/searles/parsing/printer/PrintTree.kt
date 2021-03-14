@@ -17,7 +17,7 @@ interface PrintTree {
             return this
         }
 
-        return ComposedTree.of(this, right)
+        return ComposedPrintTree.create(this, right)
     }
 
     object Empty : PrintTree {

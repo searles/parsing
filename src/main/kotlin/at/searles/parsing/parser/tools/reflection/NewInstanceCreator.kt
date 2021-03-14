@@ -15,23 +15,22 @@ class NewInstanceCreator<T>(outClass: KClass<*>) {
     }
 
     private fun checkArgs(args: List<Any?>) {
-        val errors = ArrayList<String>()
+        if(args.size != ctor.parameters.size) {
+            generateError(args)
+        }
 
         ctor.parameters.forEachIndexed { index, kParameter ->
-            if(args.size <= index) {
-                errors.add("arg[$index] is missing. Expected type is ${kParameter.type}")
-            } else if(args[index] != null && !kParameter.type.jvmErasure.isInstance(args[index])) {
-                errors.add("arg[$index] must be of type ${kParameter.type} but is ${args[index]}")
+            if(args[index] != null && !kParameter.type.jvmErasure.isInstance(args[index])) {
+                generateError(args)
             }
         }
+    }
 
-        if(args.size > ctor.parameters.size) {
-            errors.add("Too many arguments: Only ${ctor.parameters.size} expected!")
-        }
+    private fun generateError(args: List<Any?>) {
+        val expected = ctor.parameters.joinToString(", ") { it.javaClass.simpleName }
+        val actual = args.joinToString(", ") { it?.javaClass?.simpleName ?: "Any?" }
 
-        if(errors.isNotEmpty()) {
-            error(errors.joinToString("\n"))
-        }
+        error("Bad arguments: Expected ($expected) but was ($actual)")
     }
 
     fun create(args: List<Any?>): T {

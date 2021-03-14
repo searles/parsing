@@ -12,7 +12,7 @@ class CastBuildersTest {
         val cast = CastBuilders.cast<A>().from<B>()
 
         val a: A = cast.convert(B())
-        val b = cast.print(a)
+        val b = cast.invert(a)
 
         Assert.assertTrue(b.isSuccess)
     }
@@ -23,6 +23,6 @@ class CastBuildersTest {
 
         val nullableCast = CastBuilders.nullable<A>()
 
-        Assert.assertFalse(nullableCast.print(null).isSuccess)
+        Assert.assertFalse(nullableCast.invert(null).isSuccess)
     }
 }

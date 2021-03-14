@@ -112,7 +112,7 @@ object NewInstanceBuilders {
         return this + newInstance.from()
     }
 
-    inline operator fun <T, V> Recognizer.plus(newInstance: NewInstanceLeftBuilder<T, V>): Reducer<T, V> {
+    operator fun <T, V> Recognizer.plus(newInstance: NewInstanceLeftBuilder<T, V>): Reducer<T, V> {
         return this + newInstance.create()
     }
 

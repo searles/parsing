@@ -59,7 +59,7 @@ class NewInstanceBuildersTest {
         data class B(val i: Int = 0)
         class C(val a: A, val b: B)
 
-        val parser = InitValue(A()) + ( InitValue(B()) + newInstance<C>().left<A>())
+        val parser = InitValue(A()) + (InitValue(B()).asParser() + newInstance<C>().left<A>())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
@@ -71,7 +71,7 @@ class NewInstanceBuildersTest {
         data class B(val i: Int = 0)
         data class C(val a: A, val b: B)
 
-        val parser = InitValue(A()) + ( InitValue(B()) + newInstance<C>().left())
+        val parser = InitValue(A()) + ( InitValue(B()).asParser() + newInstance<C>().left())
 
         Assert.assertTrue(parser.print(C(A(), B())).isSuccess)
     }
@@ -84,7 +84,7 @@ class NewInstanceBuildersTest {
         data class C(val i: Int = 0)
         class D(val a: A, val b: B, val c: C)
 
-        val parser = InitValue(A()) + InitValue(B()) + (InitValue(C()) + newInstance<D>().left())
+        val parser = InitValue(A()).asParser() + InitValue(B()).asParser() + (InitValue(C()).asParser() + newInstance<D>().left())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
@@ -97,7 +97,7 @@ class NewInstanceBuildersTest {
         data class C(val i: Int = 0)
         class D(val a: A, val b: B, val c: C)
 
-        val parser = InitValue(A()) + InitValue(B()) + (InitValue(C()) + newInstance<D>().left())
+        val parser = InitValue(A()).asParser() + InitValue(B()).asParser() + (InitValue(C()).asParser() + newInstance<D>().left())
 
         Assert.assertTrue(parser.print(D(A(), B(), C())).isSuccess)
     }
@@ -111,7 +111,7 @@ class NewInstanceBuildersTest {
         data class D(val i: Int = 0)
         class E(val a: A, val b: B, val c: C, val d: D)
 
-        val parser: Parser<E> = InitValue(A()) + InitValue(B()) + InitValue(C()) + (InitValue(D()) + newInstance<E>().left<Pair<Pair<A, B>, C>>())
+        val parser: Parser<E> = InitValue(A()).asParser() + InitValue(B()).asParser() + InitValue(C()).asParser() + (InitValue(D()).asParser() + newInstance<E>().left<Pair<Pair<A, B>, C>>())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
@@ -125,7 +125,7 @@ class NewInstanceBuildersTest {
         data class D(val i: Int = 0)
         class E(val a: A, val b: B, val c: C, val d: D)
 
-        val parser: Parser<E> = InitValue(A()) + InitValue(B()) + InitValue(C()) + (InitValue(D()) + newInstance<E>().left<Pair<Pair<A, B>, C>>())
+        val parser: Parser<E> = InitValue(A()).asParser() + InitValue(B()).asParser() + InitValue(C()).asParser() + (InitValue(D()).asParser() + newInstance<E>().left<Pair<Pair<A, B>, C>>())
 
         Assert.assertTrue(parser.print(E(A(), B(), C(), D())).isSuccess)
     }
@@ -136,7 +136,7 @@ class NewInstanceBuildersTest {
         data class B(val i: Int = 0)
         class C(val a: A, val b: B)
 
-        val parser = InitValue(B()) + newInstance<C>(A())
+        val parser = InitValue(B()).asParser() + newInstance<C>(A())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
@@ -147,7 +147,7 @@ class NewInstanceBuildersTest {
         data class B(val i: Int = 0)
         class C(val a: A, val b: B)
 
-        val parser = InitValue(B()) + newInstance<C>(A())
+        val parser = InitValue(B()).asParser() + newInstance<C>(A())
 
         Assert.assertTrue(parser.print(C(A(), B())).isSuccess)
     }
@@ -161,7 +161,7 @@ class NewInstanceBuildersTest {
         data class C(val i: Int = 0)
         class D(val a: A, val b: B, val c: C)
 
-        val parser = InitValue(B()) + (InitValue(C()) + newInstance<D>(A()).left())
+        val parser = InitValue(B()) + (InitValue(C()).asParser() + newInstance<D>(A()).left())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
     }
@@ -174,7 +174,7 @@ class NewInstanceBuildersTest {
         data class C(val i: Int = 0)
         class D(val a: A, val b: B, val c: C)
 
-        val parser = InitValue(B()) + (InitValue(C()) + newInstance<D>(A()).left())
+        val parser = InitValue(B()) + (InitValue(C()).asParser() + newInstance<D>(A()).left())
 
         Assert.assertTrue(parser.print(D(A(), B(), C())).isSuccess)
     }

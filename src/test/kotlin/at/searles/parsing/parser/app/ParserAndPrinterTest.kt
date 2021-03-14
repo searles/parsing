@@ -128,7 +128,7 @@ class ParserAndPrinterTest {
         println("Parser successful: ${duration()}")
         print()
         println("Printer successful: ${duration()}")
-        val str = output.toString()
+        val str = output.asString()
         println(str.length)
         withInput(str)
         parse()

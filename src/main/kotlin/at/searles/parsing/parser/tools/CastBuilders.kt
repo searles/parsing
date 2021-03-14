@@ -1,8 +1,6 @@
 package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.*
-import at.searles.parsing.printer.PartialPrintTree
-import at.searles.parsing.printer.PrintTree
 
 object CastBuilders {
     inline fun <reified T> cast(): Cast<T> {
@@ -37,11 +35,11 @@ object CastBuilders {
                     return value
                 }
 
-                override fun print(value: U): PartialPrintTree<T> {
+                override fun invert(value: U): FnResult<T> {
                     return if(value is T)
-                        PartialPrintTree.of(value, PrintTree.Empty)
+                        FnResult.success(value)
                     else
-                        PartialPrintTree.failure
+                        FnResult.failure
                 }
 
                 override fun toString(): String {

@@ -57,7 +57,7 @@ object CharSetParser: Grammar {
     private val charOrRange: Parser<IntRange> by lazy {
         startChar + (
             text("-") + endChar + CreateRange or
-            CreateSingleChar
+            CreateSingleChar.asReducer()
         )
     }
 }

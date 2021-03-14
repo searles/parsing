@@ -11,6 +11,10 @@ interface Reducer<A, B> {
         return ReducerPlusReducer(this, reducer)
     }
 
+    operator fun <C> plus(conversion: Conversion<B, C>): Reducer<A, C> {
+        return ReducerPlusConversion(this, conversion)
+    }
+
     operator fun plus(recognizer: Recognizer): Reducer<A, B> {
         return this + recognizer.toReducer()
     }

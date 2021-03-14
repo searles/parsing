@@ -2,7 +2,7 @@ package at.searles.parsing.parser
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.CharSet
-import at.searles.parsing.parser.combinators.ParserPlusReducer
+import at.searles.parsing.parser.combinators.ParserPlusConversion
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import org.junit.Assert
@@ -42,7 +42,7 @@ class ParserCombinatorTest {
 
     @Test
     fun testSuccessParserWithMapping() {
-        val result = ParserPlusReducer(number, toInt).parse(ParserStream(("32")))
+        val result = ParserPlusConversion(number, toInt).parse(ParserStream(("32")))
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals(32, result.value)
@@ -50,7 +50,7 @@ class ParserCombinatorTest {
 
     @Test
     fun testFailParserWithMapping() {
-        val result = ParserPlusReducer(number, toInt).parse(ParserStream(("A")))
+        val result = ParserPlusConversion(number, toInt).parse(ParserStream(("A")))
 
         Assert.assertFalse(result.isSuccess)
         try {

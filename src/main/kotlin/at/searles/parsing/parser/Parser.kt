@@ -36,6 +36,10 @@ interface Parser<A> {
         return ParserPlusReducer(this, reducer)
     }
 
+    operator fun <B> plus(conversion: Conversion<A, B>): Parser<B> {
+        return ParserPlusConversion(this, conversion)
+    }
+
     operator fun <B, C> plus(fold: Fold<B, A, C>): Reducer<B, C> {
         return ParserPlusFold(this, fold)
     }
@@ -45,7 +49,7 @@ interface Parser<A> {
     }
 
     fun opt(): Parser<A?> {
-        return this + CastToNullable() or InitValue(null)
+        return this + CastToNullable() or InitValue<A?>(null).asParser()
     }
 
     fun join(separator: Recognizer): Parser<List<A>> {
@@ -58,7 +62,7 @@ interface Parser<A> {
 
     companion object {
         fun <A> Parser<List<A>>.orEmpty(): Parser<List<A>> {
-            return ParserPrinterSeparate(this or CreateEmptyList(), CreateEmptyList<A>() or this)
+            return ParserPrinterSeparate(this or CreateEmptyList<A>().asParser(), CreateEmptyList<A>().asParser() or this)
         }
 
         fun <A> variation(vararg others: Parser<A>): Parser<List<A>> {
