@@ -6,8 +6,8 @@ import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.ref
 import at.searles.parsing.parser.tools.CastBuilders.cast
 import at.searles.parsing.parser.tools.CastBuilders.plus
-import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
-import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.plus
 import org.junit.Assert
 import org.junit.Test
 

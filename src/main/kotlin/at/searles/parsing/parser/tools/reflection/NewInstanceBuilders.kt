@@ -1,7 +1,6 @@
-package at.searles.parsing.parser.tools
+package at.searles.parsing.parser.tools.reflection
 
 import at.searles.parsing.parser.*
-import at.searles.parsing.parser.tools.reflection.NewInstanceCreator
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 
@@ -102,6 +101,10 @@ object NewInstanceBuilders {
             @Suppress("UNCHECKED_CAST")
             return FnResult.success(createPairsFromList(args.drop(countLeft)) as U)
         }
+    }
+
+    inline operator fun <reified T, reified U, V> Reducer<T, U>.plus(newInstance: NewInstance<V>): Reducer<T, V> {
+        return this + newInstance.from()
     }
 
     inline operator fun <reified T, U> Parser<T>.plus(newInstance: NewInstance<U>): Parser<U> {

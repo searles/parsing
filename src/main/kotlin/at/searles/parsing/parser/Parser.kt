@@ -21,7 +21,7 @@ interface Parser<A> {
     }
 
     fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
-        return if(swapPrint) ParserPrinterSeparate(this or other, other or this) else this or other
+        return if(swapPrint) ParserPrinterSeparator(this or other, other or this) else this or other
     }
 
     operator fun plus(recognizer: Recognizer): Parser<A> {
@@ -62,7 +62,7 @@ interface Parser<A> {
 
     companion object {
         fun <A> Parser<List<A>>.orEmpty(): Parser<List<A>> {
-            return ParserPrinterSeparate(this or CreateEmptyList<A>().asParser(), CreateEmptyList<A>().asParser() or this)
+            return ParserPrinterSeparator(this or CreateEmptyList<A>().asParser(), CreateEmptyList<A>().asParser() or this)
         }
 
         fun <A> variation(vararg others: Parser<A>): Parser<List<A>> {

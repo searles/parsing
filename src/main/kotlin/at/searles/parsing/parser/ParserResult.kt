@@ -13,13 +13,18 @@ interface ParserResult<out A> {
     }
 
     companion object {
-        fun <T> of(value: T, index: Long, length: Long): ParserResult<T> =
-            object: ParserResult<T> {
+        fun <T> of(value: T, index: Long, length: Long): ParserResult<T> {
+            if(value is Traceable) {
+                value.setTrace(index, length)
+            }
+
+            return object : ParserResult<T> {
                 override val isSuccess: Boolean = true
                 override val value: T = value
                 override val index: Long = index
                 override val length: Long = length
             }
+        }
 
         val failure = object: ParserResult<Nothing> {
             override val isSuccess: Boolean = false

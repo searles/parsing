@@ -6,8 +6,8 @@ import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.combinators.ref
-import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
-import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.plus
 import at.searles.parsing.ruleset.Grammar
 import org.junit.Assert
 import org.junit.Test
@@ -291,5 +291,31 @@ class ParserTest {
         }
 
         Assert.assertEquals("c", rules.abc.print(1).asString())
+    }
+
+    @Test
+    fun testIsTraceable() {
+        class Node(val value: String): Traceable {
+            var index: Long? = null
+            var length: Long? = null
+            override fun setTrace(index: Long, length: Long) {
+                this.index = index
+                this.length = length
+            }
+        }
+
+        val lexer = Lexer()
+
+        val bcParser = TokenParser(lexer.createToken(Text("bc"))) + newInstance<Node>()
+
+        val aRecognizer = TokenRecognizer(lexer.createToken(Text("a")), "a")
+
+        val parser = aRecognizer + bcParser + aRecognizer
+
+        val node = parser.parse("abca")
+
+        Assert.assertTrue(node.isSuccess)
+        Assert.assertEquals(0, node.index)
+        Assert.assertEquals(4, node.length)
     }
 }

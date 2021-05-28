@@ -4,7 +4,7 @@ import at.searles.parsing.parser.*
 import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
-class ParserPrinterSeparate<A>(private val parser: Parser<A>, private val printer: Parser<A>) : Parser<A> {
+class ParserPrinterSeparator<A>(private val parser: Parser<A>, private val printer: Parser<A>) : Parser<A> {
     override fun parse(stream: ParserStream): ParserResult<A> {
         return parser.parse(stream)
     }

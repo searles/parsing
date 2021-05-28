@@ -2,8 +2,8 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserStream
-import at.searles.parsing.parser.tools.NewInstanceBuilders.newInstance
-import at.searles.parsing.parser.tools.NewInstanceBuilders.plus
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.newInstance
+import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.plus
 import org.junit.Assert
 import org.junit.Test
 
@@ -187,5 +187,21 @@ class NewInstanceBuildersTest {
         val parser = InitValue(1) + (Mark("just_a_recognizer") + newInstance<A>().left())
 
         Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+    }
+
+    @ExperimentalStdlibApi
+    @Test
+    fun testNewInstanceAfterFold() {
+        class TestClass(val list: List<Int>)
+
+        val parser: Parser<TestClass> = InitValue(1).asParser() + (InitValue(2).asParser() + BinaryList() + newInstance())
+
+        val result = parser.parse("")
+
+        Assert.assertTrue(result.isSuccess)
+        Assert.assertEquals(listOf(1, 2), result.value.list)
+
+        Assert.assertFalse(parser.print(TestClass(emptyList())).isSuccess)
+        Assert.assertTrue(parser.print(TestClass(listOf(1, 2))).isSuccess)
     }
 }

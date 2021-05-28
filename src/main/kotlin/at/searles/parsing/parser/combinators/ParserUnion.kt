@@ -35,7 +35,7 @@ class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
 
     override fun or(other: Parser<A>, swapPrint: Boolean): Parser<A> {
         return if(swapPrint)
-            ParserPrinterSeparate(this or other, ParserUnion(listOf(other) + parsers))
+            ParserPrinterSeparator(this or other, ParserUnion(listOf(other) + parsers))
         else {
             this or other
         }

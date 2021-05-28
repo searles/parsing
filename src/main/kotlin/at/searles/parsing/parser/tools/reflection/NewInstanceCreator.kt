@@ -4,7 +4,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.jvmErasure
 
-class NewInstanceCreator<T>(outClass: KClass<*>) {
+class NewInstanceCreator<T>(private val outClass: KClass<*>) {
     init {
         require(outClass.constructors.size == 1) { "${outClass.simpleName} must have exactly one constructor" }
     }
@@ -30,7 +30,7 @@ class NewInstanceCreator<T>(outClass: KClass<*>) {
         val expected = ctor.parameters.joinToString(", ") { it.javaClass.simpleName }
         val actual = args.joinToString(", ") { it?.javaClass?.simpleName ?: "Any?" }
 
-        error("Bad arguments: Expected ($expected) but was ($actual)")
+        error("${outClass.simpleName}($expected) does not match arguments ($actual)")
     }
 
     fun create(args: List<Any?>): T {
