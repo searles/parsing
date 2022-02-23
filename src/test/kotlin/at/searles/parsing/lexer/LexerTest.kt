@@ -1,5 +1,6 @@
 package at.searles.parsing.lexer
 
+import at.searles.parsing.codepoint.FrameStream
 import at.searles.parsing.codepoint.StringCodePointStream
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.lexer.regexp.Regexp
@@ -9,19 +10,19 @@ import org.junit.Test
 
 class LexerTest {
     private lateinit var lexer: Lexer
-    private lateinit var token: Token
+    private var tokenId: Int = -1
 
     private fun with(regexp: Regexp) {
         lexer = Lexer()
-        token = lexer.createToken(regexp)
+        tokenId = lexer.createToken(regexp)
     }
 
     private fun testIfIsAccepted(string: String, expected: String?) {
         val stream = FrameStream(StringCodePointStream(string))
-        val tokenIds = lexer.readNextToken(stream)
+        val tokenIds = lexer.selectNextToken(stream)
         Assert.assertEquals(expected != null, tokenIds != null)
-        Assert.assertEquals(expected != null, tokenIds != null && tokenIds.contains(token.tokenId))
-        Assert.assertEquals(expected, if (tokenIds != null) stream.getFrame() else null)
+        Assert.assertEquals(expected != null, tokenIds != null && tokenIds.contains(tokenId))
+        Assert.assertEquals(expected, if (tokenIds != null) stream.frame.toString() else null)
     }
 
     @Test

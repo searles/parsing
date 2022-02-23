@@ -1,7 +1,8 @@
 package at.searles.parsing.parser
 
-import at.searles.parsing.parser.Reducer.Companion.rep
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Reducer.Companion.join
+import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.parser.tools.*
 import at.searles.parsing.printer.PrintTree
@@ -9,11 +10,11 @@ import at.searles.parsing.printer.PrintTree
 interface Parser<A> {
     fun parse(string: String): ParserResult<A> {
         // for convenience
-        val stream = ParserStream(string)
+        val stream = TokenStream(string)
         return parse(stream)
     }
 
-    fun parse(stream: ParserStream): ParserResult<A>
+    fun parse(stream: TokenStream): ParserResult<A>
     fun print(value: A): PrintTree
 
     infix fun or(other: Parser<A>): Parser<A> {
@@ -54,10 +55,6 @@ interface Parser<A> {
 
     fun join(separator: Recognizer): Parser<List<A>> {
         return CreateEmptyList<A>() + (this + ListAppend()).join(separator)
-    }
-
-    fun select(highlight: Any): Parser<A> {
-        return SelectParser(highlight, this)
     }
 
     companion object {

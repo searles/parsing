@@ -1,6 +1,7 @@
 package at.searles.parsing.ruleset
 
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
@@ -20,7 +21,7 @@ class CycleCheck {
             val b by lazy { text("a").init(1) or text("(") + a + text(")") }
         }
         try {
-            rules.a.parse(ParserStream("a"))
+            rules.a.parse(TokenStream("a"))
             Assert.fail()
         } catch(e: StackOverflowError) {
             // e.printStackTrace()
@@ -36,7 +37,7 @@ class CycleCheck {
             val b by lazy { text("a").init(1) or text("(") + a + text(")") }
         }
 
-        val result = rules.a.parse(ParserStream("a"))
+        val result = rules.a.parse(TokenStream("a"))
         Assert.assertTrue(result.isSuccess)
     }
 
@@ -63,7 +64,7 @@ class CycleCheck {
         // is not considered in the longest-match
         // the output is exc-l
 
-        val result = rules.a.parse(ParserStream("excl"))
+        val result = rules.a.parse(TokenStream("excl"))
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals("hello world", result.value)
     }
@@ -76,7 +77,7 @@ class CycleCheck {
             val a: Parser<String> by ref { text("a") + a }
         }
 
-        val result = rules.a.parse(ParserStream("a"))
+        val result = rules.a.parse(TokenStream("a"))
 
         Assert.assertFalse(result.isSuccess)
     }

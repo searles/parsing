@@ -1,6 +1,7 @@
 package at.searles.parsing.parser
 
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Parser.Companion.variation
 import at.searles.parsing.parser.combinators.Variation
 import at.searles.parsing.parser.tools.ListAppend
@@ -30,11 +31,11 @@ class VariationTest {
 
     @Test
     fun testParseVariation() {
-        val result = abcdVariation.parse(ParserStream("adb"), emptyList())
+        val result = abcdVariation.parse(TokenStream("adb"), emptyList())
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals(listOf(1, 4, 2), result.value)
-        Assert.assertEquals(0, result.index)
-        Assert.assertEquals(3, result.length)
+        Assert.assertEquals(0, result.startIndex)
+        Assert.assertEquals(3, result.endIndex)
     }
 
     @Test
@@ -47,10 +48,10 @@ class VariationTest {
 
     @Test
     fun testParseVariationWithoutRepetition() {
-        val stream = ParserStream("abcda")
+        val stream = TokenStream("abcda")
         val result = abcdVariation.parse(stream, emptyList())
         Assert.assertTrue(result.isSuccess)
-        Assert.assertEquals(4, stream.index)
+        Assert.assertEquals(4, stream.startIndex)
     }
 
     @Test
@@ -71,7 +72,7 @@ class VariationTest {
             val parser = variation(a1, b2, c3, d4)
         }
 
-        val result = rules.parser.parse(ParserStream("dbca"))
+        val result = rules.parser.parse(TokenStream("dbca"))
         Assert.assertEquals(listOf(4, 2, 3, 1), result.value)
     }
 }

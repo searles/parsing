@@ -27,7 +27,7 @@ class NewInstanceCreator<T>(private val outClass: KClass<*>) {
     }
 
     private fun generateError(args: List<Any?>) {
-        val expected = ctor.parameters.joinToString(", ") { it.javaClass.simpleName }
+        val expected = ctor.parameters.joinToString(", ") { it.javaClass.simpleName } // TODO This is often a bad name
         val actual = args.joinToString(", ") { it?.javaClass?.simpleName ?: "Any?" }
 
         error("${outClass.simpleName}($expected) does not match arguments ($actual)")

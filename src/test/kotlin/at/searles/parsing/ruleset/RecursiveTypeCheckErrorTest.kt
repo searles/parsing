@@ -75,7 +75,7 @@ class RecursiveTypeCheckErrorTest {
             itext("(") + expr + itext(")")
         }
 
-        val literal by ref<Literal> {
+        val literal: Parser<Literal> by ref {
             rex("[0-9]+") { it.toString().toInt() } + newInstance<Num>() + cast()
         }
     }

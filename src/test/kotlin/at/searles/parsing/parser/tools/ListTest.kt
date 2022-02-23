@@ -2,7 +2,7 @@ package at.searles.parsing.parser.tools
 
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.parser.Parser.Companion.orEmpty
-import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.tools.CastBuilders.castAll
 import org.junit.Assert
@@ -39,7 +39,7 @@ class ListTest {
         val a = TokenRecognizer.text("a", lexer).init("a")
         val list = a.join(TokenRecognizer.text(",", lexer))
 
-        val parseResult = list.parse(ParserStream("a,a,a"))
+        val parseResult = list.parse(TokenStream("a,a,a"))
         val printResult = list.print(listOf("a", "a"))
 
         Assert.assertTrue(parseResult.isSuccess)
@@ -57,7 +57,7 @@ class ListTest {
 
         val list = (plus + a.join(TokenRecognizer.text(",", lexer))).orEmpty()
 
-        val parseResult = list.parse(ParserStream("+a,a,a"))
+        val parseResult = list.parse(TokenStream("+a,a,a"))
         val printResult = list.print(listOf("a", "a"))
         val printResultEmpty = list.print(emptyList())
 

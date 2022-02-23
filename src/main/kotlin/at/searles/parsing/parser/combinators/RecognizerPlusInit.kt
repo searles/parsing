@@ -1,10 +1,11 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.*
 import at.searles.parsing.printer.PrintTree
 
 class RecognizerPlusInit<A>(private val recognizer: Recognizer, private val init: Initializer<A>) : Parser<A> {
-    override fun parse(stream: ParserStream): ParserResult<A> {
+    override fun parse(stream: TokenStream): ParserResult<A> {
         val result = recognizer.parse(stream)
 
         if(!result.isSuccess) {

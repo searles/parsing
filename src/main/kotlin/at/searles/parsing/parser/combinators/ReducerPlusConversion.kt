@@ -2,19 +2,19 @@ package at.searles.parsing.parser.combinators
 
 import at.searles.parsing.parser.Conversion
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PartialPrintTree
 
 class ReducerPlusConversion<A, B, C>(private val reducer: Reducer<A, B>, private val conversion: Conversion<B, C>) : Reducer<A, C> {
-    override fun parse(stream: ParserStream, input: A): ParserResult<C> {
+    override fun parse(stream: TokenStream, input: A): ParserResult<C> {
         val result = reducer.parse(stream, input)
 
         if(!result.isSuccess) {
             return ParserResult.failure
         }
 
-        return ParserResult.of(conversion.convert(result.value), result.index, result.length)
+        return ParserResult.of(conversion.convert(result.value), result.startIndex, result.endIndex)
     }
 
     override fun print(value: C): PartialPrintTree<A> {

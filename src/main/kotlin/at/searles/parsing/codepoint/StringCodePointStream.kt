@@ -3,29 +3,9 @@ package at.searles.parsing.codepoint
 /**
  * This class creates a CharStream out of a Reader.
  */
-class StringCodePointStream(private val string: String) : BufferedStream {
+class StringCodePointStream(private val string: String) : IndexedStream {
     override var index = 0L
         private set
-
-    override fun backtrackToIndex(newIndex: Long) {
-        index = newIndex
-    }
-
-    override fun getCharSequence(index: Long, length: Int): CharSequence {
-        return getString(index, length)
-    }
-
-    override fun getString(index: Long, length: Int): String {
-        return string.substring(index.toInt(), index.toInt() + length)
-    }
-
-    override fun getCodePointAt(index: Long): Int {
-        if(Character.isLowSurrogate(string[index.toInt()])) {
-            return -1
-        }
-
-        return string.codePointAt(index.toInt())
-    }
 
     override fun read(): Int {
         return if(index < string.length) readNextCodePoint() else -1
@@ -37,7 +17,26 @@ class StringCodePointStream(private val string: String) : BufferedStream {
         return codePoint
     }
 
-    override fun toString(): String {
-        return string.substring(0 until index.toInt()) + "_" + string.substring(index.toInt())
+    override fun reset(newIndex: Long) {
+        index = newIndex
+    }
+
+    override fun getString(startIndex: Long, endIndex: Long): String {
+        return string.substring(startIndex.toInt(), endIndex.toInt())
+    }
+
+    override fun getCodePointStream(startIndex: Long, endIndex: Long): CodePointStream {
+        return object: CodePointStream {
+            var index = startIndex.toInt()
+            override fun read(): Int {
+                if(index >= endIndex) {
+                    return -1
+                }
+
+                return string.codePointAt(index).also {
+                    index += Character.charCount(it)
+                }
+            }
+        }
     }
 }

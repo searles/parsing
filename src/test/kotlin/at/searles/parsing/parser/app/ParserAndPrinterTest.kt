@@ -2,6 +2,7 @@ package at.searles.parsing.parser.app
 
 import at.searles.parsing.codepoint.CodePointStream
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.opt
@@ -17,7 +18,7 @@ import kotlin.math.abs
 
 class ParserAndPrinterTest {
     private lateinit var parser: Parser<Expr>
-    private lateinit var input: ParserStream
+    private lateinit var input: TokenStream
     private lateinit var value: Expr
     private lateinit var output: PrintTree
 
@@ -116,9 +117,9 @@ class ParserAndPrinterTest {
 
     @Test
     fun testLotsOfData() {
-        // about 3.5 seconds for 1000000 (on big one 0.5)
+        // 1000000 on Macbook M1 Air (Battery): 0.8 seconds
         // about 35 seconds for 10000000 (on big one 17 seconds)
-        input = ParserStream(stream(1000000))
+        input = TokenStream(stream(1000000))
 
         val startTime = System.currentTimeMillis()
         val duration = { (System.currentTimeMillis() - startTime).toFloat() / 1000f }
@@ -173,7 +174,7 @@ class ParserAndPrinterTest {
     }
 
     private fun withInput(input: String) {
-        this.input = ParserStream(input)
+        this.input = TokenStream(input)
     }
 
     private fun parse() {

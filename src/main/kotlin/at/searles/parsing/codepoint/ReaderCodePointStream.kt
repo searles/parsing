@@ -27,7 +27,13 @@ class ReaderCodePointStream(private val reader: Reader) : CodePointStream {
 
     private fun readAndCombineSurrogates(hi: Char): Int {
         val lo = reader.read()
-        require(lo != -1) { "no low surrogate from this reader" }
+
+        if(lo < 0) throw ReaderCodePointException("Missing low surrogate")
+
+        if(!Character.isLowSurrogate(lo.toChar())) {
+            throw ReaderCodePointException("No low surrogate after high surrogate")
+        }
+
         return Character.toCodePoint(hi, lo.toChar())
     }
 

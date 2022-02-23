@@ -1,10 +1,11 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.*
 import at.searles.parsing.printer.PartialPrintTree
 
 class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fold<B, A, C>) : Reducer<B, C> {
-    override fun parse(stream: ParserStream, input: B): ParserResult<C> {
+    override fun parse(stream: TokenStream, input: B): ParserResult<C> {
         val leftResult = mid.parse(stream)
 
         if(!leftResult.isSuccess) {
@@ -12,7 +13,7 @@ class ParserPlusFold<A, B, C>(private val mid: Parser<A>, private val right: Fol
         }
 
         val rightValue = right.fold(input, leftResult.value)
-        return ParserResult.of(rightValue, leftResult.index, leftResult.length)
+        return ParserResult.of(rightValue, leftResult.startIndex, leftResult.endIndex)
     }
 
     override fun print(value: C): PartialPrintTree<B> {

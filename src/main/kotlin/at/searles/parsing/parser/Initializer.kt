@@ -1,9 +1,10 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.combinators.InitializerPlusReducer
 import at.searles.parsing.printer.PrintTree
 
-interface Initializer<A> {
+fun interface Initializer<A> {
     fun initialize(): A
     fun consume(value: A): Boolean = error("Not invertible function")
 
@@ -45,8 +46,8 @@ interface Initializer<A> {
 
     fun asParser(): Parser<A> {
         return object: Parser<A> {
-            override fun parse(stream: ParserStream): ParserResult<A> {
-                return ParserResult.of(initialize(), stream.index, 0)
+            override fun parse(stream: TokenStream): ParserResult<A> {
+                return ParserResult.of(initialize(), stream.startIndex, 0)
             }
 
             override fun print(value: A): PrintTree {

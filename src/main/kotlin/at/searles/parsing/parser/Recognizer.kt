@@ -1,12 +1,13 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.parser.tools.InitValue
 import at.searles.parsing.printer.PrintTree
 
-interface Recognizer {
-    fun parse(stream: ParserStream): RecognizerResult
-    fun print(): PrintTree
+fun interface Recognizer {
+    fun parse(stream: TokenStream): RecognizerResult
+    fun print(): PrintTree = error("Not invertible function")
 
     infix fun or(other: Recognizer): Recognizer {
         return RecognizerOrRecognizer(this, other)

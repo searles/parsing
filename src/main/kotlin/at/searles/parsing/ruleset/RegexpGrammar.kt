@@ -17,61 +17,26 @@ object RegexpGrammar: Grammar {
 
     override val lexer = Lexer()
 
-    val createUnion get() = object: Fold<Regexp, Regexp, Regexp> {
-        override fun fold(left: Regexp, right: Regexp): Regexp {
-            return left or right
-        }
-    }
-
-    val createDiff get() = object: Fold<Regexp, Regexp, Regexp> {
-        override fun fold(left: Regexp, right: Regexp): Regexp {
-            return left - right
-        }
-    }
-
-    val createConcat get() = object: Fold<Regexp, Regexp, Regexp> {
-        override fun fold(left: Regexp, right: Regexp): Regexp {
-            return left + right
-        }
-    }
-
-    val createRep get() = object: Conversion<Regexp, Regexp> {
-        override fun convert(value: Regexp): Regexp {
-            return value.rep()
-        }
-    }
-
-    val createRep1 get() = object: Conversion<Regexp, Regexp> {
-        override fun convert(value: Regexp): Regexp {
-            return value.rep1()
-        }
-    }
-
-    val createOpt get() = object: Conversion<Regexp, Regexp> {
-        override fun convert(value: Regexp): Regexp {
-            return value.opt()
-        }
-    }
-
-    val createShortest get() = object: Conversion<Regexp, Regexp> {
-        override fun convert(value: Regexp): Regexp {
-            return value.shortest()
-        }
-    }
+    val createUnion = Fold<Regexp, Regexp, Regexp> { left, right -> left or right }
+    val createDiff = Fold<Regexp, Regexp, Regexp> { left, right -> left - right }
+    val createConcat = Fold<Regexp, Regexp, Regexp> { left, right -> left + right }
+    val createRep = Conversion<Regexp, Regexp> { value -> value.rep() }
+    val createRep1 = Conversion<Regexp, Regexp> { value -> value.rep1() }
+    val createOpt = Conversion<Regexp, Regexp> { value -> value.opt() }
+    val createShortest = Conversion<Regexp, Regexp> { value -> value.shortest() }
 
     val regexp: Parser<Regexp> by ref { union + eof }
-
     val union: Parser<Regexp> by ref { diff + (text("|") + diff + createUnion).rep() }
 
-    val diff by lazy { concat + (ch('-') + concat + createDiff).rep() }
-    val concat by lazy { repeat + (repeat + createConcat).rep() }
-    val repeat by lazy { term + (
+    private val diff by lazy { concat + (ch('-') + concat + createDiff).rep() }
+    private val concat by lazy { repeat + (repeat + createConcat).rep() }
+    private val repeat by lazy { term + (
             ch('*') + createRep or
             ch('+') + createRep1 or
             ch('?') + createOpt or
             ch('!') + createShortest).opt() }
 
-    val term by lazy {
+    private val term by lazy {
             ch('.').init<Regexp>(CharSet.all()) or
             CharSetParser.charSet + cast() or
             char or
@@ -84,8 +49,15 @@ object RegexpGrammar: Grammar {
         }
     }
 
-    val char by lazy { (escapedChar or regularChar) + CreateChar }
+    private val char by lazy { (escapedChar or regularChar) + CreateChar }
 
-    val escapedChar = rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar
-    val regularChar = rex(EscapedChars.regularChar - CharSet('(', '\\', ')', '|', '*', '+', '-', '.')) + EscapedChars.CreateRegularChar
+    private val escapedChar = rex(EscapedChars.specialChar) + EscapedChars.CreateSpecialChar
+    private val regularChar = rex(EscapedChars.regularChar - CharSet('(', '\\', ')', '|', '*', '+', '-', '.')) + EscapedChars.CreateRegularChar
+
+    fun regexp(regexpString: String): Regexp {
+        return regexp.parse(regexpString).let {
+            require(it.isSuccess)
+            it.value
+        }
+    }
 }

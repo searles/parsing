@@ -1,10 +1,11 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.*
 import at.searles.parsing.printer.PrintTree
 
 class InitializerPlusReducer<A, B>(private val initializer: Initializer<A>, private val reducer: Reducer<A, B>) : Parser<B> {
-    override fun parse(stream: ParserStream): ParserResult<B> {
+    override fun parse(stream: TokenStream): ParserResult<B> {
         val left = initializer.initialize()
         return reducer.parse(stream, left)
     }

@@ -1,6 +1,6 @@
 package at.searles.parsing.lexer.fsa
 
-import at.searles.parsing.lexer.FrameStream
+import at.searles.parsing.codepoint.FrameStream
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -13,7 +13,7 @@ class Automaton(val startNode: Node = Node()) {
 
         while (n != null) {
             if (n.isFinal) {
-                stream.setFrameEnd()
+                stream.mark()
                 acceptedNode = n
             }
 

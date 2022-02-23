@@ -1,8 +1,8 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.printer.PrintTree
 import kotlin.reflect.KProperty
 
@@ -40,7 +40,7 @@ class RefParser<T>(private val label: String?, private val createParser: (() -> 
         }
     }
 
-    override fun parse(stream: ParserStream): ParserResult<T> {
+    override fun parse(stream: TokenStream): ParserResult<T> {
         initializeIfUninitialized()
         return lazyParser.parse(stream)
     }

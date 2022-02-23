@@ -1,11 +1,11 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.*
-import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
 class ParserPrinterSeparator<A>(private val parser: Parser<A>, private val printer: Parser<A>) : Parser<A> {
-    override fun parse(stream: ParserStream): ParserResult<A> {
+    override fun parse(stream: TokenStream): ParserResult<A> {
         return parser.parse(stream)
     }
 

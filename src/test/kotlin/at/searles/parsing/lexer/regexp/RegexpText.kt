@@ -119,11 +119,11 @@ class RegexpText {
         val automaton = regexp.accept(RegexpToFsaVisitor)
         Assert.assertEquals(
                 "q0 --97..97--> q2*, " +
-                        "q0 --98..98--> q1*; " +
-                        "q1* --97..97--> q2*, " +
-                        "q1* --98..98--> q1*; " +
-                        "q2* --97..97--> q2*, " +
-                        "q2* --98..98--> q1*", automaton.toString())
+                "q0 --98..98--> q1*; " +
+                "q1* --97..97--> q2*, " +
+                "q1* --98..98--> q1*; " +
+                "q2* --97..97--> q2*, " +
+                "q2* --98..98--> q1*", automaton.toString())
     }
 
     @Test

@@ -1,5 +1,6 @@
 package at.searles.parsing.lexer
 
+import at.searles.parsing.codepoint.FrameStream
 import at.searles.parsing.lexer.fsa.IntSet
 import at.searles.parsing.lexer.fsa.Automaton
 import at.searles.parsing.lexer.fsa.RegexpToFsaVisitor
@@ -13,14 +14,12 @@ import at.searles.parsing.lexer.regexp.Regexp
  * The lexer does not take care of hidden tokens, this is the duty of
  * TokStream.
  */
-class Lexer {
+class Lexer(private val tokenIdStream: Iterator<Int> = generateSequence(0) { it + 1 }.iterator()) {
     /**
      * fsa that accepts our current language. Empty language is not allowed,
      * add must be called at least once.
      */
     private var automaton = Automaton()
-    private var tokenIdCounter = 0
-    private val specialTokens = IntSet()
 
     /**
      * Fetches the next token from the token stream.
@@ -29,27 +28,22 @@ class Lexer {
      * been called prior to this call.
      * @return A set that should not be modified.
      */
-    fun readNextToken(stream: FrameStream): IntSet? {
-        stream.consumeFrame()
-        val node = automaton.accept(stream) ?: return null
+    fun selectNextToken(stream: FrameStream): IntSet? {
+        require(stream.isReset)
+        val node = automaton.accept(stream) ?: run {
+            stream.reset()
+            return null
+        }
 
         return node.acceptedIds
     }
 
-    fun createToken(regexp: Regexp): Token {
+    fun createToken(regexp: Regexp): Int {
         val regexpAutomaton = regexp.accept(RegexpToFsaVisitor)
         regexpAutomaton.setId(temporaryId)
         automaton = automaton.union(regexpAutomaton)
 
-        val tokenId = replaceTemporaryIdByExistingOrNewId()
-
-        return Token(tokenId, this)
-    }
-
-    fun createSpecialToken(regexp: Regexp): Token {
-        val token = createToken(regexp)
-        specialTokens.add(token.tokenId)
-        return token
+        return replaceTemporaryIdByExistingOrNewId()
     }
 
     private fun replaceTemporaryIdByExistingOrNewId(): Int {
@@ -65,7 +59,7 @@ class Lexer {
         require(idsOfMatches.size <= 1)
 
         return if(idsOfMatches.isEmpty) {
-            replaceMarkerByNewId()
+            replaceMarkerByNewTokenId()
         } else {
             removeMarker()
             idsOfMatches[0]
@@ -102,25 +96,17 @@ class Lexer {
         }
     }
 
-    private fun replaceMarkerByNewId(): Int {
-        val newId = getNextTokenId()
+    private fun replaceMarkerByNewTokenId(): Int {
+        val tokenId = tokenIdStream.next()
 
         automaton.finalNodes.forEach {
             if (it.acceptedIds.contains(-1)) {
                 it.acceptedIds.remove(-1)
-                it.acceptedIds.add(newId)
+                it.acceptedIds.add(tokenId)
             }
         }
 
-        return newId
-    }
-
-    private fun getNextTokenId(): Int {
-        return tokenIdCounter++
-    }
-
-    fun isSpecialToken(tokenIds: IntSet): Boolean {
-        return specialTokens.indexOfFirstMatch(tokenIds) != -1
+        return tokenId
     }
 
     companion object {

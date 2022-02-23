@@ -1,12 +1,12 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.printer.PrintTree
 
 class ParserUnion<A>(private val parsers: List<Parser<A>>) : Parser<A> {
-    override fun parse(stream: ParserStream): ParserResult<A> {
+    override fun parse(stream: TokenStream): ParserResult<A> {
         for(parser in parsers) {
             val result = parser.parse(stream)
             if(result.isSuccess) {

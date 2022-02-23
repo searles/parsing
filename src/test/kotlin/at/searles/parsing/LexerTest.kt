@@ -1,7 +1,6 @@
 package at.searles.parsing
 
-import at.searles.parsing.codepoint.StringCodePointStream
-import at.searles.parsing.lexer.FrameStream
+import at.searles.parsing.codepoint.FrameStream
 import at.searles.parsing.lexer.Lexer
 import at.searles.parsing.lexer.regexp.Text
 import org.junit.Assert
@@ -20,18 +19,22 @@ class LexerTest {
     fun testSimpleLexer() {
         val zero = lexer.createToken(Text("0"))
         val seven = lexer.createToken(Text("7"))
+        val stream = FrameStream("07")
 
-        val stream = FrameStream(StringCodePointStream("07"))
+        val first = lexer.selectNextToken(stream)!!
+        val firstMatch = stream.frame.toString()
+        stream.next()
 
-        val first = lexer.readNextToken(stream)!!
-        Assert.assertEquals("0", stream.getFrame())
-        val second = lexer.readNextToken(stream)!!
-        Assert.assertEquals("7", stream.getFrame())
-        val third = lexer.readNextToken(stream)
-        Assert.assertEquals("", stream.getFrame())
+        val second = lexer.selectNextToken(stream)!!
+        val secondMatch = stream.frame.toString()
+        stream.next()
 
-        Assert.assertTrue(first.size == 1 && first.contains(zero.tokenId))
-        Assert.assertTrue(second.size == 1 && second.contains(seven.tokenId))
+        val third = lexer.selectNextToken(stream)
+
+        Assert.assertEquals("0", firstMatch)
+        Assert.assertEquals("7", secondMatch)
+        Assert.assertTrue(first.size == 1 && first.contains(zero))
+        Assert.assertTrue(second.size == 1 && second.contains(seven))
         Assert.assertNull(third)
     }
 }

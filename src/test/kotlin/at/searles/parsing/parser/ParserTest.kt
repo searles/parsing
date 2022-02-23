@@ -1,6 +1,8 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.codepoint.Frame
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.combinators.TokenParser
@@ -19,7 +21,8 @@ class ParserTest {
 
         val mapping = object: Conversion<CharSequence, Int?> {
             override fun convert(value: CharSequence): Int? {
-                return when(value[0]) {
+                val firstChar = (value as Frame).getCodePointStream().read()
+                return when(firstChar.toChar()) {
                     'a' -> 0
                     'b' -> null
                     else -> error("not possible")
@@ -35,10 +38,10 @@ class ParserTest {
             }
         }
 
-        val parser = TokenParser(lexer.createToken(CharSet('a', 'b'))) + mapping
+        val parser = TokenParser(lexer.createToken(CharSet('a', 'b')), lexer, mapping)
 
-        val aResult = parser.parse(ParserStream("a"))
-        val bResult = parser.parse(ParserStream("b"))
+        val aResult = parser.parse(TokenStream("a"))
+        val bResult = parser.parse(TokenStream("b"))
 
         Assert.assertTrue(aResult.isSuccess)
         Assert.assertTrue(bResult.isSuccess)
@@ -60,17 +63,13 @@ class ParserTest {
     fun testListParser() {
         val lexer = Lexer()
 
-        val createString = object: Conversion<CharSequence, String> {
-            override fun convert(value: CharSequence): String {
-                return value.toString()
-            }
-        }
+        val createString = Conversion<CharSequence, String> { value -> value.toString() }
 
-        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))) + createString
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z')), lexer, createString)
 
         val listParser = parser.rep()
 
-        val result = listParser.parse(ParserStream("abc"))
+        val result = listParser.parse(TokenStream("abc"))
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals(listOf("a", "b", "c"), result.value)
@@ -79,9 +78,9 @@ class ParserTest {
     @Test
     fun testOptParser() {
         val lexer = Lexer()
-        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))).opt()
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z')), lexer) { it.toString() }.opt()
 
-        val result = parser.parse(ParserStream("1"))
+        val result = parser.parse(TokenStream("1"))
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertNull(result.value)
@@ -90,11 +89,11 @@ class ParserTest {
     @Test
     fun testPairParser() {
         val lexer = Lexer()
-        val parser = TokenParser(lexer.createToken(CharSet('a'..'z'))).opt()
+        val parser = TokenParser(lexer.createToken(CharSet('a'..'z')), lexer) { it.toString() }.opt()
 
         val pairParser = parser + parser
 
-        val result = pairParser.parse(ParserStream("ab"))
+        val result = pairParser.parse(TokenStream("ab"))
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals(Pair("a", "b"), result.value)
@@ -103,24 +102,17 @@ class ParserTest {
 
     @Test
     fun testSelfReferringParser() {
-        val str = object: Conversion<CharSequence, String> {
-            override fun convert(value: CharSequence): String {
-                return value.toString()
-            }
-        }
+        val str = Conversion<CharSequence, String> { value -> value.toString() }
 
-        val stringAppend = object: Fold<String, String, String> {
-            override fun fold(left: String, right: String): String {
-                return left + right
-            }
-        }
+        val stringAppend = Fold<String, String, String> { left, right -> left + right }
 
         val parserSet = object {
             val recursiveParser: Parser<String> by ref { charParser + (recursiveParser + stringAppend) or charParser }
-            val charParser = TokenParser(Lexer().createToken(CharSet('a'..'z'))) + str
+            val lexer = Lexer()
+            val charParser = TokenParser(lexer.createToken(CharSet('a'..'z')), lexer, str)
         }
 
-        val result = parserSet.recursiveParser.parse(ParserStream("abcde"))
+        val result = parserSet.recursiveParser.parse(TokenStream("abcde"))
 
         Assert.assertTrue(result.isSuccess)
         Assert.assertEquals("abcde", result.value)
@@ -131,8 +123,8 @@ class ParserTest {
         val lexer = Lexer()
         val a = TokenRecognizer.text("a", lexer).flag()
 
-        val resultTrue = a.parse(ParserStream("a"))
-        val resultFalse = a.parse(ParserStream(""))
+        val resultTrue = a.parse(TokenStream("a"))
+        val resultFalse = a.parse(TokenStream(""))
 
         Assert.assertTrue(resultTrue.isSuccess)
         Assert.assertTrue(resultFalse.isSuccess)
@@ -155,7 +147,6 @@ class ParserTest {
         Assert.assertEquals("b", printResult.asString())
     }
 
-
     @Test
     fun testSwapPrintMultipleItems() {
         val lexer = Lexer()
@@ -170,70 +161,70 @@ class ParserTest {
         Assert.assertTrue(printResult.isSuccess)
         Assert.assertEquals("b", printResult.asString())
     }
-
-    @Test
-    fun testItextMany() {
-        val rules = object: Grammar {
-            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val a = itext("a", "b")
-        }
-
-        val result = rules.a.parse(ParserStream("A B"))
-        Assert.assertTrue(result.isSuccess)
-        Assert.assertEquals("ab", rules.a.print().asString())
-    }
-
-    @Test
-    fun testPlusStraightened() {
-        val rules = object: Grammar {
-            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val a = itext("a").init(1)
-            val b = itext("b").init(2)
-            val c = itext("c").init(3)
-
-            val abc = a + b + c
-        }
-
-        Assert.assertEquals(Pair(Pair(1, 2), 3), rules.abc.parse(ParserStream("abc")).value)
-    }
-
-    @Test
-    fun testParsePersonExample() {
-        class Person(val firstName: String, val lastName: String, val age: Int)
-
-        val rules = object: Grammar {
-            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
-            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
-
-            val person = name + name + text(",") + num + newInstance<Person>()
-        }
-
-        val result = rules.person.parse(ParserStream("Joe Biden, 78"))
-        Assert.assertTrue(result.isSuccess)
-        val person = result.value
-        Assert.assertEquals("Joe", person.firstName)
-        Assert.assertEquals("Biden", person.lastName)
-        Assert.assertEquals(78, person.age)
-    }
-
-    @Suppress("unused")
-    @Test
-    fun testPrintPersonExample() {
-        class Person(val firstName: String, val lastName: String, val age: Int)
-
-        val rules = object: Grammar {
-            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
-            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
-            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
-
-            val person = name + name + text(",") + num + newInstance<Person>()
-        }
-
-        val result = rules.person.print(Person("John", "Doe", 111))
-        Assert.assertTrue(result.isSuccess)
-        Assert.assertEquals("JohnDoe,111", result.asString())
-    }
+//
+//    @Test
+//    fun testItextMany() {
+//        val rules = object: Grammar {
+//            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+//            val a = itext("a", "b")
+//        }
+//
+//        val result = rules.a.parse(TokenStream("A B"))
+//        Assert.assertTrue(result.isSuccess)
+//        Assert.assertEquals("ab", rules.a.print().asString())
+//    }
+//
+//    @Test
+//    fun testPlusStraightened() {
+//        val rules = object: Grammar {
+//            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+//            val a = itext("a").init(1)
+//            val b = itext("b").init(2)
+//            val c = itext("c").init(3)
+//
+//            val abc = a + b + c
+//        }
+//
+//        Assert.assertEquals(Pair(Pair(1, 2), 3), rules.abc.parse(TokenStream("abc")).value)
+//    }
+//
+//    @Test
+//    fun testParsePersonExample() {
+//        class Person(val firstName: String, val lastName: String, val age: Int)
+//
+//        val rules = object: Grammar {
+//            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+//            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
+//            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
+//
+//            val person = name + name + text(",") + num + newInstance<Person>()
+//        }
+//
+//        val result = rules.person.parse(TokenStream("Joe Biden, 78"))
+//        Assert.assertTrue(result.isSuccess)
+//        val person = result.value
+//        Assert.assertEquals("Joe", person.firstName)
+//        Assert.assertEquals("Biden", person.lastName)
+//        Assert.assertEquals(78, person.age)
+//    }
+//
+//    @Suppress("unused")
+//    @Test
+//    fun testPrintPersonExample() {
+//        class Person(val firstName: String, val lastName: String, val age: Int)
+//
+//        val rules = object: Grammar {
+//            override val lexer = Lexer().apply { createSpecialToken(Text(" ")) }
+//            val name = rex(CharSet('A'..'Z', 'a'..'z').rep1())
+//            val num = rex(CharSet('0'..'9').rep1()) { it.toString().toInt() }
+//
+//            val person = name + name + text(",") + num + newInstance<Person>()
+//        }
+//
+//        val result = rules.person.print(Person("John", "Doe", 111))
+//        Assert.assertTrue(result.isSuccess)
+//        Assert.assertEquals("JohnDoe,111", result.asString())
+//    }
 
     @Test
     fun testReversePrint() {
@@ -260,7 +251,7 @@ class ParserTest {
             val aOrA2 = a.or(a2, swapPrint = true)
         }
 
-        Assert.assertEquals(1, rules.aOrA2.parse(ParserStream("a")).value)
+        Assert.assertEquals(1, rules.aOrA2.parse(TokenStream("a")).value)
     }
 
     @Test
@@ -275,7 +266,7 @@ class ParserTest {
             val aaa = (a or a2).or(a3, swapPrint = true)
         }
 
-        Assert.assertEquals(1, rules.aaa.parse(ParserStream("a")).value)
+        Assert.assertEquals(1, rules.aaa.parse(TokenStream("a")).value)
     }
 
     @Test
@@ -296,26 +287,26 @@ class ParserTest {
     @Test
     fun testIsTraceable() {
         class Node(val value: String): Traceable {
-            var index: Long? = null
-            var length: Long? = null
-            override fun setTrace(index: Long, length: Long) {
-                this.index = index
-                this.length = length
+            var startIndex: Long? = null
+            var endIndex: Long? = null
+            override fun setTrace(startIndex: Long, endIndex: Long) {
+                this.startIndex = startIndex
+                this.endIndex = endIndex
             }
         }
 
         val lexer = Lexer()
 
-        val bcParser = TokenParser(lexer.createToken(Text("bc"))) + newInstance<Node>()
+        val bcParser = TokenParser(lexer.createToken(Text("bc")), lexer) + newInstance<Node>()
 
-        val aRecognizer = TokenRecognizer(lexer.createToken(Text("a")), "a")
+        val aRecognizer = TokenRecognizer(lexer.createToken(Text("a")), lexer, "a")
 
         val parser = aRecognizer + bcParser + aRecognizer
 
         val node = parser.parse("abca")
 
         Assert.assertTrue(node.isSuccess)
-        Assert.assertEquals(0, node.index)
-        Assert.assertEquals(4, node.length)
+        Assert.assertEquals(0, node.startIndex)
+        Assert.assertEquals(4, node.endIndex)
     }
 }

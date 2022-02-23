@@ -1,5 +1,6 @@
 package at.searles.parsing.lexer
 
+import at.searles.parsing.codepoint.FrameStream
 import at.searles.parsing.codepoint.StringCodePointStream
 import org.junit.Assert
 import org.junit.Test
@@ -7,79 +8,82 @@ import org.junit.Test
 class FrameStreamTest {
     @Test
     fun testFrameIsEmpty() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
-        Assert.assertEquals("", frameStream.getFrame())
+        val stream = FrameStream(StringCodePointStream("abcd"))
+        Assert.assertEquals("", stream.frame.toString())
     }
 
     @Test
     fun testFrameToString() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
+        val stream = FrameStream(StringCodePointStream("abcd"))
 
-        Assert.assertEquals('a'.toInt(), frameStream.read())
-        Assert.assertEquals('b'.toInt(), frameStream.read())
+        Assert.assertEquals('a'.toInt(), stream.read())
+        Assert.assertEquals('b'.toInt(), stream.read())
 
-        frameStream.setFrameEnd()
+        stream.mark()
 
-        Assert.assertEquals("ab", frameStream.getFrame())
+        Assert.assertEquals("ab", stream.frame.toString())
     }
 
     @Test
     fun testFrameEmptyAfterConsuming() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
+        val stream = FrameStream(StringCodePointStream("abcd"))
 
-        Assert.assertEquals('a'.toInt(), frameStream.read())
-        Assert.assertEquals('b'.toInt(), frameStream.read())
+        Assert.assertEquals('a'.toInt(), stream.read())
+        Assert.assertEquals('b'.toInt(), stream.read())
 
-        frameStream.setFrameEnd()
-        frameStream.consumeFrame()
+        stream.mark()
+        stream.next()
 
-        Assert.assertEquals("", frameStream.getFrame())
+        Assert.assertEquals("", stream.frame.toString())
     }
 
     @Test
     fun testFrameStreamToString() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
+        val stream = FrameStream(StringCodePointStream("abcd"))
 
-        Assert.assertEquals('a'.toInt(), frameStream.read())
-        Assert.assertEquals('b'.toInt(), frameStream.read())
+        Assert.assertEquals('a'.toInt(), stream.read())
+        Assert.assertEquals('b'.toInt(), stream.read())
 
-        frameStream.setFrameEnd()
+        stream.mark()
 
-        frameStream.read()
+        Assert.assertEquals('c'.toInt(), stream.read())
 
-        Assert.assertEquals("\"ab\": abc_d[0:2]", frameStream.toString())
+        Assert.assertEquals("ab", stream.frame.toString())
+
+        stream.next()
+        Assert.assertEquals('c'.toInt(), stream.read())
     }
 
 
     @Test
     fun testMultipleSetFrameEnd() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
+        val stream = FrameStream(StringCodePointStream("abcd"))
 
-        Assert.assertEquals('a'.toInt(), frameStream.read())
-        frameStream.setFrameEnd()
-        Assert.assertEquals('b'.toInt(), frameStream.read())
+        Assert.assertEquals('a'.toInt(), stream.read())
+        stream.mark()
+        Assert.assertEquals('b'.toInt(), stream.read())
 
-        Assert.assertEquals("a", frameStream.getFrame())
-        frameStream.setFrameEnd()
-        Assert.assertEquals("ab", frameStream.getFrame())
+        Assert.assertEquals("a", stream.frame.toString())
+        stream.mark()
+        Assert.assertEquals("ab", stream.frame.toString())
     }
 
     @Test
     fun testFrameReadAfterConsuming() {
-        val frameStream = FrameStream(StringCodePointStream("abcd"))
+        val stream = FrameStream(StringCodePointStream("abcd"))
 
-        frameStream.read()
-        frameStream.read()
+        stream.read()
+        stream.read()
 
-        frameStream.setFrameEnd()
+        stream.mark()
 
-        Assert.assertEquals('c'.toInt(), frameStream.read())
+        Assert.assertEquals('c'.toInt(), stream.read())
 
-        frameStream.consumeFrame()
+        stream.next()
 
-        Assert.assertEquals('c'.toInt(), frameStream.read())
-        frameStream.setFrameEnd()
+        Assert.assertEquals('c'.toInt(), stream.read())
+        stream.mark()
 
-        Assert.assertEquals("c", frameStream.getFrame())
+        Assert.assertEquals("c", stream.frame.toString())
     }
 }

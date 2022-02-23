@@ -1,11 +1,12 @@
 package at.searles.parsing.parser
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.combinators.*
 import at.searles.parsing.printer.PartialPrintTree
 
-interface Reducer<A, B> {
-    fun parse(stream: ParserStream, input: A): ParserResult<B>
-    fun print(value: B): PartialPrintTree<A>
+fun interface Reducer<A, B> {
+    fun parse(stream: TokenStream, input: A): ParserResult<B>
+    fun print(value: B): PartialPrintTree<A> = error("Not invertible")
 
     operator fun <C> plus(reducer: Reducer<B, C>): Reducer<A, C> {
         return ReducerPlusReducer(this, reducer)

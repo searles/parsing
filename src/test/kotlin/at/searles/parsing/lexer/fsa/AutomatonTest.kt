@@ -1,7 +1,7 @@
 package at.searles.parsing.lexer.fsa
 
+import at.searles.parsing.codepoint.FrameStream
 import at.searles.parsing.codepoint.StringCodePointStream
-import at.searles.parsing.lexer.FrameStream
 import org.junit.Assert
 import org.junit.Test
 
@@ -77,7 +77,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("aaab"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("aaa", stream.getFrame())
+        Assert.assertEquals("aaa", stream.frame.toString())
     }
 
     @Test
@@ -86,7 +86,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("(aa))"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa)", stream.getFrame())
+        Assert.assertEquals("(aa)", stream.frame.toString())
     }
 
     @Test
@@ -95,7 +95,7 @@ class AutomatonTest {
         val stream = FrameStream(StringCodePointStream("(aa))"))
 
         Assert.assertTrue(automaton.accept(stream) != null)
-        Assert.assertEquals("(aa))", stream.getFrame())
+        Assert.assertEquals("(aa))", stream.frame.toString())
     }
 
     @Test

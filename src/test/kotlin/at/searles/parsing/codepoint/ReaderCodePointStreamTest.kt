@@ -1,6 +1,5 @@
 package at.searles.parsing.codepoint
 
-import at.searles.parsing.codepoint.ReaderCodePointStream
 import org.junit.Assert
 import org.junit.Test
 import java.io.StringReader

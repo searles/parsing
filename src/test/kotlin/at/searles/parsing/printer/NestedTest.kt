@@ -1,7 +1,9 @@
 package at.searles.parsing.printer
 
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.lexer.regexp.CharSet
+import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.Reducer.Companion.rep
 import at.searles.parsing.parser.combinators.RefParser
@@ -51,15 +53,15 @@ class NestedTest {
         }
     }
 
-    val lexer = Lexer().apply {
-        createSpecialToken(CharSet(' ', '\n'))
-    }
+    val lexer = Lexer()
 
-    val term by ref { TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1())) + TermCreate }
+    val ws = TokenRecognizer(lexer.createToken(Text(" ")), lexer, " ")
+
+    val term by ref { TokenParser(lexer.createToken(CharSet('a' .. 'z').rep1()), lexer, TermCreate) }
     
-    val app: Parser<Tree> by ref { expr + (expr + AppCreate).rep() }
+    val app: Parser<Tree> by ref { expr + (ws + expr + AppCreate).rep() }
     
-    var expr = RefParser<Tree>("expr") {
+    var expr = RefParser("expr") {
         term or TokenRecognizer.text("(", lexer) + app + TokenRecognizer.text(")", lexer)
     }
 
@@ -72,7 +74,7 @@ class NestedTest {
 
     @Test
     fun testSimpleApp() {
-        val tree = app.parse(ParserStream("a b"))
+        val tree = app.parse(TokenStream("a b"))
 
         Assert.assertTrue(tree.isSuccess)
         Assert.assertEquals("(a b)", tree.value.toString())
@@ -80,68 +82,19 @@ class NestedTest {
 
     @Test
     fun testPrintNestedApp() {
-        val tree = app.parse(ParserStream("(a b) c d (e f)"))
+        val tree = app.parse(TokenStream("(a b) c d (e f)"))
         val printTree = app.print(tree.value)
 
         Assert.assertTrue(printTree.isSuccess)
-        Assert.assertEquals("abcd(ef)", printTree.toString())
+        Assert.assertEquals("a b c d (e f)", printTree.toString())
     }
-
 
     @Test
     fun testNestedApp() {
-        val tree = app.parse(ParserStream("(a b) c d (e f)"))
+        val tree = app.parse(TokenStream("(a b) c d (e f)"))
 
         Assert.assertTrue(tree.isSuccess)
         Assert.assertEquals("((((a b) c) d) (e f))", tree.value.toString())
-    }
-
-    class IndentationContext {
-        var level = 0
-
-        fun indent(it: OutStream) {
-            it.append("\n")
-            level++
-            it.append(" ".repeat(level))
-        }
-
-
-        fun unindent(it: OutStream) {
-            it.append("\n")
-            level--
-            it.append(" ".repeat(level))
-        }
-    }
-
-    @Test
-    fun testIndentation() {
-        val ctx = IndentationContext()
-
-        expr = RefParser<Tree>("expr") {
-            term or 
-            TokenRecognizer.text("(", lexer) + app.select("indent") + TokenRecognizer.text(")", lexer)
-        }
-
-        val tree = app.parse(ParserStream("(a (b (c d e) f) g) h"))
-        val printTree = app.print(tree.value)
-
-        val os = object: StringOutStream() {
-            override fun select(label: Any, tree: PrintTree) {
-                if(label == "indent") {
-                    ctx.indent(this)
-                    tree.print(this)
-                    ctx.unindent(this)
-                }
-            }
-        }
-
-        printTree.print(os)
-
-        Assert.assertEquals("a(\n" +
-                " b(\n" +
-                "  cde\n" +
-                " )f\n" +
-                ")gh", os.toString())
     }
 }
 

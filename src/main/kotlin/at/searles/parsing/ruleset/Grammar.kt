@@ -13,19 +13,19 @@ interface Grammar {
 
     fun itext(vararg text: String): Recognizer {
         return text.map<String, Recognizer> {
-            TokenRecognizer(lexer.createToken(Text.itext(it)), it)
+            TokenRecognizer(lexer.createToken(Text.itext(it)), lexer, it)
         }.reduce { a, b -> a + b }
     }
 
     fun text(vararg text: String): Recognizer {
         return text.map<String, Recognizer> {
-            TokenRecognizer(lexer.createToken(Text(it)), it)
+            TokenRecognizer(lexer.createToken(Text(it)), lexer, it)
         }.reduce { a, b -> a + b }
     }
 
     fun ch(char: Char): Recognizer {
         val token = lexer.createToken(CharSet(char))
-        return TokenRecognizer(token, char.toString())
+        return TokenRecognizer(token, lexer, char.toString())
     }
 
     fun rex(regexp: Regexp): Parser<String> {
@@ -42,23 +42,9 @@ interface Grammar {
     }
 
 
-    val eof get() = TokenRecognizer(lexer.createToken(CharSet.eof()), "")
+    val eof get() = TokenRecognizer(lexer.createToken(CharSet.eof()), lexer, "")
 
     fun <A> rex(regexp: Regexp, create: (CharSequence) -> A): Parser<A> {
-        return TokenParser(lexer.createToken(regexp)) + ConvertCharSeq(create)
-    }
-
-    private class ConvertCharSeq<A>(val create: (CharSequence) -> A): Conversion<CharSequence, A> {
-        override fun convert(value: CharSequence): A {
-            return create(value)
-        }
-
-        override fun invert(value: A): FnResult<CharSequence> {
-            return FnResult.success(value.toString())
-        }
-
-        override fun toString(): String {
-            return "{create}"
-        }
+        return TokenParser(lexer.createToken(regexp), lexer, create)
     }
 }

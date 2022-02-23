@@ -1,7 +1,10 @@
 package at.searles.parsing.parser.tools
 
 import at.searles.parsing.parser.Parser
-import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.lexer.TokenStream
+import at.searles.parsing.parser.Recognizer
+import at.searles.parsing.parser.RecognizerResult
+import at.searles.parsing.parser.combinators.TokenRecognizer
 import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.newInstance
 import at.searles.parsing.parser.tools.reflection.NewInstanceBuilders.plus
 import org.junit.Assert
@@ -61,7 +64,7 @@ class NewInstanceBuildersTest {
 
         val parser = InitValue(A()) + (InitValue(B()).asParser() + newInstance<C>().left<A>())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @ExperimentalStdlibApi
@@ -86,7 +89,7 @@ class NewInstanceBuildersTest {
 
         val parser = InitValue(A()).asParser() + InitValue(B()).asParser() + (InitValue(C()).asParser() + newInstance<D>().left())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @ExperimentalStdlibApi
@@ -113,7 +116,7 @@ class NewInstanceBuildersTest {
 
         val parser: Parser<E> = InitValue(A()).asParser() + InitValue(B()).asParser() + InitValue(C()).asParser() + (InitValue(D()).asParser() + newInstance<E>().left<Pair<Pair<A, B>, C>>())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @ExperimentalStdlibApi
@@ -138,7 +141,7 @@ class NewInstanceBuildersTest {
 
         val parser = InitValue(B()).asParser() + newInstance<C>(A())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @Test
@@ -163,7 +166,7 @@ class NewInstanceBuildersTest {
 
         val parser = InitValue(B()) + (InitValue(C()).asParser() + newInstance<D>(A()).left())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @ExperimentalStdlibApi
@@ -184,9 +187,9 @@ class NewInstanceBuildersTest {
     fun testNewInstanceFoldFromRecognizer() {
         data class A(val i: Int)
 
-        val parser = InitValue(1) + (Mark("just_a_recognizer") + newInstance<A>().left())
+        val parser = InitValue(1) + (Recognizer { stream -> RecognizerResult.of(stream.startIndex, 0) } + newInstance<A>().left())
 
-        Assert.assertTrue(parser.parse(ParserStream("")).isSuccess)
+        Assert.assertTrue(parser.parse(TokenStream("")).isSuccess)
     }
 
     @ExperimentalStdlibApi

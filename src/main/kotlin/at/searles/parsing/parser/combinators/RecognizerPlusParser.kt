@@ -1,14 +1,14 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Recognizer
 import at.searles.parsing.printer.PrintTree
 
 class RecognizerPlusParser<A>(private val left: Recognizer, private val right: Parser<A>) : Parser<A> {
-    override fun parse(stream: ParserStream): ParserResult<A> {
-        val state = stream.createState()
+    override fun parse(stream: TokenStream): ParserResult<A> {
+        val index0 = stream.startIndex
         val leftResult = left.parse(stream)
 
         if(!leftResult.isSuccess) return ParserResult.failure
@@ -16,11 +16,11 @@ class RecognizerPlusParser<A>(private val left: Recognizer, private val right: P
         val rightResult = right.parse(stream)
 
         if(!rightResult.isSuccess) {
-            stream.restoreState(state)
+            stream.restoreIndex(index0)
             return ParserResult.failure
         }
 
-        return ParserResult.of(rightResult.value, leftResult.index, stream.index - leftResult.index)
+        return ParserResult.of(rightResult.value, leftResult.index, stream.startIndex - leftResult.index)
     }
 
     override fun print(value: A): PrintTree {

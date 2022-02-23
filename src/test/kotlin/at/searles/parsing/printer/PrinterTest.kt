@@ -1,19 +1,18 @@
 package at.searles.parsing.printer
 
 import at.searles.parsing.lexer.Lexer
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.lexer.regexp.CharSet
 import at.searles.parsing.lexer.regexp.Text
 import at.searles.parsing.parser.*
 import at.searles.parsing.parser.combinators.TokenParser
 import at.searles.parsing.parser.combinators.TokenRecognizer
-import at.searles.parsing.parser.tools.Mark
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 class PrinterTest {
     private lateinit var lexer: Lexer
-    private lateinit var number: Parser<CharSequence>
     private lateinit var toIntNode: Conversion<CharSequence, Tree>
     private lateinit var plusSign: Recognizer
     private lateinit var intParser: Parser<Tree>
@@ -23,7 +22,7 @@ class PrinterTest {
     @Before
     fun setUp() {
         lexer = Lexer()
-        number = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()))
+
         toIntNode = object: Conversion<CharSequence, Tree> {
             override fun convert(value: CharSequence): Tree.IntNode {
                 return Tree.IntNode(value.toString().toInt())
@@ -33,8 +32,10 @@ class PrinterTest {
                 return FnResult.ofNullable((value as? Tree.IntNode)?.value.toString())
             }
         }
-        plusSign = TokenRecognizer(lexer.createToken(Text("+")), "+")
-        intParser = number + toIntNode
+
+        intParser = TokenParser(lexer.createToken(CharSet('0'..'9').rep1()), lexer, toIntNode)
+
+        plusSign = TokenRecognizer(lexer.createToken(Text("+")), lexer, "+")
 
         additionOp = object: Fold<Tree, Tree, Tree> {
             override fun fold(left: Tree, right: Tree): Tree {
@@ -55,7 +56,7 @@ class PrinterTest {
 
     @Test
     fun testPrinter() {
-        val result = addition.parse(ParserStream("16+32"))
+        val result = addition.parse(TokenStream("16+32"))
 
         Assert.assertTrue(result.isSuccess)
 
@@ -63,28 +64,28 @@ class PrinterTest {
         Assert.assertTrue(printResult.isSuccess)
         Assert.assertEquals("16+32", printResult.toString())
     }
-
-    @Test
-    fun testPrinterWithMarks() {
-        fun space(it: OutStream) { it.append(" ") }
-
-        addition = intParser + ((Mark("space") + plusSign) + Mark("space") + intParser + additionOp)
-
-        val result = addition.parse(ParserStream("16+32"))
-
-        Assert.assertTrue(result.isSuccess)
-
-        val printResult = addition.print(result.value)
-        Assert.assertTrue(printResult.isSuccess)
-
-        val output = object: StringOutStream() {
-            override fun mark(label: Any) {
-                if(label == "space") space(this)
-            }
-        }.also {
-            printResult.print(it)
-        }.toString()
-
-        Assert.assertEquals("16 + 32", output)
-    }
+//
+//    @Test
+//    fun testPrinterWithMarks() {
+//        fun space(it: OutStream) { it.append(" ") }
+//
+//        addition = intParser + ((Mark("space") + plusSign) + Mark("space") + intParser + additionOp)
+//
+//        val result = addition.parse(TokenStream("16+32"))
+//
+//        Assert.assertTrue(result.isSuccess)
+//
+//        val printResult = addition.print(result.value)
+//        Assert.assertTrue(printResult.isSuccess)
+//
+//        val output = object: StringOutStream() {
+//            override fun mark(label: Any) {
+//                if(label == "space") space(this)
+//            }
+//        }.also {
+//            printResult.print(it)
+//        }.toString()
+//
+//        Assert.assertEquals("16 + 32", output)
+//    }
 }

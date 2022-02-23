@@ -1,12 +1,12 @@
 package at.searles.parsing.parser.combinators
 
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PartialPrintTree
 
 class ReducerUnion<A, B>(private val reducers: List<Reducer<A, B>>) : Reducer<A, B> {
-    override fun parse(stream: ParserStream, input: A): ParserResult<B> {
+    override fun parse(stream: TokenStream, input: A): ParserResult<B> {
         for(reducer in reducers) {
             val result = reducer.parse(stream, input)
 

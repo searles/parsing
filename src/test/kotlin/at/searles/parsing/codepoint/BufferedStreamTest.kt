@@ -6,7 +6,7 @@ import org.junit.Test
 class BufferedStreamTest {
     @Test
     fun testSetPosition() {
-        val stream = BufferedStream.of(StringCodePointStream("abc"))
+        val stream = IndexedStream.of(StringCodePointStream("abc"))
 
         Assert.assertEquals('a'.toInt(), stream.read())
 
@@ -16,7 +16,7 @@ class BufferedStreamTest {
         Assert.assertEquals('c'.toInt(), stream.read())
         Assert.assertEquals(-1, stream.read())
 
-        stream.backtrackToIndex(index)
+        stream.reset(index)
 
         Assert.assertEquals('b'.toInt(), stream.read())
         Assert.assertEquals('c'.toInt(), stream.read())
@@ -25,7 +25,7 @@ class BufferedStreamTest {
 
     @Test
     fun testBufferTooSmall() {
-        val stream = BufferedStream.of(StringCodePointStream("abcd"), 2)
+        val stream = IndexedStream.of(StringCodePointStream("abcd"), 2)
 
         val startIndex = stream.index
 
@@ -34,7 +34,7 @@ class BufferedStreamTest {
         Assert.assertEquals('c'.toInt(), stream.read())
 
         try {
-            stream.backtrackToIndex(startIndex)
+            stream.reset(startIndex)
             Assert.fail()
         } catch (e: OutOfBufferRangeException) {
             e.printStackTrace()
@@ -43,7 +43,7 @@ class BufferedStreamTest {
 
     @Test
     fun testBufferFullyUsed() {
-        val stream = BufferedStream.of(StringCodePointStream("abcd"), 3)
+        val stream = IndexedStream.of(StringCodePointStream("abcd"), 3)
 
         val startIndex = stream.index
 
@@ -51,7 +51,7 @@ class BufferedStreamTest {
         Assert.assertEquals('b'.toInt(), stream.read())
         Assert.assertEquals('c'.toInt(), stream.read())
 
-        stream.backtrackToIndex(startIndex)
+        stream.reset(startIndex)
 
         Assert.assertEquals('a'.toInt(), stream.read())
         Assert.assertEquals('b'.toInt(), stream.read())
@@ -63,7 +63,7 @@ class BufferedStreamTest {
 
     @Test
     fun testSubstring() {
-        val stream = BufferedStream.of(StringCodePointStream("abcd"), 3)
+        val stream = IndexedStream.of(StringCodePointStream("abcd"), 3)
 
         Assert.assertEquals('a'.toInt(), stream.read())
 
@@ -72,12 +72,10 @@ class BufferedStreamTest {
         Assert.assertEquals('b'.toInt(), stream.read())
         Assert.assertEquals('c'.toInt(), stream.read())
 
-        val length = stream.index - startIndex
-
-        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()).toString())
+        Assert.assertEquals("bc", stream.getString(startIndex, stream.index))
 
         Assert.assertEquals('d'.toInt(), stream.read())
 
-        Assert.assertEquals("bc", stream.getCharSequence(startIndex, length.toInt()).toString())
+        Assert.assertEquals("bcd", stream.getString(startIndex, stream.index))
     }
 }

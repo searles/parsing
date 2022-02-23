@@ -1,15 +1,14 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.Parser
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PrintTree
 
 class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Reducer<A, B>): Parser<B> {
-    override fun parse(stream: ParserStream): ParserResult<B> {
-        val state = stream.createState()
-
+    override fun parse(stream: TokenStream): ParserResult<B> {
+        val index0 = stream.startIndex
         val leftResult = left.parse(stream)
 
         if(!leftResult.isSuccess) return ParserResult.failure
@@ -17,11 +16,11 @@ class ParserPlusReducer<A, B>(private val left: Parser<A>, private val right: Re
         val rightResult = right.parse(stream, leftResult.value)
 
         if(!rightResult.isSuccess) {
-            stream.restoreState(state)
+            stream.restoreIndex(index0)
             return ParserResult.failure
         }
 
-        return ParserResult.of(rightResult.value, leftResult.index, stream.index - leftResult.index)
+        return ParserResult.of(rightResult.value, leftResult.startIndex, rightResult.endIndex)
     }
 
     override fun print(value: B): PrintTree {

@@ -1,14 +1,14 @@
 package at.searles.parsing.parser.combinators
 
+import at.searles.parsing.lexer.TokenStream
 import at.searles.parsing.parser.ParserResult
-import at.searles.parsing.parser.ParserStream
 import at.searles.parsing.parser.Reducer
 import at.searles.parsing.printer.PartialPrintTree
 import at.searles.parsing.printer.PrintTree
 
 class Variation<A>(private val reducers: List<Reducer<A, A>>): Reducer<A, A> {
-    override fun parse(stream: ParserStream, input: A): ParserResult<A> {
-        val startIndex = stream.index
+    override fun parse(stream: TokenStream, input: A): ParserResult<A> {
+        val startIndex = stream.startIndex
         val list = ArrayList(reducers)
 
         var value = input
@@ -27,7 +27,7 @@ class Variation<A>(private val reducers: List<Reducer<A, A>>): Reducer<A, A> {
         // If no repetitions are allowed and the list is empty, then
         // it is a permutation.
 
-        return ParserResult.of(value, startIndex, stream.index - startIndex)
+        return ParserResult.of(value, startIndex, stream.startIndex - startIndex)
     }
 
     override fun print(value: A): PartialPrintTree<A> {

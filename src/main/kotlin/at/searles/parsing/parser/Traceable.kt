@@ -1,5 +1,5 @@
 package at.searles.parsing.parser
 
 interface Traceable {
-    fun setTrace(index: Long, length: Long)
+    fun setTrace(startIndex: Long, endIndex: Long)
 }

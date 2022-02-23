@@ -10,6 +10,6 @@ class TokenTest {
         val lexer = Lexer()
         val tok1 = lexer.createToken(Text("="))
         val tok2 = lexer.createToken(Text("="))
-        Assert.assertEquals(tok1.tokenId, tok2.tokenId)
+        Assert.assertEquals(tok1, tok2)
     }
 }
