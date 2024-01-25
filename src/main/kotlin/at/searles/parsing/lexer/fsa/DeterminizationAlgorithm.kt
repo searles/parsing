@@ -29,7 +29,7 @@ class DeterminizationAlgorithm {
             addConnectionsToTable(nextNodeSet)
         }
 
-        val nodesTable = createNodesTable() // createNodeSetToNewNodeTable()
+        val nodesTable = createNodesTable()
         return Automaton(nodesTable.getValue(startNodeSet))
     }
 
@@ -63,6 +63,14 @@ class DeterminizationAlgorithm {
     }
 
     private fun getEpsilonClosure(set: Set<Node>): Set<Node> {
+        fun collectEpsilonConnectedNodes(node: Node, set: HashSet<Node>) {
+            if(node in set) return
+            set.add(node)
+            epsilonEdges[node]?.also {
+                collectEpsilonConnectedNodes(it, set)
+            }
+        }
+
         val collected = HashSet<Node>()
         set.forEach {
             collectEpsilonConnectedNodes(it, collected)
@@ -70,22 +78,8 @@ class DeterminizationAlgorithm {
         return collected
     }
 
-    private fun collectEpsilonConnectedNodes(node: Node, set: HashSet<Node>) {
-        if(node in set) {
-            return
-        }
-
-        set.add(node)
-
-        epsilonEdges[node]?.also {
-            collectEpsilonConnectedNodes(it, set)
-        }
-    }
-
     private fun addConnectionsToTable(nodeSet: Set<Node>) {
-        if(table.contains(nodeSet)) {
-            return
-        }
+        if(table.contains(nodeSet)) return
 
         val connections = getConnections(nodeSet)
 
@@ -98,7 +92,6 @@ class DeterminizationAlgorithm {
 
     private fun getConnections(set: Set<Node>): IntervalMap<Set<Node>> {
         val epsilonClosure = getEpsilonClosure(set)
-
         val connections = IntervalMap<Set<Node>>()
 
         epsilonClosure.forEach {

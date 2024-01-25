@@ -11,8 +11,6 @@ import at.searles.parsing.lexer.regexp.Regexp
  * It always finds the longest match. Each regex that is added returns a unique
  * integer. Multiple regexes can match an element (for instance, a keyword is
  * usually also an ID). In this case, both elements match.
- * The lexer does not take care of hidden tokens, this is the duty of
- * TokStream.
  */
 class Lexer(private val tokenIdStream: Iterator<Int> = generateSequence(0) { it + 1 }.iterator()) {
     /**
@@ -28,7 +26,7 @@ class Lexer(private val tokenIdStream: Iterator<Int> = generateSequence(0) { it 
      * been called prior to this call.
      * @return A set that should not be modified.
      */
-    fun selectNextToken(stream: FrameStream): IntSet? {
+    fun selectNextToken(stream: FrameStream): IntSet? { // TODO introduce immutable type
         require(stream.isReset)
         val node = automaton.accept(stream) ?: run {
             stream.reset()
@@ -110,6 +108,8 @@ class Lexer(private val tokenIdStream: Iterator<Int> = generateSequence(0) { it 
     }
 
     companion object {
+        // Temporary id is used as a marker for a new lexem being added
+        // because initially it is unknown whether the next lexem already exists.
         private const val temporaryId = -1
     }
 }

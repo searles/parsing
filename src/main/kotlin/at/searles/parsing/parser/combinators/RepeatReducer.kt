@@ -12,9 +12,11 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>, private val minCount:
     }
 
     override fun parse(stream: TokenStream, input: A): ParserResult<A> {
-        val index0 = stream.startIndex
+        val state0 = stream.getState()
 
         var value = input
+        var endIndex = state0.index
+
         var count = 0
 
         while(true) {
@@ -22,14 +24,15 @@ class RepeatReducer<A>(private val reducer: Reducer<A, A>, private val minCount:
 
             if(!result.isSuccess) {
                 if(count < minCount) {
-                    stream.restoreIndex(index0)
+                    stream.restoreState(state0)
                     return ParserResult.failure
                 }
 
-                return ParserResult.of(value, index0, stream.startIndex - index0)
+                return ParserResult.of(value, state0.index, endIndex)
             }
 
             value = result.value
+            endIndex = result.endIndex
             count++
         }
     }

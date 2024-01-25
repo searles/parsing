@@ -8,5 +8,4 @@ internal class AtLeast(private val regexp: Regexp, private val count: Int) : Reg
     override fun toString(): String {
         return String.format("min(%s, %d)", regexp, count)
     }
-
 }

@@ -1,6 +1,5 @@
 package at.searles.parsing.lexer.regexp
 
-import at.searles.parsing.codepoint.CodePointStream
 import at.searles.parsing.codepoint.StringCodePointStream
 
 class Text(seq: CharSequence) : Regexp {

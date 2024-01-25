@@ -73,7 +73,6 @@ class Automaton(val startNode: Node = Node()) {
             algorithm.epsilonConnect(it, startNode)
         }
 
-
         return algorithm.createAutomaton(newStartNode)
     }
 

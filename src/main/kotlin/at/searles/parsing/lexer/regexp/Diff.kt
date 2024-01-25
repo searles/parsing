@@ -8,5 +8,4 @@ internal class Diff(private val l: Regexp, private val r: Regexp) : Regexp {
     override fun <A> accept(visitor: Visitor<A>): A {
         return visitor.visitMinus(l, r)
     }
-
 }
